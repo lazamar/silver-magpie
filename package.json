@@ -1,0 +1,25 @@
+{
+  "name": "silver-magpi",
+  "version": "1.0.0",
+  "description": "Twitter extention for Chrome",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Lazamar",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-plugin-external-helpers-2": "^6.3.13",
+    "babel-plugin-transform-async-to-generator": "^6.8.0",
+    "babel-preset-es2015-rollup": "^1.2.0",
+    "gulp": "^3.9.1",
+    "gulp-rollup": "^2.3.0",
+    "gulp-sass": "^2.3.2",
+    "gulp-shell": "^0.5.2",
+    "gulp-sourcemaps": "^1.6.0",
+    "require-dir-all": "^0.4.9",
+    "rollup-plugin-babel": "^2.6.1",
+    "rollup-plugin-commonjs": "^3.3.1",
+    "rollup-plugin-node-resolve": "^2.0.0"
+  }
+}

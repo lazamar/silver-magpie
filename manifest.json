@@ -1,0 +1,16 @@
+{
+  "manifest_version": 2,
+
+  "name": "Silver Magpi",
+  "description": "Twitter Chrome Client",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "images/icon.png",
+    "default_popup": "pages/index.html"
+  },
+  "permissions": [
+    "activeTab",
+    "https://ajax.googleapis.com/"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+	"styles": {
+		"src": "./src/styles/**/*.scss",
+		"dist": "./dist/styles/"
+	},
+	"js": {
+		"src": "./src/js/main.js",
+		"dist": "./dist/js/"
+	}
+}
