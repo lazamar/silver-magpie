@@ -2826,7 +2826,7 @@ select[multiple].input-lg,
     outline: 5px auto -webkit-focus-ring-color;
     outline-offset: -2px; }
   .btn:hover, .btn:focus, .btn.focus {
-    color: #333;
+    color: rgba(0, 0, 0, 0.54);
     text-decoration: none; }
   .btn:active, .btn.active {
     outline: 0;
@@ -2846,29 +2846,29 @@ fieldset[disabled] a.btn {
   pointer-events: none; }
 
 .btn-default {
-  color: #333;
-  background-color: #fff;
-  border-color: #ccc; }
+  color: rgba(0, 0, 0, 0.54);
+  background-color: transparent;
+  border-color: #333333; }
   .btn-default:focus, .btn-default.focus {
-    color: #333;
-    background-color: #e6e6e6;
-    border-color: #8c8c8c; }
+    color: rgba(0, 0, 0, 0.54);
+    background-color: transparent;
+    border-color: black; }
   .btn-default:hover {
-    color: #333;
-    background-color: #e6e6e6;
-    border-color: #adadad; }
+    color: rgba(0, 0, 0, 0.54);
+    background-color: transparent;
+    border-color: #141414; }
   .btn-default:active, .btn-default.active,
   .open > .btn-default.dropdown-toggle {
-    color: #333;
-    background-color: #e6e6e6;
-    border-color: #adadad; }
+    color: rgba(0, 0, 0, 0.54);
+    background-color: transparent;
+    border-color: #141414; }
     .btn-default:active:hover, .btn-default:active:focus, .btn-default:active.focus, .btn-default.active:hover, .btn-default.active:focus, .btn-default.active.focus,
     .open > .btn-default.dropdown-toggle:hover,
     .open > .btn-default.dropdown-toggle:focus,
     .open > .btn-default.dropdown-toggle.focus {
-      color: #333;
-      background-color: #d4d4d4;
-      border-color: #8c8c8c; }
+      color: rgba(0, 0, 0, 0.54);
+      background-color: transparent;
+      border-color: black; }
   .btn-default:active, .btn-default.active,
   .open > .btn-default.dropdown-toggle {
     background-image: none; }
@@ -2876,11 +2876,11 @@ fieldset[disabled] a.btn {
   fieldset[disabled] .btn-default:hover,
   fieldset[disabled] .btn-default:focus,
   fieldset[disabled] .btn-default.focus {
-    background-color: #fff;
-    border-color: #ccc; }
+    background-color: transparent;
+    border-color: #333333; }
   .btn-default .badge {
-    color: #fff;
-    background-color: #333; }
+    color: transparent;
+    background-color: rgba(0, 0, 0, 0.54); }
 
 .btn-primary {
   color: #fff;
@@ -11097,5 +11097,8 @@ button.close {
 body {
   width: 350px;
   height: 600px; }
+
+.TweetBar {
+  background-color: #F2F2F2; }
 
 /*# sourceMappingURL=main.css.map */

@@ -8,5 +8,6 @@ import Html.Attributes exposing (..)
 
 root : Model -> Html Msg
 root model = div [ class "TweetBar"]
-  [ button [ class "zmdi zmdi-mail-send" ] [ ]
+  [ button [ class "zmdi zmdi-mail-send TweetBar-sendBtn" ] [ ]
+  , textarea [ class "TweetBar-textInput" ] [ ]
   ]
