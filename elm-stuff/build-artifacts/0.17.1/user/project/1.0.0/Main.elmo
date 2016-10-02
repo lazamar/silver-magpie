@@ -1,23 +1,34 @@
 var _user$project$Main$initialModel = function () {
-	var _p0 = _user$project$Tweets_State$init;
-	var tweetsModel = _p0._0;
-	var tweetsCmd = _p0._1;
-	return {tweetsModel: tweetsModel};
+	var _p0 = _user$project$TweetBar_State$init;
+	var tweetBarModel = _p0._0;
+	var tweetBarCmd = _p0._1;
+	var _p1 = _user$project$Tweets_State$init;
+	var tweetsModel = _p1._0;
+	var tweetsCmd = _p1._1;
+	return {tweetsModel: tweetsModel, tweetBarModel: tweetBarModel};
 }();
-var _user$project$Main$MainModel = function (a) {
-	return {tweetsModel: a};
+var _user$project$Main$MainModel = F2(
+	function (a, b) {
+		return {tweetsModel: a, tweetBarModel: b};
+	});
+var _user$project$Main$TweetBarMsg = function (a) {
+	return {ctor: 'TweetBarMsg', _0: a};
 };
 var _user$project$Main$TweetsMsg = function (a) {
 	return {ctor: 'TweetsMsg', _0: a};
 };
 var _user$project$Main$initialCmd = function () {
-	var _p1 = _user$project$Tweets_State$init;
-	var tweetsModel = _p1._0;
-	var tweetsCmd = _p1._1;
+	var _p2 = _user$project$TweetBar_State$init;
+	var tweetBarModel = _p2._0;
+	var tweetBarCmd = _p2._1;
+	var _p3 = _user$project$Tweets_State$init;
+	var tweetsModel = _p3._0;
+	var tweetsCmd = _p3._1;
 	return _elm_lang$core$Platform_Cmd$batch(
 		_elm_lang$core$Native_List.fromArray(
 			[
-				A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$TweetsMsg, tweetsCmd)
+				A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$TweetsMsg, tweetsCmd),
+				A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$TweetBarMsg, tweetBarCmd)
 			]));
 }();
 var _user$project$Main$init = {ctor: '_Tuple2', _0: _user$project$Main$initialModel, _1: _user$project$Main$initialCmd};
@@ -28,7 +39,11 @@ var _user$project$Main$subscriptions = function (model) {
 				A2(
 				_elm_lang$core$Platform_Sub$map,
 				_user$project$Main$TweetsMsg,
-				_user$project$Tweets_State$subscriptions(model.tweetsModel))
+				_user$project$Tweets_State$subscriptions(model.tweetsModel)),
+				A2(
+				_elm_lang$core$Platform_Sub$map,
+				_user$project$Main$TweetBarMsg,
+				_user$project$TweetBar_State$subscriptions(model.tweetBarModel))
 			]));
 };
 var _user$project$Main$view = function (model) {
@@ -41,22 +56,39 @@ var _user$project$Main$view = function (model) {
 				A2(
 				_elm_lang$html$Html_App$map,
 				_user$project$Main$TweetsMsg,
-				_user$project$Tweets_View$root(model.tweetsModel))
+				_user$project$Tweets_View$root(model.tweetsModel)),
+				A2(
+				_elm_lang$html$Html_App$map,
+				_user$project$Main$TweetBarMsg,
+				_user$project$TweetBar_View$root(model.tweetBarModel))
 			]));
 };
 var _user$project$Main$update = F2(
 	function (message, model) {
-		var _p2 = message;
-		var _p3 = A2(_user$project$Tweets_State$update, _p2._0, model.tweetsModel);
-		var updatedTweetsModel = _p3._0;
-		var tweetsCmd = _p3._1;
-		return {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Native_Utils.update(
-				model,
-				{tweetsModel: updatedTweetsModel}),
-			_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$TweetsMsg, tweetsCmd)
-		};
+		var _p4 = message;
+		if (_p4.ctor === 'TweetsMsg') {
+			var _p5 = A2(_user$project$Tweets_State$update, _p4._0, model.tweetsModel);
+			var updatedTweetsModel = _p5._0;
+			var tweetsCmd = _p5._1;
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{tweetsModel: updatedTweetsModel}),
+				_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$TweetsMsg, tweetsCmd)
+			};
+		} else {
+			var _p6 = A2(_user$project$TweetBar_State$update, _p4._0, model.tweetBarModel);
+			var updatedTweetBarModel = _p6._0;
+			var tweetBarCmd = _p6._1;
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{tweetBarModel: updatedTweetBarModel}),
+				_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$TweetBarMsg, tweetBarCmd)
+			};
+		}
 	});
 var _user$project$Main$main = {
 	main: _elm_lang$html$Html_App$program(

@@ -1,0 +1,19 @@
+var _user$project$TweetBar_View$root = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('TweetBar')
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$button,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('zmdi zmdi-mail-send')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[]))
+			]));
+};
