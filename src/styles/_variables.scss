@@ -1,0 +1,22 @@
+$gray-base:              #000 !default;
+$gray-darker:            lighten($gray-base, 13.5%) !default; // #222
+$gray-dark:              lighten($gray-base, 20%) !default;   // #333
+$gray:                   lighten($gray-base, 33.5%) !default; // #555
+$gray-light:             lighten($gray-base, 46.7%) !default; // #777
+$gray-lighter:           lighten($gray-base, 93.5%) !default; // #eee
+
+
+$bg-light: white;
+$bg-lvl-1: #F2F2F2;
+$bg-lvl-2: #E6E6E6;
+$bg-lvl-3: #E1E1E1;
+
+$txt-primary: rgba(0, 0, 0, 1);
+$txt-secondary: rgba(0, 0, 0, .54);
+$txt-disabled: rgba(0, 0, 0, .26);
+
+$brand-primary:         #9c27b0 ;
+$brand-success:         #0B8043 ;
+$brand-info:            #3367D6 ;
+$brand-warning:         #EA6100 ;
+$brand-danger:          #C53929 ;
