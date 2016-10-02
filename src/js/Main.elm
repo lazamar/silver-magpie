@@ -1,98 +1,96 @@
-import Html exposing (..)
-import Html.App as App
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
-import Http
-import Json.Decode as Json
-import Task
+module Main exposing (..)
+
+import Html exposing (Html)
+import Html.App
+import Tweets.State
+import Tweets.Types
+import Tweets.View
 
 
 
-main =
-  App.program
-    { init = init "cats"
-    , view = view
-    , update = update
-    , subscriptions = subscriptions
-    }
+-- MESSAGES
 
+
+type Msg =
+  TweetsMsg Tweets.Types.Msg
 
 
 -- MODEL
 
 
-type alias Model =
-  { topic : String
-  , gifUrl : String
-  }
+type alias MainModel =
+    { tweetsModel : Tweets.Types.Model
+    }
 
 
-init : String -> (Model, Cmd Msg)
-init topic =
-  ( Model topic "waiting.gif"
-  , getRandomGif topic
-  )
+initialModel : MainModel
+initialModel =
+  let
+    (tweetsModel, tweetsCmd) = Tweets.State.init
+  in
+    { tweetsModel = tweetsModel
+    }
 
 
+initialCmd : Cmd Msg
+initialCmd =
+  let
+    (tweetsModel, tweetsCmd) = Tweets.State.init
+  in
+    Cmd.batch
+      [ Cmd.map TweetsMsg tweetsCmd
+      ]
 
--- UPDATE
+
+init : ( MainModel, Cmd Msg )
+init =
+    ( initialModel, initialCmd )
 
 
-type Msg
-  = MorePlease
-  | FetchSucceed String
-  | FetchFail Http.Error
+-- SUBSCIPTIONS
 
 
-update : Msg -> Model -> (Model, Cmd Msg)
-update msg model =
-  case msg of
-    MorePlease ->
-      (model, getRandomGif model.topic)
-
-    FetchSucceed newUrl ->
-      (Model model.topic newUrl, Cmd.none)
-
-    FetchFail _ ->
-      (model, Cmd.none)
-
+subscriptions : MainModel -> Sub Msg
+subscriptions model =
+    Sub.batch
+      [ Tweets.State.subscriptions model.tweetsModel
+          |> Sub.map TweetsMsg
+      ]
 
 
 -- VIEW
 
 
-view : Model -> Html Msg
+view : MainModel -> Html Msg
 view model =
-  div []
-    [ h2 [] [text model.topic]
-    , button [ onClick MorePlease ] [ text "More Please!" ]
-    , br [] []
-    , img [src model.gifUrl] []
-    ]
+    Html.div []
+        [ Tweets.View.root model.tweetsModel
+            |> Html.App.map TweetsMsg
+        ]
 
 
-
--- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-  Sub.none
+-- UPDATE
 
 
-
--- HTTP
-
-
-getRandomGif : String -> Cmd Msg
-getRandomGif topic =
-  let
-    url =
-      "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=" ++ topic
-  in
-    Task.perform FetchFail FetchSucceed (Http.get decodeGifUrl url)
+update : Msg -> MainModel -> ( MainModel, Cmd Msg )
+update message model =
+    case message of
+        TweetsMsg subMsg ->
+            let
+                ( updatedTweetsModel, tweetsCmd ) =
+                    Tweets.State.update subMsg model.tweetsModel
+            in
+                ( { model | tweetsModel = updatedTweetsModel }, Cmd.map TweetsMsg tweetsCmd )
 
 
-decodeGifUrl : Json.Decoder String
-decodeGifUrl =
-  Json.at ["data", "image_url"] Json.string
+-- APP
+
+
+main : Program Never
+main =
+    Html.App.program
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = subscriptions
+        }

@@ -1,0 +1,4 @@
+var _user$project$Tweets_Types$Model = function (a) {
+	return {user: a};
+};
+var _user$project$Tweets_Types$Login = {ctor: 'Login'};

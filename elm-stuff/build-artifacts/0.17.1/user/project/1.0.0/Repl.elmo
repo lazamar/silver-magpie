@@ -1,0 +1,8 @@
+var _user$project$Repl$t_s_o_l = {ctor: '_Tuple0'};
+var _user$project$Repl$a = {ctor: '_Tuple2', _0: 1, _1: 2};
+var _user$project$Repl$d_e_l_t_r_o_n_3_0_3_0 = function () {
+	var _p0 = _user$project$Repl$a;
+	var b = _p0._0;
+	var c = _p0._1;
+	return b;
+}();
