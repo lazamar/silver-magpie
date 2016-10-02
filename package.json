@@ -9,10 +9,14 @@
   "author": "Lazamar",
   "license": "ISC",
   "devDependencies": {
+    "autoprefixer": "^6.5.0",
     "babel-plugin-external-helpers-2": "^6.3.13",
     "babel-plugin-transform-async-to-generator": "^6.8.0",
     "babel-preset-es2015-rollup": "^1.2.0",
+    "elm": "^0.17.1",
     "gulp": "^3.9.1",
+    "gulp-organiser": "^1.0.6",
+    "gulp-postcss": "^6.2.0",
     "gulp-rollup": "^2.3.0",
     "gulp-sass": "^2.3.2",
     "gulp-shell": "^0.5.2",
@@ -21,5 +25,9 @@
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-commonjs": "^3.3.1",
     "rollup-plugin-node-resolve": "^2.0.0"
+  },
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "bootstrap-sass": "^3.3.7"
   }
 }

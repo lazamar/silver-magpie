@@ -2,12 +2,11 @@
   "manifest_version": 2,
 
   "name": "Silver Magpi",
-  "description": "Twitter Chrome Client",
+  "description": "Elm Twitter Client for Chrome",
   "version": "1.0",
-
   "browser_action": {
-    "default_icon": "images/icon.png",
-    "default_popup": "pages/index.html"
+    "default_icon": "dist/images/logo.png",
+    "default_popup": "dist/pages/index.html"
   },
   "permissions": [
     "activeTab",

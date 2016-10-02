@@ -1,15 +1,17 @@
-const taskName = 'sass';
-module.exports = taskName;
-
 const gulp = require('gulp');
 const sass = require('gulp-sass');
-const paths = require('./paths.json');
+const postcss = require('gulp-postcss');
+const autoprefixer = require('autoprefixer');
+const sourcemaps = require('gulp-sourcemaps');
+const organiser = require('gulp-organiser');
 
-const origin = paths.styles.src;
-const destiny = paths.styles.dist;
-
-gulp.task(taskName, () => {
-	gulp.src(origin)
-		.pipe(sass().on('error', sass.logError))
-		.pipe(gulp.dest(destiny));
+module.exports = organiser.register((task) => {
+  gulp.task(task.name, () => {
+    gulp.src(task.src)
+    .pipe(sourcemaps.init())
+    .pipe(sass().on('error', sass.logError))
+    .pipe(postcss([autoprefixer({ browsers: ['last 15 versions'] })]))
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest(task.dest));
+  });
 });

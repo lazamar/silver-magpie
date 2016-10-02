@@ -1,10 +1,18 @@
-
-// Import all tasks
-const tasksDir = './tasks';
-const requireFolder = require('require-dir-all');
-requireFolder(tasksDir, { recursive: true });
-
 // List all available tasks
-const gulp = require('gulp');
-const shell = require('gulp-shell');
-gulp.task('list-tasks', shell.task('gulp --tasks'));
+const organiser = require('gulp-organiser');
+organiser.registerAll('./tasks', {
+  sass: {
+    src: 'src/styles/**/*.scss',
+    dest: 'dist/styles',
+  },
+  'copy-static': {
+    src: ['src/**/*'],
+    dest: 'dist',
+  },
+  'build-elm': {
+    src: 'src/js/Main.elm',
+    dest: 'dist/js',
+    moduleName: 'Main',
+    ext: 'js',
+  },
+});
