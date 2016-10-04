@@ -7815,7 +7815,9 @@ var _user$project$Tweets_View$root = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
-			[]),
+			[
+				_elm_lang$html$Html_Attributes$class('Tweets')
+			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
 				_elm_lang$html$Html$text('Working! Oh yeah!')
@@ -7847,13 +7849,22 @@ var _user$project$TweetBar_View$root = function (model) {
 		_elm_lang$core$Native_List.fromArray(
 			[
 				A2(
-				_elm_lang$html$Html$button,
+				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html_Attributes$class('zmdi zmdi-mail-send TweetBar-sendBtn btn btn-default btn-icon')
+						_elm_lang$html$Html_Attributes$class('TweetBar-actions')
 					]),
 				_elm_lang$core$Native_List.fromArray(
-					[])),
+					[
+						A2(
+						_elm_lang$html$Html$button,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$class('zmdi zmdi-mail-send TweetBar-sendBtn btn btn-default btn-icon')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[]))
+					])),
 				A2(
 				_elm_lang$html$Html$textarea,
 				_elm_lang$core$Native_List.fromArray(
@@ -7917,7 +7928,9 @@ var _user$project$Main$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
-			[]),
+			[
+				_elm_lang$html$Html_Attributes$class('Main')
+			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
 				A2(

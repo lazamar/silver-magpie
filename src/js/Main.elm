@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (Html)
+import Html.Attributes exposing (class)
 import Html.App
 import Tweets.State
 import Tweets.Types
@@ -76,7 +77,7 @@ subscriptions model =
 
 view : MainModel -> Html Msg
 view model =
-    Html.div []
+    Html.div [ class "Main"]
         [ Tweets.View.root model.tweetsModel
             |> Html.App.map TweetsMsg
         , TweetBar.View.root model.tweetBarModel

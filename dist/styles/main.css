@@ -11094,6 +11094,25 @@ button.close {
 .zmdi-directions:before {
   content: '\f1e7'; }
 
+#app {
+  width: 100%;
+  height: 100%; }
+
+.Main {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-flow: column nowrap;
+      -ms-flex-flow: column nowrap;
+          flex-flow: column nowrap;
+  height: 100%;
+  width: 100%; }
+
+* {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box; }
+
 body {
   width: 350px;
   height: 600px; }
@@ -11105,12 +11124,14 @@ input, textarea {
 .btn-icon {
   font-size: 15px;
   line-height: 1em;
-  width: 1.7em;
-  height: 1.7em;
+  width: 1.8em;
+  height: 1.8em;
   -webkit-border-radius: 2px;
           border-radius: 2px;
   padding: .3em 0;
-  text-align: center; }
+  text-align: center;
+  -webkit-transition: background-color .2s linear;
+  transition: background-color .2s linear; }
 
 .btn-default {
   background-color: transparent;
@@ -11122,11 +11143,43 @@ input, textarea {
     background-color: #E1E1E1;
     outline: none; }
 
+.Tweets {
+  height: 100%;
+  width: 100%; }
+
 .TweetBar {
   background-color: #F2F2F2;
   border: 1px solid #a9a9a9;
-  border-left-width: 0;
-  border-right-width: 0;
-  padding: 4px; }
+  border-width: 0;
+  border-top-width: 1px;
+  padding: 4px 6px;
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-flow: column nowrap;
+      -ms-flex-flow: column nowrap;
+          flex-flow: column nowrap; }
+
+.TweetBar-actions {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-flow: row nowrap;
+      -ms-flex-flow: row nowrap;
+          flex-flow: row nowrap;
+  width: 100%;
+  margin-bottom: 10px; }
+
+.TweetBar-sendBtn {
+  margin-left: auto; }
+
+.TweetBar-textInput {
+  width: 100%;
+  padding: 3px 7px;
+  resize: none;
+  height: 8em; }
 
 /*# sourceMappingURL=main.css.map */

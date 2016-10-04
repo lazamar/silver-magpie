@@ -1,7 +1,28 @@
 .TweetBar {
   background-color: $bg-lvl-1;
   border: 1px solid $c-border;
-  border-left-width: 0;
-  border-right-width: 0;
-  padding: 4px;
+  border-width: 0;
+  border-top-width: 1px;
+  padding: 4px 6px;
+  width: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.TweetBar-actions {
+  display: flex;
+  flex-flow: row nowrap;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.TweetBar-sendBtn {
+  margin-left: auto;
+}
+
+.TweetBar-textInput {
+  width: 100%;
+  padding: 3px 7px;
+  resize: none;
+  height: 8em;
 }
