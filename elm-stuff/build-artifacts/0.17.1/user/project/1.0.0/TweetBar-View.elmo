@@ -11,7 +11,15 @@ var _user$project$TweetBar_View$root = function (model) {
 				_elm_lang$html$Html$button,
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html_Attributes$class('zmdi zmdi-mail-send')
+						_elm_lang$html$Html_Attributes$class('zmdi zmdi-mail-send TweetBar-sendBtn btn btn-default btn-icon')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[])),
+				A2(
+				_elm_lang$html$Html$textarea,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('TweetBar-textInput')
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[]))

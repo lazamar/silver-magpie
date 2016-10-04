@@ -1061,7 +1061,7 @@ body {
   font-family: Roboto, Noto Sans, Helvetica Neue, Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 1.42857;
-  color: #333333;
+  color: black;
   background-color: #fff; }
 
 input,
@@ -2720,7 +2720,7 @@ select[multiple].input-lg,
   display: block;
   margin-top: 5px;
   margin-bottom: 10px;
-  color: #737373; }
+  color: #404040; }
 
 @media (min-width: 768px) {
   .form-inline .form-group {
@@ -4427,7 +4427,7 @@ a.badge:hover, a.badge:focus {
     margin-right: auto; }
   .thumbnail .caption {
     padding: 9px;
-    color: #333333; }
+    color: black; }
 
 a.thumbnail:hover,
 a.thumbnail:focus,
@@ -11098,7 +11098,35 @@ body {
   width: 350px;
   height: 600px; }
 
+input, textarea {
+  -webkit-border-radius: 2px;
+          border-radius: 2px; }
+
+.btn-icon {
+  font-size: 15px;
+  line-height: 1em;
+  width: 1.7em;
+  height: 1.7em;
+  -webkit-border-radius: 2px;
+          border-radius: 2px;
+  padding: .3em 0;
+  text-align: center; }
+
+.btn-default {
+  background-color: transparent;
+  border: none; }
+  .btn-default:active, .btn-default:active:focus {
+    background-color: #c8c8c8;
+    outline: none; }
+  .btn-default:hover, .btn-default:focus {
+    background-color: #E1E1E1;
+    outline: none; }
+
 .TweetBar {
-  background-color: #F2F2F2; }
+  background-color: #F2F2F2;
+  border: 1px solid #a9a9a9;
+  border-left-width: 0;
+  border-right-width: 0;
+  padding: 4px; }
 
 /*# sourceMappingURL=main.css.map */

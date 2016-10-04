@@ -1,3 +1,7 @@
 .TweetBar {
   background-color: $bg-lvl-1;
+  border: 1px solid $c-border;
+  border-left-width: 0;
+  border-right-width: 0;
+  padding: 4px;
 }

@@ -10,6 +10,7 @@ organiser.registerAll('./tasks', {
     dest: 'dist',
   },
   'build-elm': {
+    watch: 'src/js/**/*',
     src: 'src/js/Main.elm',
     dest: 'dist/js',
     moduleName: 'Main',

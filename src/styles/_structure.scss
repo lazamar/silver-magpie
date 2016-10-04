@@ -2,3 +2,34 @@ body {
   width: 350px;
   height: 600px;
 }
+
+input, textarea {
+  border-radius: 2px;
+}
+
+.btn-icon {
+  font-size: 15px;
+  line-height: 1em;
+  width: 1.7em;
+  height: 1.7em;
+  border-radius: 2px;
+  padding: .3em 0;
+  text-align: center;
+}
+
+
+.btn-default {
+  background-color: transparent;
+  border: none;
+
+  &:active,
+  &:active:focus {
+    background-color: darken($bg-lvl-3, 10%);
+    outline: none;
+  }
+
+  &:hover, &:focus {
+    background-color: $bg-lvl-3;
+    outline: none;
+  }
+}
