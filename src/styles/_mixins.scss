@@ -1,0 +1,19 @@
+@mixin custom-scrollbar() {
+  &::-webkit-scrollbar-track {
+  	background-color: transparent;
+  }
+
+  &::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+  	background-color: transparent
+  }
+
+  &::-webkit-scrollbar-thumb {
+  	background-color: transparent;
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: $c-border;
+  }
+}
