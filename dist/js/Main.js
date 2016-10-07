@@ -8827,7 +8827,8 @@ var _user$project$Tweets_View$root = function (model) {
 			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
-				_elm_lang$html$Html$text('Working! Oh yeah!')
+				_elm_lang$html$Html$text('Working! Oh yeah!'),
+				_user$project$Tweets_View$tweetListView(model.tweets)
 			]));
 };
 

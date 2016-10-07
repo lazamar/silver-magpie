@@ -10,6 +10,7 @@ root : Model -> Html Msg
 root model =
   div [ class "Tweets"]
     [ text "Working! Oh yeah!"
+    , tweetListView model.tweets
     ]
 
 tweetListView : List Tweet -> Html Msg
