@@ -41,7 +41,7 @@ errorView err =
       text ""
 
     Just error ->
-      div [ class "Tweets-error" ]
+      div [ class "Tweets-error animated fadeInDown" ]
         [ text ( errorMessage error)
         ]
 
