@@ -6,7 +6,7 @@ var _user$project$Tweets_View$errorMessage = function (error) {
 		case 'NetworkError':
 			return 'Unable to connect to server';
 		case 'UnexpectedPayload':
-			return A2(_elm_lang$core$Basics_ops['++'], 'Unable to parse server response:', _p0._0);
+			return A2(_elm_lang$core$Basics_ops['++'], 'Unable to parse server response: ', _p0._0);
 		default:
 			return A2(
 				_elm_lang$core$Basics_ops['++'],

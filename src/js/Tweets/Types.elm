@@ -23,7 +23,6 @@ type alias Tweet =
 type alias User =
   { name : String
   , screen_name : String
-  , url : String
   , profile_image_url_https : String
   }
 

@@ -8692,9 +8692,9 @@ var _user$project$Tweets_Types$Tweet = F7(
 	function (a, b, c, d, e, f, g) {
 		return {user: a, created_at: b, text: c, retweet_count: d, favorite_count: e, favorited: f, retweeted: g};
 	});
-var _user$project$Tweets_Types$User = F4(
-	function (a, b, c, d) {
-		return {name: a, screen_name: b, url: c, profile_image_url_https: d};
+var _user$project$Tweets_Types$User = F3(
+	function (a, b, c) {
+		return {name: a, screen_name: b, profile_image_url_https: c};
 	});
 var _user$project$Tweets_Types$TweetFetchSucceed = function (a) {
 	return {ctor: 'TweetFetchSucceed', _0: a};
@@ -8709,17 +8709,13 @@ var _user$project$AJAX_Types$userDecoder = A3(
 	_elm_lang$core$Json_Decode$string,
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'url',
+		'screen_name',
 		_elm_lang$core$Json_Decode$string,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'screen_name',
+			'name',
 			_elm_lang$core$Json_Decode$string,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'name',
-				_elm_lang$core$Json_Decode$string,
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Tweets_Types$User)))));
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Tweets_Types$User))));
 var _user$project$AJAX_Types$tweetDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'retweeted',
@@ -8809,7 +8805,7 @@ var _user$project$Tweets_View$errorMessage = function (error) {
 		case 'NetworkError':
 			return 'Unable to connect to server';
 		case 'UnexpectedPayload':
-			return A2(_elm_lang$core$Basics_ops['++'], 'Unable to parse server response:', _p0._0);
+			return A2(_elm_lang$core$Basics_ops['++'], 'Unable to parse server response: ', _p0._0);
 		default:
 			return A2(
 				_elm_lang$core$Basics_ops['++'],

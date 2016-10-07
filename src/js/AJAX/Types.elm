@@ -23,7 +23,6 @@ userDecoder =
   decode Tweets.Types.User
     |> required "name" string
     |> required "screen_name" string
-    |> required "url" string
     |> required "profile_image_url_https" string
 
 

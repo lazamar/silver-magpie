@@ -56,7 +56,7 @@ errorMessage error =
       "Unable to connect to server"
 
     Http.UnexpectedPayload errDescription ->
-      "Unable to parse server response:" ++ errDescription
+      "Unable to parse server response: " ++ errDescription
 
     Http.BadResponse errCode errDescription ->
       "Server returned " ++ ( toString errCode ) ++ ". " ++ errDescription

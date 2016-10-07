@@ -6,9 +6,9 @@ var _user$project$Tweets_Types$Tweet = F7(
 	function (a, b, c, d, e, f, g) {
 		return {user: a, created_at: b, text: c, retweet_count: d, favorite_count: e, favorited: f, retweeted: g};
 	});
-var _user$project$Tweets_Types$User = F4(
-	function (a, b, c, d) {
-		return {name: a, screen_name: b, url: c, profile_image_url_https: d};
+var _user$project$Tweets_Types$User = F3(
+	function (a, b, c) {
+		return {name: a, screen_name: b, profile_image_url_https: c};
 	});
 var _user$project$Tweets_Types$TweetFetchSucceed = function (a) {
 	return {ctor: 'TweetFetchSucceed', _0: a};
