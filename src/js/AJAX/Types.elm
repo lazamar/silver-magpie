@@ -1,23 +1,14 @@
 module AJAX.Types exposing (..)
 
-import Json.Decode exposing ( Decoder, string, int, bool )
+import Json.Decode exposing ( Decoder, string, int, bool, list )
 import Json.Decode.Pipeline exposing ( decode, required )
+import Tweets.Types
 
 
-type alias Tweet =
-  { user : User
-  , created_at : String
-  , text: String
-  , retweet_count : Int
-  , favorite_count : Int
-  , favorited : Bool
-  , retweeted : Bool
-  }
 
-
-tweetDecoder : Decoder Tweet
+tweetDecoder : Decoder Tweets.Types.Tweet
 tweetDecoder =
-  decode Tweet
+  decode Tweets.Types.Tweet
     |> required "user" userDecoder
     |> required "created_at" string
     |> required "text" string
@@ -27,21 +18,15 @@ tweetDecoder =
     |> required "retweeted" bool
 
 
-type alias User =
-  { name : String
-  , screen_name : String
-  , url : String
-  , profile_image_url_https : String
-  }
-
-
-userDecoder : Decoder User
+userDecoder : Decoder Tweets.Types.User
 userDecoder =
-  decode User
+  decode Tweets.Types.User
     |> required "name" string
     |> required "screen_name" string
     |> required "url" string
     |> required "profile_image_url_https" string
 
 
-type Msg = Login
+serverMsgDecoder : Decoder ( List Tweets.Types.Tweet )
+serverMsgDecoder =
+  Json.Decode.at ["tweets"] ( list tweetDecoder )

@@ -1,3 +1,20 @@
+var _user$project$Tweets_View$tweetView = function (tweet) {
+	return A2(
+		_elm_lang$html$Html$p,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html$text(tweet.text)
+			]));
+};
+var _user$project$Tweets_View$tweetListView = function (tweets) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		A2(_elm_lang$core$List$map, _user$project$Tweets_View$tweetView, tweets));
+};
 var _user$project$Tweets_View$root = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,

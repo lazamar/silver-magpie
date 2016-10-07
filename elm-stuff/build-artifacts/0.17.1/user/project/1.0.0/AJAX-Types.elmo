@@ -1,11 +1,3 @@
-var _user$project$AJAX_Types$Tweet = F7(
-	function (a, b, c, d, e, f, g) {
-		return {user: a, created_at: b, text: c, retweet_count: d, favorite_count: e, favorited: f, retweeted: g};
-	});
-var _user$project$AJAX_Types$User = F4(
-	function (a, b, c, d) {
-		return {name: a, screen_name: b, url: c, profile_image_url_https: d};
-	});
 var _user$project$AJAX_Types$userDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'profile_image_url_https',
@@ -22,7 +14,7 @@ var _user$project$AJAX_Types$userDecoder = A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 				'name',
 				_elm_lang$core$Json_Decode$string,
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$AJAX_Types$User)))));
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Tweets_Types$User)))));
 var _user$project$AJAX_Types$tweetDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'retweeted',
@@ -51,5 +43,9 @@ var _user$project$AJAX_Types$tweetDecoder = A3(
 							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 							'user',
 							_user$project$AJAX_Types$userDecoder,
-							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$AJAX_Types$Tweet))))))));
-var _user$project$AJAX_Types$Login = {ctor: 'Login'};
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Tweets_Types$Tweet))))))));
+var _user$project$AJAX_Types$serverMsgDecoder = A2(
+	_elm_lang$core$Json_Decode$at,
+	_elm_lang$core$Native_List.fromArray(
+		['tweets']),
+	_elm_lang$core$Json_Decode$list(_user$project$AJAX_Types$tweetDecoder));

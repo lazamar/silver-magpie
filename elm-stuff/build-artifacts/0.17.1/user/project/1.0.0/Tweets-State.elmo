@@ -1,9 +1,45 @@
+var _user$project$Tweets_State$getTweets = function (section) {
+	var url = A2(_elm_lang$core$Basics_ops['++'], 'http://localhost:8080/', section);
+	return A3(
+		_elm_lang$core$Task$perform,
+		_user$project$Tweets_Types$TweetFetchFail,
+		_user$project$Tweets_Types$TweetFetchSucceed,
+		A2(_evancz$elm_http$Http$get, _user$project$AJAX_Types$serverMsgDecoder, url));
+};
 var _user$project$Tweets_State$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
 var _user$project$Tweets_State$update = F2(
 	function (msg, model) {
-		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+		var _p0 = msg;
+		if (_p0.ctor === 'TweetFetchFail') {
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						error: _elm_lang$core$Maybe$Just(_p0._0)
+					}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
+		} else {
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{tweets: _p0._0}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
+		}
 	});
-var _user$project$Tweets_State$initialModel = {user: 'anonymous'};
-var _user$project$Tweets_State$init = {ctor: '_Tuple2', _0: _user$project$Tweets_State$initialModel, _1: _elm_lang$core$Platform_Cmd$none};
+var _user$project$Tweets_State$initialModel = {
+	tab: 'home',
+	error: _elm_lang$core$Maybe$Nothing,
+	tweets: _elm_lang$core$Native_List.fromArray(
+		[])
+};
+var _user$project$Tweets_State$init = {
+	ctor: '_Tuple2',
+	_0: _user$project$Tweets_State$initialModel,
+	_1: _user$project$Tweets_State$getTweets(_user$project$Tweets_State$initialModel.tab)
+};
