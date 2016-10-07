@@ -11158,6 +11158,34 @@ input, textarea {
   .Tweets:hover::-webkit-scrollbar-thumb {
     background-color: #a9a9a9; }
 
+.Tweet {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-flow: row nowrap;
+      -ms-flex-flow: row nowrap;
+          flex-flow: row nowrap;
+  -webkit-align-content: flex-start;
+      -ms-flex-line-pack: start;
+          align-content: flex-start;
+  -webkit-box-align: start;
+  -webkit-align-items: flex-start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+  background-color: #F2F2F2;
+  -webkit-border-radius: 3px;
+          border-radius: 3px;
+  margin-bottom: .5em;
+  border: 1px solid #a9a9a9;
+  padding: .5em; }
+
+.Tweet-userImage {
+  margin-right: .5em;
+  -webkit-border-radius: 3px;
+          border-radius: 3px;
+  border: 1px solid #a9a9a9; }
+
 .TweetBar {
   background-color: #F2F2F2;
   border: 1px solid #a9a9a9;

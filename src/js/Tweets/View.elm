@@ -9,9 +9,7 @@ import Html.Attributes exposing (..)
 root : Model -> Html Msg
 root model =
   div [ class "Tweets"]
-    [ text "Working! Oh yeah!"
-    , tweetListView model.tweets
-    ]
+    [ tweetListView model.tweets ]
 
 tweetListView : List Tweet -> Html Msg
 tweetListView tweets =
@@ -21,6 +19,13 @@ tweetListView tweets =
 
 tweetView : Tweet -> Html Msg
 tweetView tweet =
-  p []
+  div [ class "Tweet"]
+  [ img
+    [ class "Tweet-userImage"
+    , src tweet.user.profile_image_url_https
+    ] []
+  , p [ class "Tweet-test" ]
     [ text tweet.text
     ]
+
+  ]

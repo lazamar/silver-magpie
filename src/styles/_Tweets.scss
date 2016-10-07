@@ -4,3 +4,21 @@
   overflow-y: scroll;
   @include custom-scrollbar();
 }
+
+.Tweet {
+  display: flex;
+  flex-flow: row nowrap;
+  align-content: flex-start;
+  align-items: flex-start;
+  background-color: $bg-lvl-1;
+  border-radius: 3px;
+  margin-bottom: .5em;
+  border: 1px solid $c-border;
+  padding: .5em;
+}
+
+.Tweet-userImage {
+  margin-right: .5em;
+  border-radius: 3px;
+  border: 1px solid $c-border;
+}
