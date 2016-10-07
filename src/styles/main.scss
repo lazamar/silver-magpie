@@ -2,10 +2,11 @@
 @import './variables';
 @import '../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap';
 
+@import './material-font';
+@import './animate.css';
 @import './mixins';
 
-@import './material-font';
-@import './structure';
 
+@import './structure';
 @import './Tweets';
 @import './TweetBar';

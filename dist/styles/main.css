@@ -6,6 +6,7 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
+@import url(./animate.css);
 html {
   font-family: sans-serif;
   -ms-text-size-adjust: 100%;
@@ -11157,6 +11158,22 @@ input, textarea {
     background-color: transparent; }
   .Tweets:hover::-webkit-scrollbar-thumb {
     background-color: #a9a9a9; }
+
+.Tweets-error {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: -webkit-calc(100% - 10px);
+  width: calc(100% - 10px);
+  text-align: center;
+  color: #C53929;
+  padding: .5em;
+  background-color: #F2F2F2;
+  border: 1px solid #a9a9a9;
+  -webkit-border-radius: 3px;
+          border-radius: 3px;
+  -webkit-animation: fadeInDown .5s ease-out forward;
+          animation: fadeInDown .5s ease-out forward; }
 
 .Tweet {
   display: -webkit-box;

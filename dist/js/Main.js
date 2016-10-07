@@ -8801,6 +8801,43 @@ var _user$project$Tweets_State$init = {
 	_1: _user$project$Tweets_State$getTweets(_user$project$Tweets_State$initialModel.tab)
 };
 
+var _user$project$Tweets_View$errorMessage = function (error) {
+	var _p0 = error;
+	switch (_p0.ctor) {
+		case 'Timeout':
+			return 'The server didn\'t respond on time.';
+		case 'NetworkError':
+			return 'Unable to connect to server';
+		case 'UnexpectedPayload':
+			return A2(_elm_lang$core$Basics_ops['++'], 'Unable to parse server response:', _p0._0);
+		default:
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				'Server returned ',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Basics$toString(_p0._0),
+					A2(_elm_lang$core$Basics_ops['++'], '. ', _p0._1)));
+	}
+};
+var _user$project$Tweets_View$errorView = function (err) {
+	var _p1 = err;
+	if (_p1.ctor === 'Nothing') {
+		return _elm_lang$html$Html$text('');
+	} else {
+		return A2(
+			_elm_lang$html$Html$div,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$class('Tweets-error')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html$text(
+					_user$project$Tweets_View$errorMessage(_p1._0))
+				]));
+	}
+};
 var _user$project$Tweets_View$tweetView = function (tweet) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -8847,6 +8884,7 @@ var _user$project$Tweets_View$root = function (model) {
 			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
+				_user$project$Tweets_View$errorView(model.error),
 				_user$project$Tweets_View$tweetListView(model.tweets)
 			]));
 };

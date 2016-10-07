@@ -5,6 +5,20 @@
   @include custom-scrollbar();
 }
 
+.Tweets-error {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: calc(100% - 10px);
+  text-align: center;
+  color: $brand-danger;
+  padding: .5em;
+  background-color: $bg-lvl-1;
+  border: 1px solid $c-border;
+  border-radius: 3px;
+  animation: fadeInDown .5s ease-out forward;
+}
+
 .Tweet {
   display: flex;
   flex-flow: row nowrap;
