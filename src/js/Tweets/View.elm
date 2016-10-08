@@ -5,6 +5,7 @@ import Tweets.Types exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
+import Array
 
 
 root : Model -> Html Msg
@@ -18,34 +19,80 @@ root model =
 tweetListView : List Tweet -> Html Msg
 tweetListView tweets =
   div []
-   ( List.map tweetView tweets )
+   ( List.indexedMap tweetView tweets )
 
 
-tweetView : Tweet -> Html Msg
-tweetView tweet =
-  div [ class "Tweet"]
-  [ img
-      [ class "Tweet-userImage"
-      , src tweet.user.profile_image_url_https
-      ] []
-  , div []
-      [ div
-          [ class "Tweet-userInfoContainer"]
-          [ a
-              [ class "Tweet-userName"
-              , href ( "@" ++ tweet.user.screen_name ) 
-              ]
-              [ text tweet.user.name ]
-          , a
-              [ class "Tweet-userHandler"
-              , href ( "https://twitter.com/" ++ tweet.user.screen_name )
-              ]
-              [ text ( "@" ++ tweet.user.screen_name ) ]
-          ]
-      , p [ class "Tweet-text" ]
-          [ text tweet.text ]
-      ]
-  ]
+tweetView : Int -> Tweet -> Html Msg
+tweetView index tweet =
+  div
+    [ class "Tweet"
+    , style [ ("borderColor", ( getColor index ) )]
+    ]
+    [ img
+        [ class "Tweet-userImage"
+        , src tweet.user.profile_image_url_https
+        ] []
+    , div []
+        [ div
+            [ class "Tweet-userInfoContainer"]
+            [ a
+                [ class "Tweet-userName"
+                , href ( "https://twitter.com/" ++ tweet.user.screen_name )
+                , target "_blank"
+                ]
+                [ text tweet.user.name ]
+            , a
+                [ class "Tweet-userHandler"
+                , href ( "https://twitter.com/" ++ tweet.user.screen_name )
+                , target "_blank"
+                ]
+                [ text ( "@" ++ tweet.user.screen_name ) ]
+            ]
+        , p [ class "Tweet-text" ]
+            [ text tweet.text ]
+        ]
+    ]
+
+
+getColor : Int -> String
+getColor index =
+  let
+    color = Array.get index colors
+    defaultColor = "#F44336"
+  in
+    case color of
+      Just aColor ->
+        aColor
+
+      Nothing ->
+        defaultColor
+
+
+colors : Array.Array String
+colors =
+  Array.fromList
+    [ "#F44336"
+    , "#009688"
+    , "#E91E63"
+    , "#9E9E9E"
+    , "#FF9800"
+    , "#03A9F4"
+    , "#8BC34A"
+    , "#FF5722"
+    , "#607D8B"
+    , "#3F51B5"
+    , "#CDDC39"
+    , "#2196F3"
+    , "#F44336"
+    , "#000000"
+    , "#E91E63"
+    , "#FFEB3B"
+    , "#9C27B0"
+    , "#673AB7"
+    , "#795548"
+    , "#4CAF50"
+    , "#FFC107"
+    ]
 
 
 errorView : (Maybe Http.Error) -> Html Msg

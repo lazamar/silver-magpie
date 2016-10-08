@@ -13483,7 +13483,7 @@ button.close {
           box-sizing: border-box; }
 
 body {
-  width: 350px;
+  width: 400px;
   height: 600px; }
 
 input, textarea {
@@ -13515,7 +13515,8 @@ input, textarea {
 .Tweets {
   height: 100%;
   width: 100%;
-  overflow-y: scroll; }
+  overflow-y: scroll;
+  background-color: #F2F2F2; }
   .Tweets::-webkit-scrollbar-track {
     background-color: transparent; }
   .Tweets::-webkit-scrollbar {
@@ -13556,15 +13557,23 @@ input, textarea {
   -webkit-align-items: flex-start;
       -ms-flex-align: start;
           align-items: flex-start;
-  background-color: #F2F2F2;
-  -webkit-border-radius: 3px;
-          border-radius: 3px;
+  background-color: white;
   margin-bottom: .5em;
-  border: 1px solid #a9a9a9;
-  padding: .5em; }
+  border: 6px solid #a9a9a9;
+  border-width: 0 6px;
+  padding: .5em .5em 1em;
+  margin: 1em 1em;
+  -webkit-transition: -webkit-box-shadow .3s ease-out;
+  transition: -webkit-box-shadow .3s ease-out;
+  transition: box-shadow .3s ease-out;
+  transition: box-shadow .3s ease-out, -webkit-box-shadow .3s ease-out; }
+  .Tweet:hover {
+    background-color: #fafafa;
+    -webkit-box-shadow: 0 0 10px #aaa;
+            box-shadow: 0 0 10px #aaa; }
 
 .Tweet-userImage {
-  margin-right: .5em;
+  margin: .2em .5em 0 0;
   -webkit-border-radius: 3px;
           border-radius: 3px;
   border: 1px solid #a9a9a9; }
@@ -13581,6 +13590,9 @@ input, textarea {
   opacity: .5;
   margin-left: .3em;
   color: inherit; }
+
+.Tweet-text {
+  margin: 0; }
 
 .TweetBar {
   background-color: #F2F2F2;

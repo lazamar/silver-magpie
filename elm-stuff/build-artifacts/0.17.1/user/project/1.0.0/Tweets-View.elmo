@@ -35,83 +35,108 @@ var _user$project$Tweets_View$errorView = function (err) {
 				]));
 	}
 };
-var _user$project$Tweets_View$tweetView = function (tweet) {
-	return A2(
-		_elm_lang$html$Html$div,
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$html$Html_Attributes$class('Tweet')
-			]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				A2(
-				_elm_lang$html$Html$img,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Attributes$class('Tweet-userImage'),
-						_elm_lang$html$Html_Attributes$src(tweet.user.profile_image_url_https)
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[])),
-				A2(
-				_elm_lang$html$Html$div,
-				_elm_lang$core$Native_List.fromArray(
-					[]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						A2(
-						_elm_lang$html$Html$div,
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_elm_lang$html$Html_Attributes$class('Tweet-userInfoContainer')
-							]),
-						_elm_lang$core$Native_List.fromArray(
-							[
-								A2(
-								_elm_lang$html$Html$a,
-								_elm_lang$core$Native_List.fromArray(
-									[
-										_elm_lang$html$Html_Attributes$class('Tweet-userName'),
-										_elm_lang$html$Html_Attributes$href(
-										A2(_elm_lang$core$Basics_ops['++'], '@', tweet.user.screen_name))
-									]),
-								_elm_lang$core$Native_List.fromArray(
-									[
-										_elm_lang$html$Html$text(tweet.user.name)
-									])),
-								A2(
-								_elm_lang$html$Html$a,
-								_elm_lang$core$Native_List.fromArray(
-									[
-										_elm_lang$html$Html_Attributes$class('Tweet-userHandler'),
-										_elm_lang$html$Html_Attributes$href(
-										A2(_elm_lang$core$Basics_ops['++'], 'https://twitter.com/', tweet.user.screen_name))
-									]),
-								_elm_lang$core$Native_List.fromArray(
-									[
-										_elm_lang$html$Html$text(
-										A2(_elm_lang$core$Basics_ops['++'], '@', tweet.user.screen_name))
-									]))
-							])),
-						A2(
-						_elm_lang$html$Html$p,
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_elm_lang$html$Html_Attributes$class('Tweet-text')
-							]),
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_elm_lang$html$Html$text(tweet.text)
-							]))
-					]))
-			]));
+var _user$project$Tweets_View$colors = _elm_lang$core$Array$fromList(
+	_elm_lang$core$Native_List.fromArray(
+		['#F44336', '#009688', '#E91E63', '#9E9E9E', '#FF9800', '#03A9F4', '#8BC34A', '#FF5722', '#607D8B', '#3F51B5', '#CDDC39', '#2196F3', '#F44336', '#000000', '#E91E63', '#FFEB3B', '#9C27B0', '#673AB7', '#795548', '#4CAF50', '#FFC107']));
+var _user$project$Tweets_View$getColor = function (index) {
+	var defaultColor = '#F44336';
+	var color = A2(_elm_lang$core$Array$get, index, _user$project$Tweets_View$colors);
+	var _p2 = color;
+	if (_p2.ctor === 'Just') {
+		return _p2._0;
+	} else {
+		return defaultColor;
+	}
 };
+var _user$project$Tweets_View$tweetView = F2(
+	function (index, tweet) {
+		return A2(
+			_elm_lang$html$Html$div,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$class('Tweet'),
+					_elm_lang$html$Html_Attributes$style(
+					_elm_lang$core$Native_List.fromArray(
+						[
+							{
+							ctor: '_Tuple2',
+							_0: 'borderColor',
+							_1: _user$project$Tweets_View$getColor(index)
+						}
+						]))
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_elm_lang$html$Html$img,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html_Attributes$class('Tweet-userImage'),
+							_elm_lang$html$Html_Attributes$src(tweet.user.profile_image_url_https)
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[])),
+					A2(
+					_elm_lang$html$Html$div,
+					_elm_lang$core$Native_List.fromArray(
+						[]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(
+							_elm_lang$html$Html$div,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html_Attributes$class('Tweet-userInfoContainer')
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									A2(
+									_elm_lang$html$Html$a,
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html_Attributes$class('Tweet-userName'),
+											_elm_lang$html$Html_Attributes$href(
+											A2(_elm_lang$core$Basics_ops['++'], 'https://twitter.com/', tweet.user.screen_name)),
+											_elm_lang$html$Html_Attributes$target('_blank')
+										]),
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html$text(tweet.user.name)
+										])),
+									A2(
+									_elm_lang$html$Html$a,
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html_Attributes$class('Tweet-userHandler'),
+											_elm_lang$html$Html_Attributes$href(
+											A2(_elm_lang$core$Basics_ops['++'], 'https://twitter.com/', tweet.user.screen_name)),
+											_elm_lang$html$Html_Attributes$target('_blank')
+										]),
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html$text(
+											A2(_elm_lang$core$Basics_ops['++'], '@', tweet.user.screen_name))
+										]))
+								])),
+							A2(
+							_elm_lang$html$Html$p,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html_Attributes$class('Tweet-text')
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html$text(tweet.text)
+								]))
+						]))
+				]));
+	});
 var _user$project$Tweets_View$tweetListView = function (tweets) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
 			[]),
-		A2(_elm_lang$core$List$map, _user$project$Tweets_View$tweetView, tweets));
+		A2(_elm_lang$core$List$indexedMap, _user$project$Tweets_View$tweetView, tweets));
 };
 var _user$project$Tweets_View$root = function (model) {
 	return A2(

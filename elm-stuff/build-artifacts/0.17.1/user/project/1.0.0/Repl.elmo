@@ -1,2 +1,5 @@
 var _user$project$Repl$t_s_o_l = {ctor: '_Tuple0'};
-var _user$project$Repl$d_e_l_t_r_o_n_3_0_3_0 = A2(_elm_lang$core$Json_Decode$decodeString, _user$project$AJAX_Types$userDecoder, '{ \"name\": \"THE SCOLADAUM™\", \"screen_name\": \"\\\"O verdadeiro povo de Deus tá com CRIVELA ou com FREIXO, barba??\\\"\\nO verdadeiro povo de Deus tá de boa, mano! Relaxa aí, na moral\", \"url\": \"https://t.co/FcLA7NBaxE\", \"profile_image_url_https\": \"https://pbs.twimg.com/profile_images/752676667751952384/yh1ChLu-_normal.jpg\" , \"test\": 123 }');
+var _user$project$Repl$b = _elm_lang$core$Array$fromList(
+	_elm_lang$core$Native_List.fromArray(
+		[1, 2, 3]));
+var _user$project$Repl$d_e_l_t_r_o_n_3_0_3_0 = _elm_lang$core$Array$length(_user$project$Repl$b);
