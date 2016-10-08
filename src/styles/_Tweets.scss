@@ -35,3 +35,19 @@
   border-radius: 3px;
   border: 1px solid $c-border;
 }
+
+.Tweet-userInfoContainer {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.Tweet-userName {
+  color: $link-color;
+}
+
+.Tweet-userHandler {
+  opacity: .5;
+  margin-left: .3em;
+  color: inherit;
+}

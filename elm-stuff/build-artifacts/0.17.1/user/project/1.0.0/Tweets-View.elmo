@@ -54,14 +54,55 @@ var _user$project$Tweets_View$tweetView = function (tweet) {
 				_elm_lang$core$Native_List.fromArray(
 					[])),
 				A2(
-				_elm_lang$html$Html$p,
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html_Attributes$class('Tweet-test')
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text(tweet.text)
+						A2(
+						_elm_lang$html$Html$div,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$class('Tweet-userInfoContainer')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								A2(
+								_elm_lang$html$Html$a,
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html_Attributes$class('Tweet-userName'),
+										_elm_lang$html$Html_Attributes$href(
+										A2(_elm_lang$core$Basics_ops['++'], '@', tweet.user.screen_name))
+									]),
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html$text(tweet.user.name)
+									])),
+								A2(
+								_elm_lang$html$Html$a,
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html_Attributes$class('Tweet-userHandler'),
+										_elm_lang$html$Html_Attributes$href(
+										A2(_elm_lang$core$Basics_ops['++'], 'https://twitter.com/', tweet.user.screen_name))
+									]),
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html$text(
+										A2(_elm_lang$core$Basics_ops['++'], '@', tweet.user.screen_name))
+									]))
+							])),
+						A2(
+						_elm_lang$html$Html$p,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$class('Tweet-text')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html$text(tweet.text)
+							]))
 					]))
 			]));
 };

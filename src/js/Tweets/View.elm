@@ -25,12 +25,26 @@ tweetView : Tweet -> Html Msg
 tweetView tweet =
   div [ class "Tweet"]
   [ img
-    [ class "Tweet-userImage"
-    , src tweet.user.profile_image_url_https
-    ] []
-  , p [ class "Tweet-test" ]
-    [ text tweet.text
-    ]
+      [ class "Tweet-userImage"
+      , src tweet.user.profile_image_url_https
+      ] []
+  , div []
+      [ div
+          [ class "Tweet-userInfoContainer"]
+          [ a
+              [ class "Tweet-userName"
+              , href ( "@" ++ tweet.user.screen_name ) 
+              ]
+              [ text tweet.user.name ]
+          , a
+              [ class "Tweet-userHandler"
+              , href ( "https://twitter.com/" ++ tweet.user.screen_name )
+              ]
+              [ text ( "@" ++ tweet.user.screen_name ) ]
+          ]
+      , p [ class "Tweet-text" ]
+          [ text tweet.text ]
+      ]
   ]
 
 
