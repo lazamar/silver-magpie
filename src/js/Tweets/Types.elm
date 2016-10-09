@@ -5,7 +5,6 @@ import RemoteData exposing (WebData)
 
 type alias Model =
   { tab: String
-  , error: Maybe Http.Error
   , tweets: WebData ( List Tweet )
   }
 

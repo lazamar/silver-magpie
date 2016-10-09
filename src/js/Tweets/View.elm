@@ -12,9 +12,7 @@ import RemoteData exposing (..)
 root : Model -> Html Msg
 root model =
   div [ class "Tweets"]
-    [ errorView model.error
-    , tweetListView model.tweets
-    ]
+    [ tweetListView model.tweets ]
 
 
 
@@ -25,13 +23,13 @@ tweetListView tweets =
                 div [] [ text "Initialising" ]
 
             Loading ->
-                div [] [ text "Loading." ]
+                div [ class "Tweets-loading" ] [ text "Loading..." ]
 
             Success tweetList ->
                 div [] ( List.indexedMap tweetView tweetList )
 
             Failure err ->
-                div [] [ text ("Error fetching data") ]
+                div [] [ errorView err ]
 
 
 
@@ -108,17 +106,11 @@ colors =
     ]
 
 
-errorView : (Maybe Http.Error) -> Html Msg
-errorView err =
-  case err of
-    Nothing ->
-      text ""
-
-    Just error ->
-      div [ class "Tweets-error animated fadeInDown" ]
+errorView : Http.Error -> Html Msg
+errorView data =
+    div [ class "Tweets-error animated fadeInDown" ]
         [ text ( errorMessage error)
         ]
-
 
 errorMessage : Http.Error -> String
 errorMessage error =

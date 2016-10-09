@@ -14,8 +14,7 @@ import Http
 initialModel : Model
 initialModel =
     { tab = "home"
-    , error = Nothing
-    , tweets = NotAsked
+    , tweets = Loading
     }
 
 
@@ -29,21 +28,9 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         TweetFetch request ->
-            case request of
-                NotAsked ->
-                    ( { model | tweets = Loading, error = Nothing }
-                    , getTweets initialModel.tab
-                    )
-
-                Loading ->
-                    ( { model | error = Nothing }, Cmd.none )
-
-                Success tweetList ->
-                    ( { model | tweets = Success tweetList }, Cmd.none )
-
-                Failure err ->
-                    ( { model | error = Just err }, Cmd.none )
-
+            ( { model | tweets = request }
+            , Cmd.none
+            )
 
 
 subscriptions : Model -> Sub Msg
