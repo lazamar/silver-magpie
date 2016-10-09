@@ -23,7 +23,13 @@ tweetListView tweets =
                 div [] [ text "Initialising" ]
 
             Loading ->
-                div [ class "Tweets-loading" ] [ text "Loading..." ]
+                div [ class "Tweets-loading" ]
+                    [ div [ class "load-bar" ]
+                        [ div [ class "bar" ] []
+                        , div [ class "bar" ] []
+                        , div [ class "bar" ] []
+                        ]
+                    ]
 
             Success tweetList ->
                 div [] ( List.indexedMap tweetView tweetList )
@@ -107,7 +113,7 @@ colors =
 
 
 errorView : Http.Error -> Html Msg
-errorView data =
+errorView error =
     div [ class "Tweets-error animated fadeInDown" ]
         [ text ( errorMessage error)
         ]
