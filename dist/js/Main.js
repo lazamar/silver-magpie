@@ -8839,8 +8839,11 @@ var _user$project$Tweets_View$colors = _elm_lang$core$Array$fromList(
 		['#F44336', '#009688', '#E91E63', '#9E9E9E', '#FF9800', '#03A9F4', '#8BC34A', '#FF5722', '#607D8B', '#3F51B5', '#CDDC39', '#2196F3', '#F44336', '#000000', '#E91E63', '#FFEB3B', '#9C27B0', '#673AB7', '#795548', '#4CAF50', '#FFC107']));
 var _user$project$Tweets_View$getColor = function (index) {
 	var defaultColor = '#F44336';
-	var color = A2(_elm_lang$core$Array$get, index, _user$project$Tweets_View$colors);
-	var _p2 = color;
+	var colorNum = A2(
+		_elm_lang$core$Basics_ops['%'],
+		index,
+		_elm_lang$core$Array$length(_user$project$Tweets_View$colors));
+	var _p2 = A2(_elm_lang$core$Array$get, colorNum, _user$project$Tweets_View$colors);
 	if (_p2.ctor === 'Just') {
 		return _p2._0;
 	} else {

@@ -13563,10 +13563,8 @@ input, textarea {
   border-width: 0 6px;
   padding: .5em .5em 1em;
   margin: 1em 1em;
-  -webkit-transition: -webkit-box-shadow .3s ease-out;
-  transition: -webkit-box-shadow .3s ease-out;
-  transition: box-shadow .3s ease-out;
-  transition: box-shadow .3s ease-out, -webkit-box-shadow .3s ease-out; }
+  -webkit-transition: all .3s ease-out;
+  transition: all .3s ease-out; }
   .Tweet:hover {
     background-color: #fafafa;
     -webkit-box-shadow: 0 0 10px #aaa;

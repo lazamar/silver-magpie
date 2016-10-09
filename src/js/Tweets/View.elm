@@ -57,12 +57,12 @@ tweetView index tweet =
 getColor : Int -> String
 getColor index =
   let
-    color = Array.get index colors
+    colorNum = index % Array.length colors
     defaultColor = "#F44336"
   in
-    case color of
-      Just aColor ->
-        aColor
+    case Array.get colorNum colors of
+      Just color ->
+        color
 
       Nothing ->
         defaultColor
