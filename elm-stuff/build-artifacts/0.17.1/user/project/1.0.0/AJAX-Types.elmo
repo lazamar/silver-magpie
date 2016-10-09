@@ -1,8 +1,0 @@
-var _user$project$AJAX_Types$Failure = function (a) {
-	return {ctor: 'Failure', _0: a};
-};
-var _user$project$AJAX_Types$Success = function (a) {
-	return {ctor: 'Success', _0: a};
-};
-var _user$project$AJAX_Types$Loading = {ctor: 'Loading'};
-var _user$project$AJAX_Types$NotAsked = {ctor: 'NotAsked'};

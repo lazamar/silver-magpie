@@ -1,9 +1,0 @@
-var _user$project$TweetBar_State$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$none;
-};
-var _user$project$TweetBar_State$update = F2(
-	function (msg, model) {
-		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-	});
-var _user$project$TweetBar_State$initialModel = {user: 'anonymous'};
-var _user$project$TweetBar_State$init = {ctor: '_Tuple2', _0: _user$project$TweetBar_State$initialModel, _1: _elm_lang$core$Platform_Cmd$none};

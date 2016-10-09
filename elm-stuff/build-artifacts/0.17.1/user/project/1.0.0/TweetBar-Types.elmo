@@ -1,4 +1,0 @@
-var _user$project$TweetBar_Types$Model = function (a) {
-	return {user: a};
-};
-var _user$project$TweetBar_Types$Login = {ctor: 'Login'};
