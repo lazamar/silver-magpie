@@ -135,11 +135,42 @@ var _user$project$Tweets_View$tweetView = F2(
 				]));
 	});
 var _user$project$Tweets_View$tweetListView = function (tweets) {
-	return A2(
-		_elm_lang$html$Html$div,
-		_elm_lang$core$Native_List.fromArray(
-			[]),
-		A2(_elm_lang$core$List$indexedMap, _user$project$Tweets_View$tweetView, tweets));
+	var _p3 = tweets;
+	switch (_p3.ctor) {
+		case 'NotAsked':
+			return A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Initialising')
+					]));
+		case 'Loading':
+			return A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Loading.')
+					]));
+		case 'Success':
+			return A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				A2(_elm_lang$core$List$indexedMap, _user$project$Tweets_View$tweetView, _p3._0));
+		default:
+			return A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Error fetching data')
+					]));
+	}
 };
 var _user$project$Tweets_View$root = function (model) {
 	return A2(

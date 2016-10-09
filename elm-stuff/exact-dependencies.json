@@ -1,4 +1,5 @@
 {
+    "krisajenkins/remotedata": "2.4.0",
     "elm-lang/virtual-dom": "1.1.1",
     "elm-lang/mouse": "1.0.0",
     "evancz/elm-http": "3.0.1",

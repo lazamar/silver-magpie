@@ -1,14 +1,20 @@
-module AJAX.Types exposing (..)
+module Tweets.Rest exposing (..)
 
+import Tweets.Types exposing (..)
+import Http
 import Json.Decode exposing ( Decoder, string, int, bool, list )
 import Json.Decode.Pipeline exposing ( decode, required )
-import Tweets.Types
+import RemoteData
+import Task
+
+
+-- DECODERS
 
 
 
-tweetDecoder : Decoder Tweets.Types.Tweet
+tweetDecoder : Decoder Tweet
 tweetDecoder =
-  decode Tweets.Types.Tweet
+  decode Tweet
     |> required "user" userDecoder
     |> required "created_at" string
     |> required "text" string
@@ -18,14 +24,31 @@ tweetDecoder =
     |> required "retweeted" bool
 
 
-userDecoder : Decoder Tweets.Types.User
+
+userDecoder : Decoder User
 userDecoder =
-  decode Tweets.Types.User
+  decode User
     |> required "name" string
     |> required "screen_name" string
     |> required "profile_image_url_https" string
 
 
-serverMsgDecoder : Decoder ( List Tweets.Types.Tweet )
+
+serverMsgDecoder : Decoder ( List Tweet )
 serverMsgDecoder =
   Json.Decode.at ["tweets"] ( list tweetDecoder )
+
+
+
+-- DATA FETCHING
+
+
+
+getTweets : String -> Cmd Msg
+getTweets section =
+    let
+        url = "http://localhost:8080/" ++ section
+    in
+        Http.get serverMsgDecoder url
+            |> Task.perform RemoteData.Failure RemoteData.Success
+            |> Cmd.map TweetFetch

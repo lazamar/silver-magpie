@@ -6,6 +6,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
 import Array
+import RemoteData exposing (..)
 
 
 root : Model -> Html Msg
@@ -16,10 +17,22 @@ root model =
     ]
 
 
-tweetListView : List Tweet -> Html Msg
+
+tweetListView : WebData (List Tweet) -> Html Msg
 tweetListView tweets =
-  div []
-   ( List.indexedMap tweetView tweets )
+    case tweets of
+            NotAsked ->
+                div [] [ text "Initialising" ]
+
+            Loading ->
+                div [] [ text "Loading." ]
+
+            Success tweetList ->
+                div [] ( List.indexedMap tweetView tweetList )
+
+            Failure err ->
+                div [] [ text ("Error fetching data") ]
+
 
 
 tweetView : Int -> Tweet -> Html Msg

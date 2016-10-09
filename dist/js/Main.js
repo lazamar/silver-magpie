@@ -8684,6 +8684,201 @@ var _evancz$elm_http$Http$post = F3(
 			A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
 	});
 
+var _krisajenkins$remotedata$RemoteData$isFailure = function (data) {
+	var _p0 = data;
+	if (_p0.ctor === 'Failure') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _krisajenkins$remotedata$RemoteData$isSuccess = function (data) {
+	var _p1 = data;
+	if (_p1.ctor === 'Success') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _krisajenkins$remotedata$RemoteData$withDefault = F2(
+	function ($default, data) {
+		var _p2 = data;
+		if (_p2.ctor === 'Success') {
+			return _p2._0;
+		} else {
+			return $default;
+		}
+	});
+var _krisajenkins$remotedata$RemoteData$Success = function (a) {
+	return {ctor: 'Success', _0: a};
+};
+var _krisajenkins$remotedata$RemoteData$pure = _krisajenkins$remotedata$RemoteData$Success;
+var _krisajenkins$remotedata$RemoteData$prism = {
+	reverseGet: _krisajenkins$remotedata$RemoteData$Success,
+	getOption: function (data) {
+		var _p3 = data;
+		if (_p3.ctor === 'Success') {
+			return _elm_lang$core$Maybe$Just(_p3._0);
+		} else {
+			return _elm_lang$core$Maybe$Nothing;
+		}
+	}
+};
+var _krisajenkins$remotedata$RemoteData$Failure = function (a) {
+	return {ctor: 'Failure', _0: a};
+};
+var _krisajenkins$remotedata$RemoteData$asCmd = function (task) {
+	return A3(_elm_lang$core$Task$perform, _krisajenkins$remotedata$RemoteData$Failure, _krisajenkins$remotedata$RemoteData$Success, task);
+};
+var _krisajenkins$remotedata$RemoteData$fromResult = function (result) {
+	var _p4 = result;
+	if (_p4.ctor === 'Err') {
+		return _krisajenkins$remotedata$RemoteData$Failure(_p4._0);
+	} else {
+		return _krisajenkins$remotedata$RemoteData$Success(_p4._0);
+	}
+};
+var _krisajenkins$remotedata$RemoteData$fromTask = function (_p5) {
+	return A2(
+		_elm_lang$core$Task$map,
+		_krisajenkins$remotedata$RemoteData$fromResult,
+		_elm_lang$core$Task$toResult(_p5));
+};
+var _krisajenkins$remotedata$RemoteData$Loading = {ctor: 'Loading'};
+var _krisajenkins$remotedata$RemoteData$NotAsked = {ctor: 'NotAsked'};
+var _krisajenkins$remotedata$RemoteData$map = F2(
+	function (f, data) {
+		var _p6 = data;
+		switch (_p6.ctor) {
+			case 'Success':
+				return _krisajenkins$remotedata$RemoteData$Success(
+					f(_p6._0));
+			case 'Loading':
+				return _krisajenkins$remotedata$RemoteData$Loading;
+			case 'NotAsked':
+				return _krisajenkins$remotedata$RemoteData$NotAsked;
+			default:
+				return _krisajenkins$remotedata$RemoteData$Failure(_p6._0);
+		}
+	});
+var _krisajenkins$remotedata$RemoteData$toMaybe = function (_p7) {
+	return A2(
+		_krisajenkins$remotedata$RemoteData$withDefault,
+		_elm_lang$core$Maybe$Nothing,
+		A2(_krisajenkins$remotedata$RemoteData$map, _elm_lang$core$Maybe$Just, _p7));
+};
+var _krisajenkins$remotedata$RemoteData_ops = _krisajenkins$remotedata$RemoteData_ops || {};
+_krisajenkins$remotedata$RemoteData_ops['<$>'] = _krisajenkins$remotedata$RemoteData$map;
+var _krisajenkins$remotedata$RemoteData$mapFailure = F2(
+	function (f, data) {
+		var _p8 = data;
+		switch (_p8.ctor) {
+			case 'Success':
+				return _krisajenkins$remotedata$RemoteData$Success(_p8._0);
+			case 'Failure':
+				return _krisajenkins$remotedata$RemoteData$Failure(
+					f(_p8._0));
+			case 'Loading':
+				return _krisajenkins$remotedata$RemoteData$Loading;
+			default:
+				return _krisajenkins$remotedata$RemoteData$NotAsked;
+		}
+	});
+var _krisajenkins$remotedata$RemoteData$mapBoth = F3(
+	function (successFn, errorFn, data) {
+		var _p9 = data;
+		switch (_p9.ctor) {
+			case 'Success':
+				return _krisajenkins$remotedata$RemoteData$Success(
+					successFn(_p9._0));
+			case 'Failure':
+				return _krisajenkins$remotedata$RemoteData$Failure(
+					errorFn(_p9._0));
+			case 'Loading':
+				return _krisajenkins$remotedata$RemoteData$Loading;
+			default:
+				return _krisajenkins$remotedata$RemoteData$NotAsked;
+		}
+	});
+var _krisajenkins$remotedata$RemoteData$andThen = F2(
+	function (data, f) {
+		var _p10 = data;
+		switch (_p10.ctor) {
+			case 'Success':
+				return f(_p10._0);
+			case 'Failure':
+				return _krisajenkins$remotedata$RemoteData$Failure(_p10._0);
+			case 'NotAsked':
+				return _krisajenkins$remotedata$RemoteData$NotAsked;
+			default:
+				return _krisajenkins$remotedata$RemoteData$Loading;
+		}
+	});
+var _krisajenkins$remotedata$RemoteData$apply = F2(
+	function (wrappedFunction, wrappedValue) {
+		var _p11 = {ctor: '_Tuple2', _0: wrappedFunction, _1: wrappedValue};
+		switch (_p11._0.ctor) {
+			case 'Success':
+				switch (_p11._1.ctor) {
+					case 'Success':
+						return _krisajenkins$remotedata$RemoteData$Success(
+							_p11._0._0(_p11._1._0));
+					case 'Loading':
+						return _krisajenkins$remotedata$RemoteData$Loading;
+					case 'NotAsked':
+						return _krisajenkins$remotedata$RemoteData$NotAsked;
+					default:
+						return _krisajenkins$remotedata$RemoteData$Failure(_p11._1._0);
+				}
+			case 'Loading':
+				return _krisajenkins$remotedata$RemoteData$Loading;
+			case 'NotAsked':
+				return _krisajenkins$remotedata$RemoteData$NotAsked;
+			default:
+				return _krisajenkins$remotedata$RemoteData$Failure(_p11._0._0);
+		}
+	});
+var _krisajenkins$remotedata$RemoteData_ops = _krisajenkins$remotedata$RemoteData_ops || {};
+_krisajenkins$remotedata$RemoteData_ops['<*>'] = _krisajenkins$remotedata$RemoteData$apply;
+var _krisajenkins$remotedata$RemoteData$append = F2(
+	function (a, b) {
+		return A2(
+			_krisajenkins$remotedata$RemoteData_ops['<*>'],
+			A2(
+				_krisajenkins$remotedata$RemoteData_ops['<$>'],
+				F2(
+					function (v0, v1) {
+						return {ctor: '_Tuple2', _0: v0, _1: v1};
+					}),
+				a),
+			b);
+	});
+var _krisajenkins$remotedata$RemoteData$update = F2(
+	function (f, remoteData) {
+		var _p12 = remoteData;
+		switch (_p12.ctor) {
+			case 'Success':
+				var _p13 = f(_p12._0);
+				var first = _p13._0;
+				var second = _p13._1;
+				return {
+					ctor: '_Tuple2',
+					_0: _krisajenkins$remotedata$RemoteData$Success(first),
+					_1: second
+				};
+			case 'NotAsked':
+				return {ctor: '_Tuple2', _0: _krisajenkins$remotedata$RemoteData$NotAsked, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'Loading':
+				return {ctor: '_Tuple2', _0: _krisajenkins$remotedata$RemoteData$Loading, _1: _elm_lang$core$Platform_Cmd$none};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _krisajenkins$remotedata$RemoteData$Failure(_p12._0),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+		}
+	});
+
 var _user$project$Tweets_Types$Model = F3(
 	function (a, b, c) {
 		return {tab: a, error: b, tweets: c};
@@ -8696,14 +8891,11 @@ var _user$project$Tweets_Types$User = F3(
 	function (a, b, c) {
 		return {name: a, screen_name: b, profile_image_url_https: c};
 	});
-var _user$project$Tweets_Types$TweetFetchSucceed = function (a) {
-	return {ctor: 'TweetFetchSucceed', _0: a};
-};
-var _user$project$Tweets_Types$TweetFetchFail = function (a) {
-	return {ctor: 'TweetFetchFail', _0: a};
+var _user$project$Tweets_Types$TweetFetch = function (a) {
+	return {ctor: 'TweetFetch', _0: a};
 };
 
-var _user$project$AJAX_Types$userDecoder = A3(
+var _user$project$Tweets_Rest$userDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'profile_image_url_https',
 	_elm_lang$core$Json_Decode$string,
@@ -8716,7 +8908,7 @@ var _user$project$AJAX_Types$userDecoder = A3(
 			'name',
 			_elm_lang$core$Json_Decode$string,
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Tweets_Types$User))));
-var _user$project$AJAX_Types$tweetDecoder = A3(
+var _user$project$Tweets_Rest$tweetDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'retweeted',
 	_elm_lang$core$Json_Decode$bool,
@@ -8743,59 +8935,77 @@ var _user$project$AJAX_Types$tweetDecoder = A3(
 						A3(
 							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 							'user',
-							_user$project$AJAX_Types$userDecoder,
+							_user$project$Tweets_Rest$userDecoder,
 							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Tweets_Types$Tweet))))))));
-var _user$project$AJAX_Types$serverMsgDecoder = A2(
+var _user$project$Tweets_Rest$serverMsgDecoder = A2(
 	_elm_lang$core$Json_Decode$at,
 	_elm_lang$core$Native_List.fromArray(
 		['tweets']),
-	_elm_lang$core$Json_Decode$list(_user$project$AJAX_Types$tweetDecoder));
-
-var _user$project$Tweets_State$getTweets = function (section) {
+	_elm_lang$core$Json_Decode$list(_user$project$Tweets_Rest$tweetDecoder));
+var _user$project$Tweets_Rest$getTweets = function (section) {
 	var url = A2(_elm_lang$core$Basics_ops['++'], 'http://localhost:8080/', section);
-	return A3(
-		_elm_lang$core$Task$perform,
-		_user$project$Tweets_Types$TweetFetchFail,
-		_user$project$Tweets_Types$TweetFetchSucceed,
-		A2(_evancz$elm_http$Http$get, _user$project$AJAX_Types$serverMsgDecoder, url));
+	return A2(
+		_elm_lang$core$Platform_Cmd$map,
+		_user$project$Tweets_Types$TweetFetch,
+		A3(
+			_elm_lang$core$Task$perform,
+			_krisajenkins$remotedata$RemoteData$Failure,
+			_krisajenkins$remotedata$RemoteData$Success,
+			A2(_evancz$elm_http$Http$get, _user$project$Tweets_Rest$serverMsgDecoder, url)));
 };
+
 var _user$project$Tweets_State$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
+};
+var _user$project$Tweets_State$initialModel = {tab: 'home', error: _elm_lang$core$Maybe$Nothing, tweets: _krisajenkins$remotedata$RemoteData$NotAsked};
+var _user$project$Tweets_State$init = {
+	ctor: '_Tuple2',
+	_0: _user$project$Tweets_State$initialModel,
+	_1: _user$project$Tweets_Rest$getTweets(_user$project$Tweets_State$initialModel.tab)
 };
 var _user$project$Tweets_State$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
-		if (_p0.ctor === 'TweetFetchFail') {
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					model,
-					{
-						error: _elm_lang$core$Maybe$Just(_p0._0)
-					}),
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
-		} else {
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					model,
-					{tweets: _p0._0}),
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
+		var _p1 = _p0._0;
+		switch (_p1.ctor) {
+			case 'NotAsked':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{tweets: _krisajenkins$remotedata$RemoteData$Loading, error: _elm_lang$core$Maybe$Nothing}),
+					_1: _user$project$Tweets_Rest$getTweets(_user$project$Tweets_State$initialModel.tab)
+				};
+			case 'Loading':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{error: _elm_lang$core$Maybe$Nothing}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'Success':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							tweets: _krisajenkins$remotedata$RemoteData$Success(_p1._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							error: _elm_lang$core$Maybe$Just(_p1._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 		}
 	});
-var _user$project$Tweets_State$initialModel = {
-	tab: 'home',
-	error: _elm_lang$core$Maybe$Nothing,
-	tweets: _elm_lang$core$Native_List.fromArray(
-		[])
-};
-var _user$project$Tweets_State$init = {
-	ctor: '_Tuple2',
-	_0: _user$project$Tweets_State$initialModel,
-	_1: _user$project$Tweets_State$getTweets(_user$project$Tweets_State$initialModel.tab)
-};
 
 var _user$project$Tweets_View$errorMessage = function (error) {
 	var _p0 = error;
@@ -8934,11 +9144,42 @@ var _user$project$Tweets_View$tweetView = F2(
 				]));
 	});
 var _user$project$Tweets_View$tweetListView = function (tweets) {
-	return A2(
-		_elm_lang$html$Html$div,
-		_elm_lang$core$Native_List.fromArray(
-			[]),
-		A2(_elm_lang$core$List$indexedMap, _user$project$Tweets_View$tweetView, tweets));
+	var _p3 = tweets;
+	switch (_p3.ctor) {
+		case 'NotAsked':
+			return A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Initialising')
+					]));
+		case 'Loading':
+			return A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Loading.')
+					]));
+		case 'Success':
+			return A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				A2(_elm_lang$core$List$indexedMap, _user$project$Tweets_View$tweetView, _p3._0));
+		default:
+			return A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Error fetching data')
+					]));
+	}
 };
 var _user$project$Tweets_View$root = function (model) {
 	return A2(

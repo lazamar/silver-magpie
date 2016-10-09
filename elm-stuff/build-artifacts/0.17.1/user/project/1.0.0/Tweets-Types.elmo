@@ -10,9 +10,6 @@ var _user$project$Tweets_Types$User = F3(
 	function (a, b, c) {
 		return {name: a, screen_name: b, profile_image_url_https: c};
 	});
-var _user$project$Tweets_Types$TweetFetchSucceed = function (a) {
-	return {ctor: 'TweetFetchSucceed', _0: a};
-};
-var _user$project$Tweets_Types$TweetFetchFail = function (a) {
-	return {ctor: 'TweetFetchFail', _0: a};
+var _user$project$Tweets_Types$TweetFetch = function (a) {
+	return {ctor: 'TweetFetch', _0: a};
 };

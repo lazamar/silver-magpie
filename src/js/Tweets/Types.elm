@@ -1,11 +1,12 @@
 module Tweets.Types exposing (..)
 
 import Http
+import RemoteData exposing (WebData)
 
 type alias Model =
   { tab: String
   , error: Maybe Http.Error
-  , tweets: List Tweet
+  , tweets: WebData ( List Tweet )
   }
 
 
@@ -28,5 +29,4 @@ type alias User =
 
 
 type Msg
-  = TweetFetchFail Http.Error
-  | TweetFetchSucceed (List Tweet)
+  = TweetFetch ( WebData (List Tweet) )
