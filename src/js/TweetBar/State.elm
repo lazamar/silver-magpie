@@ -3,7 +3,9 @@ import TweetBar.Types exposing (..)
 
 
 initialModel : Model
-initialModel = { user = "anonymous" }
+initialModel =
+    { newTweetText = ""
+    }
 
 
 init : ( Model, Cmd Msg )
@@ -11,7 +13,10 @@ init = ( initialModel, Cmd.none)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model = ( model, Cmd.none )
+update msg model =
+    case msg of
+        LetterInput text ->
+            ( { model | newTweetText = text }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg

@@ -45,6 +45,33 @@
   font-weight: bold;
   padding: 0 .5em;
   font-size: 1.1em;
+  border-radius: 3px;
+  color: $bg-light;
+
+  > * {
+    padding: .2em .3em;
+    border-radius: 3px;
+    min-width: 2.5em;
+    text-align: center;
+    display: inline-block;
+  }
+
+  .enough {
+    background-color: $brand-info;
+  }
+
+  .quite-a-few {
+    background-color: $brand-warning;
+  }
+
+  .few-left {
+    background-color: $brand-danger;
+  }
+
+  .too-much {
+    color: $bg-light;
+    background-color: $brand-danger;
+  }
 }
 
 .TweetBar-textBox-input {

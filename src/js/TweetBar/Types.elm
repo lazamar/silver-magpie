@@ -2,8 +2,9 @@ module TweetBar.Types exposing (..)
 
 
 type alias Model =
-  { user: String
+  { newTweetText: String
   }
 
 
-type Msg = Login
+type Msg =
+    LetterInput String
