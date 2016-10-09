@@ -3,10 +3,17 @@
   border: 1px solid $c-border;
   border-width: 0;
   border-top-width: 1px;
-  padding: 4px 6px;
+  padding: 4px 1em 1em;
   width: 100%;
   display: flex;
   flex-flow: column nowrap;
+  box-shadow: 0 0 10px $c-border;
+
+
+	position: relative;
+  box-shadow:
+    0 0 10px rgba(0, 0, 0, 0.13);
+    // 0 0 40px rgba(0, 0, 0, 0.05) inset;
 }
 
 .TweetBar-actions {
@@ -20,50 +27,35 @@
   margin-left: auto;
 }
 
-.TweetBar-textInput {
+.TweetBar-textBox {
+  padding: .5em 7px;
   width: 100%;
-  padding: 3px 7px;
   resize: none;
   height: 8em;
+  background-color: white;
+  border: 1px solid $c-border;
+  border-radius: 2px;
+  display: flex;
+  flex-flow: row nowrap;
+  align-content: flex-start;
 }
 
+.TweetBar-textBox-charCount {
+  color: $link-color;
+  font-weight: bold;
+  padding: 0 .5em;
+  font-size: 1.1em;
+}
 
-/* Loading bar */
-
-.load-bar {
-  position: relative;
+.TweetBar-textBox-input {
+  padding: 0 7px;
   width: 100%;
-  height: 6px;
-  background-color: #fdba2c;
-}
+  border: 0;
+  resize: none;
 
-.bar {
-  content: "";
-  display: inline;
-  position: absolute;
-  width: 0;
-  height: 100%;
-  left: 50%;
-  text-align: center;
-}
-
-.bar:nth-child(1) {
-  background-color: #da4733;
-  animation: loading 2s linear infinite;
-}
-
-.bar:nth-child(2) {
-  background-color: #3b78e7;
-  animation: loading 2s linear .6s infinite;
-}
-
-.bar:nth-child(3) {
-  background-color: #fdba2c;
-  animation: loading 2s linear 1.25s infinite;
-}
-
-@keyframes loading {
-    from {left: 50%; width: 0;z-index:100;}
-    33.3333% {left: 0; width: 100%;z-index: 10;}
-    to {left: 0; width: 100%;}
+  &:active,
+  &:focus,
+  &:hover {
+    outline: 0;
+  }
 }

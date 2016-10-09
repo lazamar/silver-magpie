@@ -21,6 +21,10 @@ body {
   height: $windowHeight;
 }
 
+a:hover {
+  text-decoration: none;  
+}
+
 input, textarea {
   border-radius: 2px;
 }
@@ -34,6 +38,7 @@ input, textarea {
   padding: .3em 0;
   text-align: center;
   transition: background-color .2s linear;
+  cursor: auto;
 }
 
 
