@@ -23,7 +23,7 @@ tweetListView tweets =
                 div [] [ text "Initialising" ]
 
             Loading ->
-                div [ class "Tweets-loading" ]
+                section [ class "Tweets-loading" ]
                     [ div [ class "load-bar" ]
                         [ div [ class "bar" ] []
                         , div [ class "bar" ] []
