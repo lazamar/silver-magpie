@@ -1,10 +1,10 @@
 module TweetBar.State exposing ( init, update, subscriptions )
 import TweetBar.Types exposing (..)
-
+import Generic.Types exposing (..)
 
 initialModel : Model
 initialModel =
-    { newTweetText = ""
+    { newTweetText = NotSent ""
     }
 
 
@@ -16,7 +16,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         LetterInput text ->
-            ( { model | newTweetText = text }, Cmd.none )
+            ( { model | newTweetText = NotSent text }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg

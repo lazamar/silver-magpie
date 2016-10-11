@@ -1,8 +1,10 @@
 module TweetBar.Types exposing (..)
 
+import Generic.Types exposing (..)
+import Http
 
 type alias Model =
-  { newTweetText: String
+  { newTweetText: SubmissionData Http.Error String String
   }
 
 
