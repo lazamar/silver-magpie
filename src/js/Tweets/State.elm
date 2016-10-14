@@ -13,7 +13,7 @@ import Http
 
 initialModel : Model
 initialModel =
-    { tab = "home"
+    { tab = HomeRoute
     , tweets = Loading
     }
 
@@ -29,6 +29,11 @@ update msg model =
     case msg of
         TweetFetch request ->
             ( { model | tweets = request }
+            , Cmd.none
+            )
+
+        ChangeRoute route ->
+            ( { model | tab = route }
             , Cmd.none
             )
 

@@ -2,6 +2,7 @@ module Tweets.View exposing (..)
 
 
 import Tweets.Types exposing (..)
+import Generic.Utils exposing ( errorMessage )
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
@@ -117,18 +118,3 @@ errorView error =
     div [ class "Tweets-error animated fadeInDown" ]
         [ text ( errorMessage error)
         ]
-
-errorMessage : Http.Error -> String
-errorMessage error =
-  case error of
-    Http.Timeout ->
-      "The server didn't respond on time."
-
-    Http.NetworkError ->
-      "Unable to connect to server"
-
-    Http.UnexpectedPayload errDescription ->
-      "Unable to parse server response: " ++ errDescription
-
-    Http.BadResponse errCode errDescription ->
-      "Server returned " ++ ( toString errCode ) ++ ". " ++ errDescription

@@ -4,7 +4,7 @@ import Tweets.Types exposing (..)
 import Http
 import Json.Decode exposing ( Decoder, string, int, bool, list )
 import Json.Decode.Pipeline exposing ( decode, required )
-import RemoteData
+import RemoteData exposing ( RemoteData ( Success, Failure ))
 import Task
 
 
@@ -44,11 +44,19 @@ serverMsgDecoder =
 
 
 
-getTweets : String -> Cmd Msg
-getTweets section =
+getTweets : Route -> Cmd Msg
+getTweets route =
     let
+        section =
+            case route of
+                HomeRoute ->
+                    "home"
+
+                MentionsRoute ->
+                    "mentions"
+
         url = "http://localhost:8080/" ++ section
     in
         Http.get serverMsgDecoder url
-            |> Task.perform RemoteData.Failure RemoteData.Success
+            |> Task.perform Failure Success
             |> Cmd.map TweetFetch

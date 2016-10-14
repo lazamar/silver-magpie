@@ -2,20 +2,34 @@ module TweetBar.View exposing (..)
 
 
 import TweetBar.Types exposing (..)
+import Generic.Utils exposing ( errorMessage )
+import Generic.Types exposing
+    ( SubmissionData
+        ( NotSent
+        , Sending
+        , Success
+        , Failure
+        )
+    )
+
+import String
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Generic.Types exposing (..)
-import String
+
 
 
 root : Model -> Html Msg
 root model = div [ class "TweetBar"]
   [ div [ class "TweetBar-actions" ]
-    [ button [ class "zmdi zmdi-mail-send TweetBar-sendBtn btn btn-default btn-icon" ] []
+    [ button
+        [ class "zmdi zmdi-mail-send TweetBar-sendBtn btn btn-default btn-icon"
+        , onClick SubmitButtonPressed
+        ] []
     ]
   , inputBoxView model
   ]
+
 
 
 inputBoxView : Model -> Html Msg
@@ -32,8 +46,14 @@ inputBoxView model =
                       ] []
                 ]
 
-        otherwise ->
-            div [] [ text "Something else is going on." ]
+        Sending ->
+            div [] [ text "Sending tweet..." ]
+
+        Success _ ->
+            div [] [ text "It worked! Oh yeah baby!" ]
+
+        Failure error ->
+            div [] [ text ( errorMessage error )]
 
 
 remainingCharacters : String -> Html Msg

@@ -3,10 +3,19 @@ module Tweets.Types exposing (..)
 import Http
 import RemoteData exposing (WebData)
 
+
+
 type alias Model =
-  { tab: String
+  { tab: Route
   , tweets: WebData ( List Tweet )
   }
+
+
+
+type Route
+    = HomeRoute
+    | MentionsRoute
+
 
 
 type alias Tweet =
@@ -20,6 +29,7 @@ type alias Tweet =
   }
 
 
+
 type alias User =
   { name : String
   , screen_name : String
@@ -27,5 +37,7 @@ type alias User =
   }
 
 
+
 type Msg
   = TweetFetch ( WebData (List Tweet) )
+  | ChangeRoute Route
