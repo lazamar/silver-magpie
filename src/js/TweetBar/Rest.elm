@@ -7,7 +7,7 @@ import Http
 import Task
 import Json.Decode exposing ( Decoder, string )
 import Json.Decode.Pipeline exposing ( decode, required )
-
+import Json.Encode
 
 
 tweetPostedDecoder : Decoder TweetPostedResponse
@@ -23,17 +23,25 @@ tweetPostedDecoder =
 
 createSendBody: String -> Http.Body
 createSendBody tweetText =
-    Http.multipart
-        [ Http.stringData "status" tweetText
-        ]
+    [ ( "status", (Json.Encode.string tweetText) ) ]
+        |> Json.Encode.object
+        |> Json.Encode.encode 2
+        |> Http.string
+
 
 
 
 sendTweet : String -> Cmd Msg
 sendTweet tweetText =
     let
-        url = "http://localhost:8080/statusUpdate"
+        request =
+            { verb = "POST"
+            , headers = [ ("Content-Type", "application/json") ]
+            , url = "http://localhost:8080/statusUpdate"
+            , body = createSendBody tweetText
+            }
     in
-        Http.post tweetPostedDecoder url (createSendBody tweetText )
+        Http.send Http.defaultSettings request
+            |> Http.fromJson tweetPostedDecoder
             |> Task.perform Failure Success
             |> Cmd.map TweetSend
