@@ -10,8 +10,10 @@ import Generic.Types exposing
         , Sending
         , NotSent
         )
+    , never
     )
-
+import Task
+import Process
 
 
 initialModel : Model
@@ -41,10 +43,29 @@ update msg model =
                     ( model, Cmd.none )
 
         TweetSend status ->
-            ( { model | newTweetText = status }, Cmd.none)
+            case status of
+                Success _ ->
+                    ( { model | newTweetText = status }, resetTweetText)
+
+                Failure _ ->
+                    ( { model | newTweetText = status }, Cmd.none)
+
+                _ ->
+                    ( { model | newTweetText = status }, Cmd.none)
 
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
+
+
+
+
+-- Delay a few seconds and then return the value to 0
+resetTweetText : Cmd Msg
+resetTweetText =
+    Process.sleep 1800
+        `Task.andThen` (\_ -> Task.succeed "")
+        |> Task.perform never NotSent
+        |> Cmd.map TweetSend
