@@ -27,11 +27,30 @@ twistingCircle =
 tick =
     svg
         [ class "TweetBar-loading-tick"
-        , attribute "height" "120"
-        , attribute "width" "140"
+        , attribute "height" "40"
+        , attribute "width" "50"
         ]
         [ node "polyline"
-            [ attribute "points" "10,45 50,90 130,20"
-            , attribute "style" "fill:none;stroke:#3367D6;stroke-width:15"
+            [ attribute "points" "4,15 17,30 43,8"
+            , attribute "style" "fill:none;stroke:#3367D6;stroke-width:5"
+            ] []
+        ]
+
+
+cross =
+    svg
+        [ class "TweetBar-loading-cross"
+        , attribute "height" "44"
+        , attribute "width" "44"
+        ]
+        [ node "polyline"
+            [ class "TweetBar-loading-cross-first"
+            , attribute "points" "0,0 44,44"
+            , attribute "style" "fill:none;stroke:firebrick"
+            ] []
+        , node "polyline"
+            [ class "TweetBar-loading-cross-second"
+            , attribute "points" "44,0 0,44"
+            , attribute "style" "fill:none;stroke:firebrick"
             ] []
         ]

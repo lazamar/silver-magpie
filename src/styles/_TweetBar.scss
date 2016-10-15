@@ -88,7 +88,6 @@
   }
 }
 
-// ======================== LOADING ANIMATION ========================
 .TweetBar-loading {
   position: absolute;
   top: 0;
@@ -96,7 +95,10 @@
   height: 100%;
   width: 100%;
   display: flex;
+  flex-flow: column nowrap;
+  padding: 2.5em;
 }
+// ======================== LOADING ANIMATION ========================
 
 $offset: 187;
 $duration: 1.4s;
@@ -145,19 +147,56 @@ $duration: 1.4s;
 // ======================== SUCCESS ANIMATION ========================
 
 .TweetBar-loading-tick {
-  stroke-dasharray: 500;
-  stroke-dashoffset: 200;
-  transform: scale(.3);
+  stroke-dasharray: 160;
+  stroke-dashoffset: 60;
   margin: auto;
   transform-origin: center;
-  animation: loading-tick 2s linear forwards;
+  transform: scale(.85);
+  animation: loading-tick 2.5s linear forwards;
 }
 
 @keyframes loading-tick {
   from {
-    stroke-dashoffset: 500;
+    stroke-dashoffset: 160;
   }
   to {
-    stroke-dashoffset: -500;
+    stroke-dashoffset: -160;
   }
+}
+
+// ======================== END OF SUCCESS ANIMATION  ========================
+// ======================== FAILURE ANIMATION ========================
+
+$stroke-size: 100;
+$dasharray: 200;
+
+.TweetBar-loading-cross {
+  margin: auto;
+  stroke-dasharray: $dasharray;
+  stroke-dashoffset: 2 * $stroke-size;
+  transform: scale(.6);
+  stroke-width: 6;
+}
+
+.TweetBar-loading-cross-first {
+  animation: loading-cross 1.7s linear infinite .3s;
+}
+
+.TweetBar-loading-cross-second {
+    animation: loading-cross 2s linear infinite;
+}
+
+@keyframes loading-cross {
+  from {
+    stroke-dashoffset: 2 * $stroke-size;
+  }
+  to {
+    stroke-dashoffset: -$stroke-size;
+  }
+}
+// ======================== END OF FAILURE ANIMATION  ========================
+
+.TweetBar-loading-error {
+  color: $brand-danger;
+  text-align: center;
 }
