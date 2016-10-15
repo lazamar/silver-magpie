@@ -16,7 +16,7 @@ import String
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-
+import TweetBar.Animations
 
 
 root : Model -> Html Msg
@@ -28,14 +28,18 @@ root model =
                 , inputBoxView tweetText
                 ]
 
-        Sending tweetText ->
+        Sending _ ->
             div [ class "TweetBar"]
-                [ div [ class "TweetBar-loading" ] []
+                [ div
+                    [ class "TweetBar-loading" ]
+                    [ TweetBar.Animations.twistingCircle ]
                 ]
 
         Success _ ->
             div [ class "TweetBar"]
-                [ div [ class "TweetBar-loading--success" ] []
+                [ div
+                    [ class "TweetBar-loading" ]
+                    [ TweetBar.Animations.tick ]
                 ]
 
         Failure error ->

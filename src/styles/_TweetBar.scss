@@ -5,6 +5,7 @@
   border-top-width: 1px;
   padding: 4px 1em 1em;
   width: 100%;
+  min-height: 150px;
   display: flex;
   flex-flow: column nowrap;
   box-shadow: 0 0 10px $c-border;
@@ -87,7 +88,76 @@
   }
 }
 
+// ======================== LOADING ANIMATION ========================
 .TweetBar-loading {
-  height: 100px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
   width: 100%;
+  display: flex;
+}
+
+$offset: 187;
+$duration: 1.4s;
+
+.TweetBar-loading-spinner {
+  animation: rotator $duration linear infinite;
+  height: 35px;
+  width: 35px;
+  margin: auto;
+}
+
+@keyframes rotator {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(270deg); }
+}
+
+.TweetBar-loading-spinner-path {
+  stroke-dasharray: $offset;
+  stroke-dashoffset: 0;
+  transform-origin: center;
+  animation: loading-dash $duration ease-in-out infinite,
+             loading-colors ($duration * 4) ease-in-out infinite;
+}
+
+@keyframes loading-colors {
+  0% { stroke: $brand-info; }
+	25% { stroke: $brand-danger; }
+	50% { stroke: $brand-warning; }
+	75% { stroke: $brand-success; }
+  100% { stroke: $brand-info; }
+}
+
+@keyframes loading-dash {
+  0% { stroke-dashoffset: $offset; }
+  50% {
+    stroke-dashoffset: $offset / 4;
+    transform: rotate(135deg);
+  }
+  100% {
+    stroke-dashoffset: $offset;
+    transform: rotate(450deg);
+  }
+}
+
+// ======================== END OF LOADING ANIMATION ========================
+// ======================== SUCCESS ANIMATION ========================
+
+.TweetBar-loading-tick {
+  stroke-dasharray: 500;
+  stroke-dashoffset: 200;
+  transform: scale(.3);
+  margin: auto;
+  transform-origin: center;
+  animation: loading-tick 2s linear forwards;
+}
+
+@keyframes loading-tick {
+  from {
+    stroke-dashoffset: 500;
+  }
+  to {
+    stroke-dashoffset: -500;
+  }
 }
