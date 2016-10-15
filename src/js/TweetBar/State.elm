@@ -18,7 +18,8 @@ import Process
 
 initialModel : Model
 initialModel =
-    { newTweetText = NotSent ""
+    { submission = NotSent
+    , tweetText = ""
     }
 
 
@@ -32,12 +33,14 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         LetterInput text ->
-            ( { model | newTweetText = NotSent text }, Cmd.none )
+            ( { model | tweetText = text }, Cmd.none )
 
         SubmitButtonPressed ->
-            case model.newTweetText of
-                NotSent text ->
-                    ( { model | newTweetText = Sending text }, sendTweet text )
+            case model.submission of
+                NotSent ->
+                    ( { model | submission = Sending model.tweetText }
+                    , sendTweet model.tweetText
+                    )
 
                 otherwise ->
                     ( model, Cmd.none )
@@ -45,13 +48,13 @@ update msg model =
         TweetSend status ->
             case status of
                 Success _ ->
-                    ( { model | newTweetText = status }, resetTweetText 1800)
+                    ( { model | tweetText = "", submission = status }, resetTweetText 1800)
 
                 Failure _ ->
-                    ( { model | newTweetText = status }, resetTweetText 4000)
+                    ( { model | submission = status }, resetTweetText 4000)
 
                 _ ->
-                    ( { model | newTweetText = status }, Cmd.none)
+                    ( { model | submission = status }, Cmd.none)
 
 
 
@@ -66,5 +69,5 @@ resetTweetText : Float -> Cmd Msg
 resetTweetText time =
     Process.sleep time
         `Task.andThen` (\_ -> Task.succeed "")
-        |> Task.perform never NotSent
+        |> Task.perform never (\_ -> NotSent)
         |> Cmd.map TweetSend

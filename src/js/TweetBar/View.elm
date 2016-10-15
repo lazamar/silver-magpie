@@ -21,11 +21,11 @@ import TweetBar.Animations
 
 root : Model -> Html Msg
 root model =
-    case model.newTweetText of
-        NotSent tweetText ->
+    case model.submission of
+        NotSent ->
             div [ class "TweetBar"]
                 [ actionBar
-                , inputBoxView tweetText
+                , inputBoxView model.tweetText
                 ]
 
         Sending _ ->
@@ -74,6 +74,7 @@ inputBoxView tweetText =
         , textarea
               [ class "TweetBar-textBox-input"
               , onInput LetterInput
+              , value tweetText
               ] []
         ]
 
