@@ -35,7 +35,7 @@ update msg model =
         SubmitButtonPressed ->
             case model.newTweetText of
                 NotSent text ->
-                    ( { model | newTweetText = Sending }, sendTweet text )
+                    ( { model | newTweetText = Sending text }, sendTweet text )
 
                 otherwise ->
                     ( model, Cmd.none )

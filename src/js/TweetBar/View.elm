@@ -20,40 +20,56 @@ import Html.Events exposing (..)
 
 
 root : Model -> Html Msg
-root model = div [ class "TweetBar"]
-  [ div [ class "TweetBar-actions" ]
-    [ button
-        [ class "zmdi zmdi-mail-send TweetBar-sendBtn btn btn-default btn-icon"
-        , onClick SubmitButtonPressed
-        ] []
-    ]
-  , inputBoxView model
-  ]
-
-
-
-inputBoxView : Model -> Html Msg
-inputBoxView model =
+root model =
     case model.newTweetText of
         NotSent tweetText ->
-            div [ class "TweetBar-textBox" ]
-                [ span
-                      [ class "TweetBar-textBox-charCount" ]
-                      [ remainingCharacters tweetText ]
-                , textarea
-                      [ class "TweetBar-textBox-input"
-                      , onInput LetterInput
-                      ] []
+            div [ class "TweetBar"]
+                [ actionBar
+                , inputBoxView tweetText
                 ]
 
-        Sending ->
-            div [] [ text "Sending tweet..." ]
+        Sending tweetText ->
+            div [ class "TweetBar"]
+                [ div [ class "TweetBar-loading" ] []
+                ]
 
         Success _ ->
-            div [] [ text "It worked! Oh yeah baby!" ]
+            div [ class "TweetBar"]
+                [ div [ class "TweetBar-loading--success" ] []
+                ]
 
         Failure error ->
-            div [] [ text ( errorMessage error )]
+            div [ class "TweetBar"]
+                [ div
+                    [ class "TweetBar-loading--failure" ]
+                    [ text ( errorMessage error ) ]
+                ]
+
+
+
+actionBar : Html Msg
+actionBar =
+    div [ class "TweetBar-actions" ]
+        [ button
+            [ class "zmdi zmdi-mail-send TweetBar-sendBtn btn btn-default btn-icon"
+            , onClick SubmitButtonPressed
+            ] []
+        ]
+
+
+
+inputBoxView : String -> Html Msg
+inputBoxView tweetText =
+    div [ class "TweetBar-textBox" ]
+        [ span
+              [ class "TweetBar-textBox-charCount" ]
+              [ remainingCharacters tweetText ]
+        , textarea
+              [ class "TweetBar-textBox-input"
+              , onInput LetterInput
+              ] []
+        ]
+
 
 
 remainingCharacters : String -> Html Msg

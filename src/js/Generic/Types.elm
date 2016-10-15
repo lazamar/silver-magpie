@@ -4,6 +4,6 @@ module Generic.Types exposing (..)
 
 type SubmissionData e r c
     = NotSent c
-    | Sending
+    | Sending c
     | Success r
     | Failure e

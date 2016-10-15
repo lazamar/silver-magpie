@@ -9,7 +9,7 @@
   flex-flow: column nowrap;
   box-shadow: 0 0 10px $c-border;
 
-
+  transition: all .3s ease-in-out;
 	position: relative;
   box-shadow:
     0 0 10px rgba(0, 0, 0, 0.13);
@@ -85,4 +85,9 @@
   &:hover {
     outline: 0;
   }
+}
+
+.TweetBar-loading {
+  height: 100px;
+  width: 100%;
 }
