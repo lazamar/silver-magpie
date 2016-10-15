@@ -45,10 +45,10 @@ update msg model =
         TweetSend status ->
             case status of
                 Success _ ->
-                    ( { model | newTweetText = status }, resetTweetText)
+                    ( { model | newTweetText = status }, resetTweetText 1800)
 
                 Failure _ ->
-                    ( { model | newTweetText = status }, Cmd.none)
+                    ( { model | newTweetText = status }, resetTweetText 4000)
 
                 _ ->
                     ( { model | newTweetText = status }, Cmd.none)
@@ -61,11 +61,10 @@ subscriptions model =
 
 
 
-
 -- Delay a few seconds and then return the value to 0
-resetTweetText : Cmd Msg
-resetTweetText =
-    Process.sleep 1800
+resetTweetText : Float -> Cmd Msg
+resetTweetText time =
+    Process.sleep time
         `Task.andThen` (\_ -> Task.succeed "")
         |> Task.perform never NotSent
         |> Cmd.map TweetSend
