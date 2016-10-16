@@ -48,7 +48,7 @@ root model =
             div [ class "TweetBar"]
                 [ div
                     [ class "TweetBar-loading" ]
-                    [ p [ class "TweetBar-loading-error" ]
+                    [ p [ class "loading-error" ]
                         [ text ( errorMessage error ) ]
                     , Generic.Animations.cross
                     ]
