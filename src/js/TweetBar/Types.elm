@@ -19,7 +19,8 @@ type alias TweetPostedResponse =
 
 
 type Msg
-    = LetterInput String
-    | SubmitButtonPressed
+    = DoNothing
+    | LetterInput String
+    | SubmitTweet
     | TweetSend (SubmissionData Http.Error TweetPostedResponse String)
     | RefreshTweets

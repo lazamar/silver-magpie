@@ -13,6 +13,8 @@ import Generic.Types exposing
         )
     )
 
+import Json.Decode
+import Json.Decode.Pipeline
 import String
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -59,7 +61,7 @@ actionBar =
     div [ class "TweetBar-actions" ]
         [ button
             [ class "zmdi zmdi-mail-send TweetBar-sendBtn btn btn-default btn-icon"
-            , onClick SubmitButtonPressed
+            , onClick SubmitTweet
             ] []
         , button
             [ class "zmdi zmdi-refresh-alt btn btn-default btn-icon"
@@ -77,10 +79,39 @@ inputBoxView tweetText =
               [ remainingCharacters tweetText ]
         , textarea
               [ class "TweetBar-textBox-input"
+              , placeholder "Write you tweet here ..."
               , onInput LetterInput
+              , onKeyDown submitOnCtrlEnter
               , value tweetText
               ] []
         ]
+
+
+
+onKeyDown : (KeyDownEvent -> msg) -> Attribute msg
+onKeyDown tagger =
+  on "keydown" (Json.Decode.map tagger keyEventDecoder)
+
+
+type alias KeyDownEvent =
+    { keyCode : Int
+    , ctrlKey : Bool
+    }
+
+keyEventDecoder : Json.Decode.Decoder KeyDownEvent
+keyEventDecoder =
+    Json.Decode.Pipeline.decode KeyDownEvent
+        |> Json.Decode.Pipeline.required "keyCode" Json.Decode.int
+        |> Json.Decode.Pipeline.required "ctrlKey" Json.Decode.bool
+
+
+
+submitOnCtrlEnter : KeyDownEvent -> Msg
+submitOnCtrlEnter  { keyCode, ctrlKey } =
+    if keyCode == 13 && ctrlKey then
+        SubmitTweet
+    else
+        DoNothing
 
 
 

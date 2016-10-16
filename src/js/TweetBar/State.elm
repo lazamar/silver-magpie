@@ -34,10 +34,13 @@ init = ( initialModel, Cmd.none, Cmd.none)
 update : Msg -> Model -> ( Model, Cmd Msg, Cmd Main.Types.Msg )
 update msg model =
     case msg of
+        DoNothing ->
+            ( model, Cmd.none, Cmd.none )
+
         LetterInput text ->
             ( { model | tweetText = text }, Cmd.none, Cmd.none )
 
-        SubmitButtonPressed ->
+        SubmitTweet ->
             case model.submission of
                 NotSent ->
                     ( { model | submission = Sending model.tweetText }
@@ -53,7 +56,7 @@ update msg model =
                 Success _ ->
                     ( { model | tweetText = "", submission = status }
                     , resetTweetText 1800
-                    , Cmd.none
+                    , Main.Global.refreshTweets
                     )
 
                 Failure _ ->
@@ -63,7 +66,7 @@ update msg model =
                     ( { model | submission = status }, Cmd.none, Cmd.none)
 
         RefreshTweets ->
-            ( model, Cmd.none, Main.Global.loadMoreTweets)
+            ( model, Cmd.none, Main.Global.refreshTweets)
 
 
 
