@@ -1,4 +1,4 @@
-module Main.CommonState exposing (..)
+module Main.Global exposing (..)
 
 import Main.Types exposing (..)
 import Tweets.Types

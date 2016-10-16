@@ -1,7 +1,7 @@
 module TweetBar.State exposing ( init, update, subscriptions )
 
 
-import Main.CommonState
+import Main.Global
 import Main.Types
 import TweetBar.Rest exposing ( sendTweet )
 import TweetBar.Types exposing (..)
@@ -63,7 +63,7 @@ update msg model =
                     ( { model | submission = status }, Cmd.none, Cmd.none)
 
         RefreshTweets ->
-            ( model, Cmd.none, Main.CommonState.loadMoreTweets)
+            ( model, Cmd.none, Main.Global.loadMoreTweets)
 
 
 
