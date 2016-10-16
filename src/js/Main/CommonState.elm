@@ -7,6 +7,6 @@ import Generic.Utils exposing (toCmd)
 
 loadMoreTweets : Cmd Msg
 loadMoreTweets =
-    Tweets.Types.FetchTweets Tweets.Types.TopTweets
-        |> TweetsMsg 
+    Tweets.Types.FetchTweets Tweets.Types.Refresh
+        |> TweetsMsg
         |> toCmd

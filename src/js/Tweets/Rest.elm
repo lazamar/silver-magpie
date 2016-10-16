@@ -44,7 +44,7 @@ serverMsgDecoder =
 
 
 
-getTweets : TweetsPosition -> Route -> Cmd Msg
+getTweets : FetchType -> Route -> Cmd Msg
 getTweets position route =
     let
         section =

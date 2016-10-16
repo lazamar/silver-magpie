@@ -39,13 +39,13 @@ type alias User =
 
 
 
-type TweetsPosition
-    = TopTweets
+type FetchType
+    = Refresh
     | BottomTweets
 
 
 
 type Msg
-  = TweetFetch TweetsPosition ( WebData (List Tweet) )
+  = TweetFetch FetchType ( WebData (List Tweet) )
   | ChangeRoute Route
-  | FetchTweets TweetsPosition
+  | FetchTweets FetchType

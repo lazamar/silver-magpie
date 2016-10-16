@@ -25,7 +25,7 @@ initialModel =
 
 
 init : ( Model, Cmd Msg )
-init = ( initialModel, toCmd (FetchTweets TopTweets) )
+init = ( initialModel, toCmd (FetchTweets Refresh) )
 
 
 
@@ -68,11 +68,11 @@ update msg model =
 
 
 
-combineTweets : TweetsPosition -> (List Tweet) -> (List Tweet) -> (List Tweet)
+combineTweets : FetchType -> (List Tweet) -> (List Tweet) -> (List Tweet)
 combineTweets tweetsPosition newTweets oldTweets =
       case tweetsPosition of
-          TopTweets ->
-              List.concat [ newTweets, oldTweets ]
+          Refresh ->
+              newTweets
 
           BottomTweets ->
               List.concat [ oldTweets, newTweets ]
@@ -88,7 +88,7 @@ subscriptions model =
 
 
 
-resetTweetFetch : TweetsPosition -> Float -> Cmd Msg
+resetTweetFetch : FetchType -> Float -> Cmd Msg
 resetTweetFetch tweetsPosition time =
     Process.sleep time
         |> Task.perform never (\_ -> TweetFetch tweetsPosition NotAsked)
