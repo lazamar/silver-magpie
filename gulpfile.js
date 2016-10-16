@@ -6,13 +6,13 @@ organiser.registerAll('./tasks', {
     dest: 'dist/styles',
   },
   'copy-static': {
-    src: ['src/**/*', '!src/styles/**/*', '!src/js/**/*'],
+    src: ['src/**/*', '!src/styles/**/*', '!src/elm/**/*'],
     dest: 'dist',
   },
   'build-elm': {
-    watch: 'src/js/**/*',
-    src: 'src/js/Main.elm',
-    dest: 'dist/js',
+    watch: 'src/elm/**/*',
+    src: 'src/elm/Main.elm',
+    dest: 'dist/elm',
     moduleName: 'Main',
     ext: 'js',
   },
