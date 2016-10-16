@@ -44,8 +44,8 @@ serverMsgDecoder =
 
 
 
-getTweets : Route -> Cmd Msg
-getTweets route =
+getTweets : TweetsPosition -> Route -> Cmd Msg
+getTweets position route =
     let
         section =
             case route of
@@ -59,4 +59,4 @@ getTweets route =
     in
         Http.get serverMsgDecoder url
             |> Task.perform Failure Success
-            |> Cmd.map TweetFetch
+            |> Cmd.map (TweetFetch position)

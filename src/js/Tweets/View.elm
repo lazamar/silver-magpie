@@ -13,16 +13,15 @@ import RemoteData exposing (..)
 root : Model -> Html Msg
 root model =
   div [ class "Tweets"]
-    [ tweetListView model.tweets ]
+    [ loadingBar model.newTweets
+    , div [] ( List.indexedMap tweetView model.tweets )
+    ]
 
 
 
-tweetListView : WebData (List Tweet) -> Html Msg
-tweetListView tweets =
-    case tweets of
-            NotAsked ->
-                div [] [ text "Initialising" ]
-
+loadingBar : WebData (List Tweet) -> Html Msg
+loadingBar request =
+    case request of
             Loading ->
                 section [ class "Tweets-loading" ]
                     [ div [ class "load-bar" ]
@@ -32,11 +31,11 @@ tweetListView tweets =
                         ]
                     ]
 
-            Success tweetList ->
-                div [] ( List.indexedMap tweetView tweetList )
-
             Failure err ->
                 div [] [ errorView err ]
+
+            otherwise ->
+                div [] []
 
 
 

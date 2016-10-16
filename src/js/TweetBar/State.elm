@@ -68,6 +68,5 @@ subscriptions model =
 resetTweetText : Float -> Cmd Msg
 resetTweetText time =
     Process.sleep time
-        `Task.andThen` (\_ -> Task.succeed "")
-        |> Task.perform never (\_ -> NotSent)
-        |> Cmd.map TweetSend
+        `Task.andThen` Task.succeed
+        |> Task.perform never (\_ -> TweetSend NotSent)

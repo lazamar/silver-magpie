@@ -7,7 +7,8 @@ import RemoteData exposing (WebData)
 
 type alias Model =
   { tab: Route
-  , tweets: WebData ( List Tweet )
+  , tweets: List Tweet
+  , newTweets: WebData ( List Tweet )
   }
 
 
@@ -38,6 +39,12 @@ type alias User =
 
 
 
+type TweetsPosition
+    = TopTweets
+    | BottomTweets
+
+
+
 type Msg
-  = TweetFetch ( WebData (List Tweet) )
+  = TweetFetch TweetsPosition ( WebData (List Tweet) )
   | ChangeRoute Route
