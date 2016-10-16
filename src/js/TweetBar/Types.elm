@@ -22,3 +22,4 @@ type Msg
     = LetterInput String
     | SubmitButtonPressed
     | TweetSend (SubmissionData Http.Error TweetPostedResponse String)
+    | RefreshTweets

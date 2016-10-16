@@ -61,6 +61,10 @@ actionBar =
             [ class "zmdi zmdi-mail-send TweetBar-sendBtn btn btn-default btn-icon"
             , onClick SubmitButtonPressed
             ] []
+        , button
+            [ class "zmdi zmdi-refresh-alt btn btn-default btn-icon"
+            , onClick RefreshTweets
+            ] []
         ]
 
 

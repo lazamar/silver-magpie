@@ -14,7 +14,7 @@ initialModel =
   let
     (tweetsModel, tweetsCmd) =
       Tweets.State.init
-    (tweetBarModel, tweetBarCmd) =
+    (tweetBarModel, tweetBarCmd, tweetBarGlobalCmd) =
       TweetBar.State.init
   in
     { tweetsModel = tweetsModel
@@ -28,12 +28,13 @@ initialCmd =
   let
     (tweetsModel, tweetsCmd) =
       Tweets.State.init
-    (tweetBarModel, tweetBarCmd) =
+    (tweetBarModel, tweetBarCmd, tweetBarGlobalCmd) =
       TweetBar.State.init
   in
     Cmd.batch
       [ Cmd.map TweetsMsg tweetsCmd
       , Cmd.map TweetBarMsg tweetBarCmd
+      , tweetBarGlobalCmd
       ]
 
 
@@ -71,11 +72,18 @@ update message model =
                 ( updatedTweetsModel, tweetsCmd ) =
                     Tweets.State.update subMsg model.tweetsModel
             in
-                ( { model | tweetsModel = updatedTweetsModel }, Cmd.map TweetsMsg tweetsCmd )
+                ( { model | tweetsModel = updatedTweetsModel }
+                , Cmd.map TweetsMsg tweetsCmd
+                )
 
         TweetBarMsg subMsg ->
             let
-                ( updatedTweetBarModel, tweetBarCmd ) =
+                ( updatedTweetBarModel, tweetBarCmd, globalCmd ) =
                     TweetBar.State.update subMsg model.tweetBarModel
             in
-                ( { model | tweetBarModel = updatedTweetBarModel }, Cmd.map TweetBarMsg tweetBarCmd )
+                ( { model | tweetBarModel = updatedTweetBarModel }
+                , Cmd.batch
+                    [ Cmd.map TweetBarMsg tweetBarCmd
+                    , globalCmd
+                    ]
+                )

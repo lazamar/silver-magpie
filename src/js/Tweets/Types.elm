@@ -48,3 +48,4 @@ type TweetsPosition
 type Msg
   = TweetFetch TweetsPosition ( WebData (List Tweet) )
   | ChangeRoute Route
+  | FetchTweets TweetsPosition

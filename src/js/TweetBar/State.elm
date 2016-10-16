@@ -1,6 +1,8 @@
 module TweetBar.State exposing ( init, update, subscriptions )
 
 
+import Main.CommonState
+import Main.Types
 import TweetBar.Rest exposing ( sendTweet )
 import TweetBar.Types exposing (..)
 import Generic.Types exposing
@@ -24,37 +26,44 @@ initialModel =
 
 
 
-init : ( Model, Cmd Msg )
-init = ( initialModel, Cmd.none)
+init : ( Model, Cmd Msg, Cmd Main.Types.Msg )
+init = ( initialModel, Cmd.none, Cmd.none)
 
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> ( Model, Cmd Msg, Cmd Main.Types.Msg )
 update msg model =
     case msg of
         LetterInput text ->
-            ( { model | tweetText = text }, Cmd.none )
+            ( { model | tweetText = text }, Cmd.none, Cmd.none )
 
         SubmitButtonPressed ->
             case model.submission of
                 NotSent ->
                     ( { model | submission = Sending model.tweetText }
                     , sendTweet model.tweetText
+                    , Cmd.none
                     )
 
                 otherwise ->
-                    ( model, Cmd.none )
+                    ( model, Cmd.none, Cmd.none )
 
         TweetSend status ->
             case status of
                 Success _ ->
-                    ( { model | tweetText = "", submission = status }, resetTweetText 1800)
+                    ( { model | tweetText = "", submission = status }
+                    , resetTweetText 1800
+                    , Cmd.none
+                    )
 
                 Failure _ ->
-                    ( { model | submission = status }, resetTweetText 4000)
+                    ( { model | submission = status }, resetTweetText 4000, Cmd.none)
 
                 _ ->
-                    ( { model | submission = status }, Cmd.none)
+                    ( { model | submission = status }, Cmd.none, Cmd.none)
+
+        RefreshTweets ->
+            ( model, Cmd.none, Main.CommonState.loadMoreTweets)
 
 
 

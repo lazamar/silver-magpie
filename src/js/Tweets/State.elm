@@ -3,10 +3,13 @@ module Tweets.State exposing ( init, update, subscriptions )
 import Tweets.Rest exposing ( getTweets )
 import Tweets.Types exposing (..)
 import Generic.Types exposing (never)
+import Generic.Utils exposing (toCmd)
+import Main.Types
 import RemoteData exposing (..)
 import Task
 import Http
 import Process
+
 
 -- MAIN FUNCTIONS
 
@@ -22,7 +25,7 @@ initialModel =
 
 
 init : ( Model, Cmd Msg )
-init = ( initialModel, getTweets TopTweets initialModel.tab )
+init = ( initialModel, toCmd (FetchTweets TopTweets) )
 
 
 
@@ -33,6 +36,11 @@ init = ( initialModel, getTweets TopTweets initialModel.tab )
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        FetchTweets tweetsPosition ->
+            ( { model | newTweets = Loading }
+            , getTweets tweetsPosition model.tab
+            )
+
         TweetFetch tweetsPosition request ->
             case request of
                 Success newTweets ->
