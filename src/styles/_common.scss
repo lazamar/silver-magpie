@@ -1,0 +1,163 @@
+#app {
+  width: 100%;
+  height: 100%;
+}
+
+.Main {
+  display: flex;
+  flex-flow: column nowrap;
+  height: 100%;
+  width: 100%;
+}
+
+// ---------
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  width: $windowWidth;
+  height: $windowHeight;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+input, textarea {
+  border-radius: 2px;
+}
+
+.btn-icon {
+  font-size: 15px;
+  line-height: 1em;
+  width: 1.8em;
+  height: 1.8em;
+  border-radius: 2px;
+  padding: .3em 0;
+  text-align: center;
+  transition: background-color .2s linear;
+  cursor: auto;
+}
+
+
+.btn-default {
+  background-color: transparent;
+  border: none;
+
+  &:active,
+  &:active:focus {
+    background-color: darken($bg-lvl-3, 10%);
+    outline: none;
+  }
+
+  &:hover, &:focus {
+    background-color: $bg-lvl-3;
+    outline: none;
+  }
+}
+
+
+// ======================== LOADING ANIMATION ========================
+
+$offset: 187;
+$duration: 1.4s;
+
+.loading-spinner {
+  animation: rotator $duration linear infinite;
+  height: 35px;
+  width: 35px;
+  margin: auto;
+}
+
+@keyframes rotator {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(270deg); }
+}
+
+.loading-spinner-path {
+  stroke-dasharray: $offset;
+  stroke-dashoffset: 0;
+  transform-origin: center;
+  animation: loading-dash $duration ease-in-out infinite,
+             loading-colors ($duration * 4) ease-in-out infinite;
+}
+
+@keyframes loading-colors {
+  0% { stroke: $brand-info; }
+	25% { stroke: $brand-danger; }
+	50% { stroke: $brand-warning; }
+	75% { stroke: $brand-success; }
+  100% { stroke: $brand-info; }
+}
+
+@keyframes loading-dash {
+  0% { stroke-dashoffset: $offset; }
+  50% {
+    stroke-dashoffset: $offset / 4;
+    transform: rotate(135deg);
+  }
+  100% {
+    stroke-dashoffset: $offset;
+    transform: rotate(450deg);
+  }
+}
+
+// ======================== END OF LOADING ANIMATION ========================
+// ======================== SUCCESS ANIMATION ========================
+
+.loading-tick {
+  stroke-dasharray: 160;
+  stroke-dashoffset: 60;
+  margin: auto;
+  transform-origin: center;
+  transform: scale(.85);
+  animation: loading-tick 2.5s linear forwards;
+}
+
+@keyframes loading-tick {
+  from {
+    stroke-dashoffset: 160;
+  }
+  to {
+    stroke-dashoffset: -160;
+  }
+}
+
+// ======================== END OF SUCCESS ANIMATION  ========================
+// ======================== FAILURE ANIMATION ========================
+
+$stroke-size: 100;
+$dasharray: 200;
+
+.loading-cross {
+  margin: auto;
+  stroke-dasharray: $dasharray;
+  stroke-dashoffset: 2 * $stroke-size;
+  transform: scale(.6);
+  stroke-width: 6;
+}
+
+.loading-cross-first {
+  animation: loading-cross 1.7s linear infinite .3s;
+}
+
+.loading-cross-second {
+  animation: loading-cross 2s linear infinite;
+}
+
+@keyframes loading-cross {
+  from {
+    stroke-dashoffset: 2 * $stroke-size;
+  }
+  to {
+    stroke-dashoffset: -$stroke-size;
+  }
+}
+// ======================== END OF FAILURE ANIMATION  ========================
+
+.loading-error {
+  color: $brand-danger;
+  text-align: center;
+}

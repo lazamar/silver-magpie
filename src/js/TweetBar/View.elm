@@ -3,6 +3,7 @@ module TweetBar.View exposing (..)
 
 import TweetBar.Types exposing (..)
 import Generic.Utils exposing ( errorMessage )
+import Generic.Animations
 import Generic.Types exposing
     ( SubmissionData
         ( NotSent
@@ -16,7 +17,6 @@ import String
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import TweetBar.Animations
 
 
 root : Model -> Html Msg
@@ -32,14 +32,14 @@ root model =
             div [ class "TweetBar"]
                 [ div
                     [ class "TweetBar-loading" ]
-                    [ TweetBar.Animations.twistingCircle ]
+                    [ Generic.Animations.twistingCircle ]
                 ]
 
         Success _ ->
             div [ class "TweetBar"]
                 [ div
                     [ class "TweetBar-loading" ]
-                    [ TweetBar.Animations.tick ]
+                    [ Generic.Animations.tick ]
                 ]
 
         Failure error ->
@@ -48,7 +48,7 @@ root model =
                     [ class "TweetBar-loading" ]
                     [ p [ class "TweetBar-loading-error" ]
                         [ text ( errorMessage error ) ]
-                    , TweetBar.Animations.cross
+                    , Generic.Animations.cross
                     ]
                 ]
 
