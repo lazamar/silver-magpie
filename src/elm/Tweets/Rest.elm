@@ -2,13 +2,47 @@ module Tweets.Rest exposing (..)
 
 import Tweets.Types exposing (..)
 import Http
-import Json.Decode exposing ( Decoder, string, int, bool, list )
-import Json.Decode.Pipeline exposing ( decode, required )
+import Json.Decode exposing ( Decoder, string, int, bool, list, dict )
+import Json.Decode.Pipeline exposing ( decode, required, optional )
 import RemoteData exposing ( RemoteData ( Success, Failure ))
 import Task
 
 
 -- DECODERS
+
+userMentionsDecoder =
+    decode UserMentionsRecord
+        |> required "screen_name" string
+
+
+
+mediaDecoder =
+    decode MediaRecord
+        |> required "media_url_https" string
+        |> required "url" string -- this is the url contained in the tweet
+
+
+
+hashtagDecoder =
+    decode HashtagRecord
+        |> required "text" string
+
+
+
+urlDecoder =
+    decode UrlRecord
+        |> required "display_url" string
+        |> required "url" string
+
+
+
+-- tweetEntitiesDecoder : Decoder
+tweetEntitiesDecoder =
+    decode TweetEntitiesRecord
+        |> required "hashtags" ( list hashtagDecoder )
+        |> required "urls" ( list urlDecoder )
+        |> required "user_mentions" ( list userMentionsDecoder )
+        |> optional "media" ( list mediaDecoder ) []
 
 
 
@@ -22,6 +56,7 @@ tweetDecoder =
     |> required "favorite_count" int
     |> required "favorited" bool
     |> required "retweeted" bool
+    |> required "entities" tweetEntitiesDecoder
 
 
 
