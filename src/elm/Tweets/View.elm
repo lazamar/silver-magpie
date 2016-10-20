@@ -7,7 +7,10 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
 import Array
+import Regex
 import RemoteData exposing (..)
+import Json.Encode
+
 
 
 root : Model -> Html Msg
@@ -65,8 +68,11 @@ tweetView index tweet =
                 ]
                 [ text ( "@" ++ tweet.user.screen_name ) ]
             ]
-        , p [ class "Tweet-text" ]
-            [ text tweet.text ]
+        , p
+            [ class "Tweet-text"
+            , property "innerHTML" <| Json.Encode.string ( tweetTextView tweet )
+            ]
+            []
         ]
     ]
 
@@ -112,8 +118,52 @@ colors =
     ]
 
 
+
 errorView : Http.Error -> Html Msg
 errorView error =
     div [ class "Tweets-error animated fadeInDown" ]
         [ text ( errorMessage error)
         ]
+
+
+
+tweetTextView : Tweet -> String
+tweetTextView { text, entities } =
+    text
+     |> (flip23 List.foldl) linkUrl entities.urls
+     |> (flip23 List.foldl) linkUserMentions entities.user_mentions
+
+
+
+flip23 : (a -> b -> c -> d) -> a -> c -> b -> d
+flip23 f =
+    (\a c b -> f a b c)
+
+
+
+linkUrl : UrlRecord -> String -> String
+linkUrl url tweetText =
+    let
+        linkText =
+            "<a target=\"_blank\" href=\""
+            ++ url.url
+            ++ "\">"
+            ++ url.display_url
+            ++ "</a>"
+    in
+        Regex.replace Regex.All (Regex.regex (Regex.escape url.url)) (\_ -> linkText) tweetText
+
+
+
+linkUserMentions : UserMentionsRecord -> String -> String
+linkUserMentions { screen_name } tweetText =
+    let
+        handler = "@" ++ screen_name
+        linkText =
+            "<a target=\"_blank\" href=\"https://twitter.com/"
+            ++ screen_name
+            ++ "\">"
+            ++ handler
+            ++ "</a>"
+    in
+        Regex.replace Regex.All (Regex.regex (Regex.escape handler)) (\_ -> linkText) tweetText

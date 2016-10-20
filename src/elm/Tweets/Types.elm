@@ -53,6 +53,7 @@ type alias Tweet =
   , favorited : Bool
   , retweeted : Bool
   , entities: TweetEntitiesRecord
+  , extended_entities: TweetExtendedEntitiesRecord
   }
 
 
@@ -88,4 +89,24 @@ type alias HashtagRecord =
 type alias UrlRecord =
     { display_url : String
     , url : String
+    }
+
+
+
+type alias TweetExtendedEntitiesRecord =
+    { media: List TweetExtendedMediaRecord
+    }
+
+
+
+type alias TweetExtendedMediaRecord =
+    { url: String
+    , variants: List TweetExtendedMediaVariantRecord
+    }
+
+
+
+type alias TweetExtendedMediaVariantRecord =
+    { content_type: String
+    , url: String
     }

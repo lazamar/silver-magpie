@@ -6,7 +6,7 @@ organiser.registerAll('./tasks', {
     dest: 'dist/styles',
   },
   'copy-static': {
-    src: ['src/**/*', '!src/styles/**/*', '!src/elm/**/*'],
+    src: ['src/**/*', '!src/styles/**/*', '!src/elm/**/*.elm'],
     dest: 'dist',
   },
   'build-elm': {

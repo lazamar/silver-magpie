@@ -2,7 +2,7 @@ module Tweets.Rest exposing (..)
 
 import Tweets.Types exposing (..)
 import Http
-import Json.Decode exposing ( Decoder, string, int, bool, list, dict )
+import Json.Decode exposing ( Decoder, string, int, bool, list, dict, at )
 import Json.Decode.Pipeline exposing ( decode, required, optional )
 import RemoteData exposing ( RemoteData ( Success, Failure ))
 import Task
@@ -45,6 +45,24 @@ tweetEntitiesDecoder =
         |> optional "media" ( list mediaDecoder ) []
 
 
+tweetExtendedMediaVariantRecordDecoder =
+    decode TweetExtendedMediaVariantRecord
+        |> required "content_type" string
+        |> required "url" string
+
+
+tweetExtendedMediaRecordDecoder =
+    decode TweetExtendedMediaRecord
+        |> required "url" string
+        |> required "variants" (at ["video_info", "variants"] (list tweetExtendedMediaVariantRecordDecoder))
+
+
+
+tweetExtendedEntitiesDecoder =
+    decode TweetExtendedEntitiesRecord
+        |> optional "media" (list tweetExtendedMediaRecordDecoder) []
+
+
 
 tweetDecoder : Decoder Tweet
 tweetDecoder =
@@ -57,6 +75,7 @@ tweetDecoder =
     |> required "favorited" bool
     |> required "retweeted" bool
     |> required "entities" tweetEntitiesDecoder
+    |> required "extended_entities" tweetExtendedEntitiesDecoder
 
 
 
