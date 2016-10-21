@@ -53,7 +53,8 @@ update msg model =
 
                 Failure error ->
                     ( { model | newTweets = request }
-                    , resetTweetFetch tweetsPosition 3000
+                    , Cmd.none
+                    -- , resetTweetFetch tweetsPosition 3000
                     )
 
                 _ ->
