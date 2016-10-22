@@ -198,11 +198,28 @@ mediaView tweet =
             (\media ->
                 case media of
                     VideoMedia videoMedia ->
-                        [ video [ src videoMedia.media_url ] [] ]
+                        [ a [ href videoMedia.display_url
+                            , target "_blank"
+                            ]
+                            [ video
+                                [ src <| "https://" ++ videoMedia.media_url
+                                , class "Tweet-media-video"
+                                ] []
+                            ]
+                        ]
 
                     MultiPhotoMedia multiPhoto ->
                         multiPhoto.media_url_list
                             |> List.map
-                                (\imgUrl -> img [ src imgUrl ] [])
+                                (\imgUrl ->
+                                      a [ href <| "https://" ++ multiPhoto.display_url
+                                        , target "_blank"
+                                        ]
+                                        [ img
+                                            [ src imgUrl
+                                            , class "Tweet-media-photo"
+                                            ] []
+                                        ]
+                                )
             )
         |> div []
