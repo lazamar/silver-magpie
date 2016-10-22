@@ -132,6 +132,7 @@ tweetTextView { text, entities } =
     text
      |> (flip23 List.foldl) linkUrl entities.urls
      |> (flip23 List.foldl) linkUserMentions entities.user_mentions
+     |> (flip23 List.foldl) removeMediaUrl entities.media
 
 
 
@@ -151,7 +152,7 @@ linkUrl url tweetText =
             ++ url.display_url
             ++ "</a>"
     in
-        Regex.replace Regex.All (Regex.regex (Regex.escape url.url)) (\_ -> linkText) tweetText
+        replace url.url linkText tweetText
 
 
 
@@ -166,4 +167,21 @@ linkUserMentions { screen_name } tweetText =
             ++ handler
             ++ "</a>"
     in
-        Regex.replace Regex.All (Regex.regex (Regex.escape handler)) (\_ -> linkText) tweetText
+        replace handler linkText tweetText
+
+
+
+removeMediaUrl : MediaRecord -> String -> String
+removeMediaUrl record tweetText =
+    case record of
+        VideoMedia video ->
+            replace video.url "" tweetText
+
+        MultiPhotoMedia photo ->
+            replace photo.url "" tweetText
+
+
+
+replace : String -> String -> String -> String
+replace replaced replacement sentence =
+        Regex.replace Regex.All (Regex.regex (Regex.escape replaced)) (\_ -> replacement) sentence

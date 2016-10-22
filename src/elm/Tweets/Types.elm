@@ -40,10 +40,6 @@ type alias User =
 
 
 
-  -- Rest Types
-
-
-
 type alias Tweet =
   { user : User
   , created_at : String
@@ -71,9 +67,11 @@ type alias UserMentionsRecord =
     }
 
 
+
 type MediaRecord
     = MultiPhotoMedia MultiPhoto
     | VideoMedia Video
+
 
 
 type alias MultiPhoto =
