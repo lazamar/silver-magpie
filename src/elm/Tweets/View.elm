@@ -194,32 +194,44 @@ replace replaced replacement sentence =
 mediaView : Tweet -> Html Msg
 mediaView tweet =
     tweet.entities.media
-        |> List.concatMap
+        |> List.map
             (\media ->
                 case media of
                     VideoMedia videoMedia ->
-                        [ a [ href videoMedia.display_url
-                            , target "_blank"
-                            ]
-                            [ video
-                                [ src <| "https://" ++ videoMedia.media_url
-                                , class "Tweet-media-video"
-                                ] []
-                            ]
-                        ]
+                        videoView videoMedia
 
                     MultiPhotoMedia multiPhoto ->
-                        multiPhoto.media_url_list
-                            |> List.map
-                                (\imgUrl ->
-                                      a [ href <| "https://" ++ multiPhoto.display_url
-                                        , target "_blank"
-                                        ]
-                                        [ img
-                                            [ src imgUrl
-                                            , class "Tweet-media-photo"
-                                            ] []
-                                        ]
-                                )
+                        multiPhotoView multiPhoto
+            )
+        |> div []
+
+
+
+videoView : Video -> Html Msg
+videoView videoMedia =
+    a [ href videoMedia.display_url
+        , target "_blank"
+        ]
+        [ video
+            [ src <| "https://" ++ videoMedia.media_url
+            , class "Tweet-media-video"
+            ] []
+        ]
+
+
+
+multiPhotoView : MultiPhoto -> Html Msg
+multiPhotoView multiPhoto =
+    multiPhoto.media_url_list
+        |> List.map
+            (\imgUrl ->
+                  a [ href <| "https://" ++ multiPhoto.display_url
+                    , target "_blank"
+                    ]
+                    [ img
+                        [ src imgUrl
+                        , class "Tweet-media-photo"
+                        ] []
+                    ]
             )
         |> div []
