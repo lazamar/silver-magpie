@@ -11,7 +11,7 @@ import Tweets.Types exposing
     )
 
 import Json.Decode exposing ( Decoder, string, int, bool, list, dict, at, andThen, fail, (:=) )
-import Json.Decode.Pipeline exposing ( decode, required, optional )
+import Json.Decode.Pipeline exposing ( decode, required, optional, requiredAt )
 
 
 
@@ -51,7 +51,6 @@ type alias ExtendedPhotoRecord =
     { url: String -- what is in the tweet
     , display_url: String -- what should be shown in the tweet
     , media_url_https : String -- the actuall address of the content
-    , variants: List VariantRecord
     }
 
 
@@ -170,19 +169,18 @@ extendedMediaDecoder : Decoder ExtendedMedia
 extendedMediaDecoder =
     ( "type" := string )
         `andThen` \mtype ->
-                case mtype of
-                    "video" ->
-                        extendedVideoRecordDecoder
-                        `andThen` \x -> decode ( ExtendedVideo x )
+                if mtype == "video" then
+                    extendedVideoRecordDecoder
+                    `andThen` \x -> decode ( ExtendedVideo x )
 
-                    "photo" ->
-                        extendedPhotoRecordDecoder
-                        `andThen` \x -> decode ( ExtendedPhoto x )
-                        -- TODO: Multi-photo parse
-                    _ ->
-                        -- FIXME: This mustbe an appropriate
-                        -- parser for an undefined option
-                        fail ( mtype ++ " is not a recognised type.")
+                else if mtype == "photo" || mtype == "animated_gif" then
+                    extendedPhotoRecordDecoder
+                    `andThen` \x -> decode ( ExtendedPhoto x )
+                    -- TODO: Multi-photo parse
+                else
+                    -- FIXME: This mustbe an appropriate
+                    -- parser for an undefined option
+                    fail ( mtype ++ " is not a recognised type.")
 
 
 
@@ -190,7 +188,7 @@ extendedVideoRecordDecoder : Decoder ExtendedVideoRecord
 extendedVideoRecordDecoder =
     decode ExtendedVideoRecord
         |> required "url" string
-        |> required "variants" ( list variantRecordDecoder )
+        |> requiredAt ["video_info", "variants"] ( list variantRecordDecoder )
 
 
 
@@ -200,7 +198,6 @@ extendedPhotoRecordDecoder =
         |> required "url" string
         |> required "display_url" string
         |> required "media_url_https" string
-        |> required "variants" ( list variantRecordDecoder )
 
 
 
