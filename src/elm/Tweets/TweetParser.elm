@@ -5,7 +5,9 @@ import Tweets.Types exposing
     , User
     , TweetEntitiesRecord
     , UserMentionsRecord
-    , MediaRecord
+    , MediaRecord (MultiPhotoMedia, VideoMedia)
+    , Video
+    , MultiPhoto
     , HashtagRecord
     , UrlRecord
     )
@@ -28,10 +30,24 @@ type alias RawTweet =
   , favorite_count : Int
   , favorited : Bool
   , retweeted : Bool
-  , entities: TweetEntitiesRecord
+  , entities: RawTweetEntitiesRecord
   , extended_entities: ExtendedEntitiesRecord
   }
 
+
+type alias RawTweetEntitiesRecord =
+    { hashtags : List HashtagRecord
+    , urls : List UrlRecord
+    , user_mentions : List UserMentionsRecord
+    , media : List RawMediaRecord
+    }
+
+
+type alias RawMediaRecord =
+    { url : String
+    , display_url : String
+    , media_url_https : String
+    }
 
 
 -- EXTENDED RECORDS
@@ -42,12 +58,12 @@ type alias ExtendedEntitiesRecord =
 
 
 type ExtendedMedia
-    = ExtendedPhoto ExtendedPhotoRecord
-    | ExtendedVideo ExtendedVideoRecord
+    = ExtendedPhotoMedia ExtendedPhoto
+    | ExtendedVideoMedia ExtendedVideo
 
 
 
-type alias ExtendedPhotoRecord =
+type alias ExtendedPhoto =
     { url : String -- what is in the tweet
     , display_url : String -- what should be shown in the tweet
     , media_url_https : String -- the actuall address of the content
@@ -55,7 +71,7 @@ type alias ExtendedPhotoRecord =
 
 
 
-type alias ExtendedVideoRecord =
+type alias ExtendedVideo =
     { url : String
     , display_url : String
     , variants : List VariantRecord
@@ -91,7 +107,12 @@ preprocessTweet raw =
         raw.favorite_count
         raw.favorited
         raw.retweeted
-        raw.entities
+        ( TweetEntitiesRecord
+            raw.entities.hashtags
+            ( mergeMediaLists raw.extended_entities.media raw.entities.media )
+            raw.entities.urls
+            raw.entities.user_mentions
+        )
 
 
 
@@ -105,7 +126,7 @@ rawTweetDecoder =
         |> required "favorite_count" int
         |> required "favorited" bool
         |> required "retweeted" bool
-        |> required "entities" tweetEntitiesDecoder
+        |> required "entities" rawTweetEntitiesDecoder
         |> optional "extended_entities" extendedEntitiesDecoder ( ExtendedEntitiesRecord [] )
 
 
@@ -119,13 +140,13 @@ userDecoder =
 
 
 
-tweetEntitiesDecoder : Decoder TweetEntitiesRecord
-tweetEntitiesDecoder =
-    decode TweetEntitiesRecord
+rawTweetEntitiesDecoder : Decoder RawTweetEntitiesRecord
+rawTweetEntitiesDecoder =
+    decode RawTweetEntitiesRecord
         |> required "hashtags" ( list hashtagDecoder )
         |> required "urls" ( list urlDecoder )
         |> required "user_mentions" ( list userMentionsDecoder )
-        |> optional "media" ( list mediaDecoder ) []
+        |> optional "media" ( list rawMediaRecordDecoder ) []
 
 
 
@@ -135,11 +156,11 @@ userMentionsDecoder =
 
 
 
-mediaDecoder =
-    decode MediaRecord
-        |> required "media_url_https" string
+rawMediaRecordDecoder =
+    decode RawMediaRecord
         |> required "url" string -- this is the url contained in the tweet
-
+        |> required "display_url" string -- this is the url contained in the tweet
+        |> required "media_url_https" string
 
 
 hashtagDecoder =
@@ -168,11 +189,11 @@ extendedMediaDecoder =
         `andThen` \mtype ->
                 if mtype == "video" then
                     extendedVideoRecordDecoder
-                    `andThen` \x -> decode ( ExtendedVideo x )
+                    `andThen` \x -> decode ( ExtendedVideoMedia x )
 
                 else if mtype == "photo" || mtype == "animated_gif" then
                     extendedPhotoRecordDecoder
-                    `andThen` \x -> decode ( ExtendedPhoto x )
+                    `andThen` \x -> decode ( ExtendedPhotoMedia x )
                     -- TODO: Multi-photo parse
                 else
                     -- FIXME: This mustbe an appropriate
@@ -181,18 +202,18 @@ extendedMediaDecoder =
 
 
 
-extendedVideoRecordDecoder : Decoder ExtendedVideoRecord
+extendedVideoRecordDecoder : Decoder ExtendedVideo
 extendedVideoRecordDecoder =
-    decode ExtendedVideoRecord
+    decode ExtendedVideo
         |> required "url" string
         |> required "display_url" string
         |> requiredAt ["video_info", "variants"] ( list variantRecordDecoder )
 
 
 
-extendedPhotoRecordDecoder : Decoder ExtendedPhotoRecord
+extendedPhotoRecordDecoder : Decoder ExtendedPhoto
 extendedPhotoRecordDecoder =
-    decode ExtendedPhotoRecord
+    decode ExtendedPhoto
         |> required "url" string
         |> required "display_url" string
         |> required "media_url_https" string
@@ -211,30 +232,8 @@ variantRecordDecoder =
 
 
 
-type MediaRecord2
-    = MultiPhotoMedia MultiPhoto
-    | VideoMedia Video
-
-
-
-type alias MultiPhoto =
-    { url : String -- what is in the tweet
-    , display_url : String -- what should be shown in the tweet
-    , media_url_list : List String -- the actuall addresses of the contents
-    }
-
-
-
-type alias Video =
-    { url: String -- what is in the tweet
-    , display_url:  String -- what should be shown in the tweet
-    , content_type : String
-    , url : String -- the actuall addresses of the contents
-    }
-
-
-
-mergeMediaLists : List ExtendedMedia -> List MediaRecord2 -> List MediaRecord2
+-- FIXME: It is currently ignoring the raw media
+mergeMediaLists : List ExtendedMedia -> List RawMediaRecord -> List MediaRecord
 mergeMediaLists extendedMedia media =
     let
         photos = getPhotos extendedMedia
@@ -244,7 +243,7 @@ mergeMediaLists extendedMedia media =
 
 
 
-getPhotos : List ExtendedMedia -> List MediaRecord2
+getPhotos : List ExtendedMedia -> List MediaRecord
 getPhotos extendedMedia =
     extendedMedia
         |> List.filterMap toExtendedPhoto
@@ -273,10 +272,10 @@ getPhotos extendedMedia =
 
 
 
-toExtendedPhoto : ExtendedMedia -> Maybe ExtendedPhotoRecord
+toExtendedPhoto : ExtendedMedia -> Maybe ExtendedPhoto
 toExtendedPhoto extendedMedia =
     case extendedMedia of
-        ExtendedPhoto extendedPhoto ->
+        ExtendedPhotoMedia extendedPhoto ->
             Just extendedPhoto
 
         otherwise ->
@@ -284,20 +283,23 @@ toExtendedPhoto extendedMedia =
 
 
 
-groupByUrl : List ExtendedPhotoRecord -> List (List ExtendedPhotoRecord)
+groupByUrl : List ExtendedPhoto -> List (List ExtendedPhoto)
 groupByUrl mediaList =
     mediaList
-        |> List.foldr
-            (\m uniqueUrls -> if List.member m.url uniqueUrls then uniqueUrls else m.url :: uniqueUrls )
-            []
+        |> (flip List.foldr) []
+            (\m uniqueUrls ->
+                if List.member m.url uniqueUrls then
+                    uniqueUrls
+                else
+                    m.url :: uniqueUrls
+            )
         |> List.map
             (\url ->
                 List.filter (\mediaItem -> mediaItem.url == url) mediaList
             )
 
 
-
-getVideos : List ExtendedMedia -> List MediaRecord2
+getVideos : List ExtendedMedia -> List MediaRecord
 getVideos extendedMedia =
     extendedMedia
         |> List.filterMap toExtendedVideo
@@ -306,10 +308,10 @@ getVideos extendedMedia =
 
 
 
-toExtendedVideo : ExtendedMedia -> Maybe ExtendedVideoRecord
+toExtendedVideo : ExtendedMedia -> Maybe ExtendedVideo
 toExtendedVideo extendedMedia =
     case extendedMedia of
-        ExtendedVideo extendedPhoto ->
+        ExtendedVideoMedia extendedPhoto ->
             Just extendedPhoto
 
         otherwise ->
@@ -317,7 +319,7 @@ toExtendedVideo extendedMedia =
 
 
 
-extendedVideoToVideo : ExtendedVideoRecord -> Video
+extendedVideoToVideo : ExtendedVideo -> Video
 extendedVideoToVideo extendedVideo =
     let
         videoVariant =
@@ -327,5 +329,5 @@ extendedVideoToVideo extendedVideo =
         Video
             extendedVideo.url
             extendedVideo.display_url
-            videoVariant.content_type
             videoVariant.url
+            videoVariant.content_type

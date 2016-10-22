@@ -59,9 +59,9 @@ type alias Tweet =
 
 type alias TweetEntitiesRecord =
     { hashtags : List HashtagRecord
+    , media : List MediaRecord
     , urls : List UrlRecord
     , user_mentions : List UserMentionsRecord
-    , media : List MediaRecord
     }
 
 
@@ -71,10 +71,24 @@ type alias UserMentionsRecord =
     }
 
 
+type MediaRecord
+    = MultiPhotoMedia MultiPhoto
+    | VideoMedia Video
 
-type alias MediaRecord =
-    { media_url_https : String
-    , url : String
+
+type alias MultiPhoto =
+    { url : String -- what is in the tweet
+    , display_url : String -- what should be shown in the tweet
+    , media_url_list : List String -- the actuall addresses of the contents
+    }
+
+
+
+type alias Video =
+    { url: String -- what is in the tweet
+    , display_url:  String -- what should be shown in the tweet
+    , media_url : String -- the actuall addresses of the contents
+    , content_type : String
     }
 
 
