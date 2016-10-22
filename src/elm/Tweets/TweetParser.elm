@@ -10,7 +10,7 @@ import Tweets.Types exposing
     , UrlRecord
     )
 
-import Json.Decode exposing ( Decoder, string, int, bool, list, dict, at )
+import Json.Decode exposing ( Decoder, string, int, bool, list, dict, at, andThen, fail, (:=) )
 import Json.Decode.Pipeline exposing ( decode, required, optional )
 
 
@@ -34,20 +34,36 @@ type alias RawTweet =
 
 
 
+-- EXTENDED RECORDS
 type alias ExtendedEntitiesRecord =
-    { media: List ExtendedMediaRecord
+    { media: List ExtendedMedia
     }
 
 
 
-type alias ExtendedMediaRecord =
+type ExtendedMedia
+    = ExtendedPhoto ExtendedPhotoRecord
+    | ExtendedVideo ExtendedVideoRecord
+
+
+
+type alias ExtendedPhotoRecord =
+    { url: String -- what is in the tweet
+    , display_url: String -- what should be shown in the tweet
+    , media_url_https : String -- the actuall address of the content
+    , variants: List VariantRecord
+    }
+
+
+
+type alias ExtendedVideoRecord =
     { url: String
-    , variants: List ExtendedMediaVariantRecord
+    , variants: List VariantRecord
     }
 
 
 
-type alias ExtendedMediaVariantRecord =
+type alias VariantRecord =
     { content_type: String
     , url: String
     }
@@ -90,7 +106,7 @@ rawTweetDecoder =
         |> required "favorited" bool
         |> required "retweeted" bool
         |> required "entities" tweetEntitiesDecoder
-        |> required "extended_entities" extendedEntitiesDecoder
+        |> optional "extended_entities" extendedEntitiesDecoder ( ExtendedEntitiesRecord [] )
 
 
 
@@ -146,22 +162,50 @@ urlDecoder =
 extendedEntitiesDecoder : Decoder ExtendedEntitiesRecord
 extendedEntitiesDecoder =
     decode ExtendedEntitiesRecord
-        |> optional "media" ( list extendedMediaRecordDecoder ) []
+        |> optional "media" ( list extendedMediaDecoder ) []
 
 
 
+extendedMediaDecoder : Decoder ExtendedMedia
+extendedMediaDecoder =
+    ( "type" := string )
+        `andThen` \mtype ->
+                case mtype of
+                    "video" ->
+                        extendedVideoRecordDecoder
+                        `andThen` \x -> decode ( ExtendedVideo x )
 
-extendedMediaRecordDecoder : Decoder ExtendedMediaRecord
-extendedMediaRecordDecoder =
-    decode ExtendedMediaRecord
+                    "photo" ->
+                        extendedPhotoRecordDecoder
+                        `andThen` \x -> decode ( ExtendedPhoto x )
+                        -- TODO: Multi-photo parse
+                    _ ->
+                        -- FIXME: This mustbe an appropriate
+                        -- parser for an undefined option
+                        fail ( mtype ++ " is not a recognised type.")
+
+
+
+extendedVideoRecordDecoder : Decoder ExtendedVideoRecord
+extendedVideoRecordDecoder =
+    decode ExtendedVideoRecord
         |> required "url" string
-        |> required "variants" (at ["video_info", "variants"] (list extendedMediaVariantRecordDecoder))
+        |> required "variants" ( list variantRecordDecoder )
 
 
 
+extendedPhotoRecordDecoder : Decoder ExtendedPhotoRecord
+extendedPhotoRecordDecoder =
+    decode ExtendedPhotoRecord
+        |> required "url" string
+        |> required "display_url" string
+        |> required "media_url_https" string
+        |> required "variants" ( list variantRecordDecoder )
 
-extendedMediaVariantRecordDecoder : Decoder ExtendedMediaVariantRecord
-extendedMediaVariantRecordDecoder =
-    decode ExtendedMediaVariantRecord
+
+
+variantRecordDecoder : Decoder VariantRecord
+variantRecordDecoder =
+    decode VariantRecord
         |> required "content_type" string
         |> required "url" string
