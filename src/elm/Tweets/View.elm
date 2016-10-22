@@ -73,6 +73,9 @@ tweetView index tweet =
             , property "innerHTML" <| Json.Encode.string ( tweetTextView tweet )
             ]
             []
+        , div
+            [ class "Tweet-media" ]
+            [ mediaView tweet ]
         ]
     ]
 
@@ -185,3 +188,21 @@ removeMediaUrl record tweetText =
 replace : String -> String -> String -> String
 replace replaced replacement sentence =
         Regex.replace Regex.All (Regex.regex (Regex.escape replaced)) (\_ -> replacement) sentence
+
+
+
+mediaView : Tweet -> Html Msg
+mediaView tweet =
+    tweet.entities.media
+        |> List.concatMap
+            (\media ->
+                case media of
+                    VideoMedia videoMedia ->
+                        [ video [ src videoMedia.media_url ] [] ]
+
+                    MultiPhotoMedia multiPhoto ->
+                        multiPhoto.media_url_list
+                            |> List.map
+                                (\imgUrl -> img [ src imgUrl ] [])
+            )
+        |> div []
