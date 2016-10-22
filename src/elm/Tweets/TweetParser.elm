@@ -35,12 +35,14 @@ type alias RawTweet =
   }
 
 
+
 type alias RawTweetEntitiesRecord =
     { hashtags : List HashtagRecord
     , urls : List UrlRecord
     , user_mentions : List UserMentionsRecord
     , media : List RawMediaRecord
     }
+
 
 
 type alias RawMediaRecord =
@@ -50,7 +52,11 @@ type alias RawMediaRecord =
     }
 
 
+
 -- EXTENDED RECORDS
+
+
+
 type alias ExtendedEntitiesRecord =
     { media: List ExtendedMedia
     }
@@ -97,25 +103,6 @@ tweetDecoder =
 
 
 
-preprocessTweet : RawTweet -> Tweet
-preprocessTweet raw =
-    Tweet
-        raw.user
-        raw.created_at
-        raw.text
-        raw.retweet_count
-        raw.favorite_count
-        raw.favorited
-        raw.retweeted
-        ( TweetEntitiesRecord
-            raw.entities.hashtags
-            ( mergeMediaLists raw.extended_entities.media raw.entities.media )
-            raw.entities.urls
-            raw.entities.user_mentions
-        )
-
-
-
 rawTweetDecoder : Decoder RawTweet
 rawTweetDecoder =
     decode RawTweet
@@ -131,12 +118,14 @@ rawTweetDecoder =
 
 
 
+
 userDecoder : Decoder User
 userDecoder =
   decode User
     |> required "name" string
     |> required "screen_name" string
     |> required "profile_image_url_https" string
+
 
 
 
@@ -150,12 +139,14 @@ rawTweetEntitiesDecoder =
 
 
 
+userMentionsDecoder : Decoder UserMentionsRecord
 userMentionsDecoder =
     decode UserMentionsRecord
         |> required "screen_name" string
 
 
 
+rawMediaRecordDecoder : Decoder RawMediaRecord
 rawMediaRecordDecoder =
     decode RawMediaRecord
         |> required "url" string -- this is the url contained in the tweet
@@ -163,12 +154,15 @@ rawMediaRecordDecoder =
         |> required "media_url_https" string
 
 
+
+hashtagDecoder : Decoder HashtagRecord
 hashtagDecoder =
     decode HashtagRecord
         |> required "text" string
 
 
 
+urlDecoder : Decoder UrlRecord
 urlDecoder =
     decode UrlRecord
         |> required "display_url" string
@@ -202,21 +196,21 @@ extendedMediaDecoder =
 
 
 
-extendedVideoRecordDecoder : Decoder ExtendedVideo
-extendedVideoRecordDecoder =
-    decode ExtendedVideo
-        |> required "url" string
-        |> required "display_url" string
-        |> requiredAt ["video_info", "variants"] ( list variantRecordDecoder )
-
-
-
 extendedPhotoRecordDecoder : Decoder ExtendedPhoto
 extendedPhotoRecordDecoder =
     decode ExtendedPhoto
         |> required "url" string
         |> required "display_url" string
         |> required "media_url_https" string
+
+
+
+extendedVideoRecordDecoder : Decoder ExtendedVideo
+extendedVideoRecordDecoder =
+    decode ExtendedVideo
+        |> required "url" string
+        |> required "display_url" string
+        |> requiredAt ["video_info", "variants"] ( list variantRecordDecoder )
 
 
 
@@ -230,6 +224,24 @@ variantRecordDecoder =
 
 -- PROCESSING
 
+
+
+preprocessTweet : RawTweet -> Tweet
+preprocessTweet raw =
+    Tweet
+        raw.user
+        raw.created_at
+        raw.text
+        raw.retweet_count
+        raw.favorite_count
+        raw.favorited
+        raw.retweeted
+        ( TweetEntitiesRecord
+            raw.entities.hashtags
+            ( mergeMediaLists raw.extended_entities.media raw.entities.media )
+            raw.entities.urls
+            raw.entities.user_mentions
+        )
 
 
 -- FIXME: It is currently ignoring the raw media
