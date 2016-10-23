@@ -134,8 +134,9 @@ tweetTextView : Tweet -> String
 tweetTextView { text, entities } =
     text
      |> (flip23 List.foldl) linkUrl entities.urls
-     |> (flip23 List.foldl) linkUserMentions entities.user_mentions
      |> (flip23 List.foldl) removeMediaUrl entities.media
+     |> (flip23 List.foldl) linkHashtags entities.hashtags
+     |> (flip23 List.foldl) linkUserMentions entities.user_mentions
 
 
 
@@ -172,6 +173,20 @@ linkUserMentions { screen_name } tweetText =
     in
         replace handler linkText tweetText
 
+
+
+linkHashtags : HashtagRecord -> String -> String
+linkHashtags { text } tweetText =
+    let
+        hash = "#" ++ text
+        hashLink =
+            "<a target=\"_blank\" href=\"https://twitter.com/hashtag/"
+            ++ text
+            ++ "?src=hash\">"
+            ++ hash
+            ++ "</a>"
+    in
+        replace hash hashLink tweetText
 
 
 removeMediaUrl : MediaRecord -> String -> String
