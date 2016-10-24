@@ -80,6 +80,7 @@ inputBoxView tweetText =
         , textarea
               [ class "TweetBar-textBox-input"
               , placeholder "Write you tweet here ..."
+              , autofocus True
               , onInput LetterInput
               , onKeyDown submitOnCtrlEnter
               , value tweetText
