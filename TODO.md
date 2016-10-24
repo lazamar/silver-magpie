@@ -1,0 +1,4 @@
+  - Link previews in tweets and tweetbar
+  - Link shrinking in tweetbar
+  - Auto-complete tagging in tweetbar
+  - Infinite scroll
