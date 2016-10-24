@@ -224,11 +224,13 @@ mediaView tweet =
 
 videoView : Video -> Html Msg
 videoView videoMedia =
-    a [ href videoMedia.display_url
+    a [ href <| "https://" ++ videoMedia.display_url
         , target "_blank"
         ]
         [ video
-            [ src <| "https://" ++ videoMedia.media_url
+            [ src videoMedia.media_url
+            , autoplay True
+            , loop True
             , class "Tweet-media-video"
             ] []
         ]

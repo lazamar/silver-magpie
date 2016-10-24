@@ -181,11 +181,11 @@ extendedMediaDecoder : Decoder ExtendedMedia
 extendedMediaDecoder =
     ( "type" := string )
         `andThen` \mtype ->
-                if mtype == "video" then
+                if mtype == "video" || mtype == "animated_gif" then
                     extendedVideoRecordDecoder
                     `andThen` \x -> decode ( ExtendedVideoMedia x )
 
-                else if mtype == "photo" || mtype == "animated_gif" then
+                else if mtype == "photo" then
                     extendedPhotoRecordDecoder
                     `andThen` \x -> decode ( ExtendedPhotoMedia x )
                     -- TODO: Multi-photo parse
