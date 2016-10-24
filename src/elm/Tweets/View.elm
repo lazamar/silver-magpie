@@ -76,6 +76,12 @@ tweetView index tweet =
         , div
             [ class "Tweet-media" ]
             [ mediaView tweet ]
+        , div
+            [ class "Tweet-actions" ]
+            [ a [ class "zmdi zmdi-mail-reply" ] []
+            , a [ class "zmdi zmdi-favorite" ] []
+            , a [ class "zmdi zmdi-repeat" ] []
+            ]
         ]
     ]
 

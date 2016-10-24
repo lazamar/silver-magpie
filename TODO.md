@@ -2,3 +2,6 @@
   - Link shrinking in tweetbar
   - Auto-complete tagging in tweetbar
   - Infinite scroll
+  - Make retweets look good
+  - Allow retweeting and favouriting
+  - Show retweetcount and favourite count
