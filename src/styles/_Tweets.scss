@@ -74,7 +74,15 @@
 .Tweet-actions {
   display: flex;
   justify-content: space-around;
-  padding-top: .5em;
+  padding-top: 1em;
+  color: $txt-disabled;
+
+  > a {
+    color: inherit;
+    &:hover {
+      color: $brand-info;
+    }
+  }
 }
 
 /* Loading bar */
