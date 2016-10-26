@@ -76,12 +76,25 @@
   justify-content: space-around;
   padding-top: 1em;
   color: $txt-disabled;
+  font-family: monospace;
 
-  > a {
-    color: inherit;
-    &:hover {
-      color: $brand-info;
-    }
+  i {
+    margin-right: .2em;
+  }
+}
+
+.Tweet-actions-favourite {
+  color: inherit;
+  &:hover {
+    color: $brand-danger;
+  }
+}
+
+.Tweet-actions-retweet,
+.Tweet-actions-reply {
+  color: inherit;
+  &:hover {
+    color: $brand-info;
   }
 }
 

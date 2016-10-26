@@ -78,12 +78,28 @@ tweetView index tweet =
             [ mediaView tweet ]
         , div
             [ class "Tweet-actions" ]
-            [ a [ class "zmdi zmdi-mail-reply" ] []
-            , a [ class "zmdi zmdi-favorite" ] []
-            , a [ class "zmdi zmdi-repeat" ] []
+            [ a [ class "Tweet-actions-reply zmdi zmdi-mail-reply" ] []
+            , a [ class "Tweet-actions-favourite" ]
+                [ i [ class "zmdi zmdi-favorite" ] []
+                , text (toStringNotZero tweet.favorite_count)
+                ]
+            , a [ class "Tweet-actions-retweet"]
+                [ i [ class "zmdi zmdi-repeat" ] []
+                , text (toStringNotZero tweet.retweet_count)
+                ]
             ]
         ]
     ]
+
+
+
+toStringNotZero : Int -> String
+toStringNotZero num =
+    if num > 0 then
+        toString num
+    else
+        ""
+
 
 
 getColor : Int -> String
