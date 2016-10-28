@@ -27,6 +27,7 @@ root model =
         NotSent ->
             div [ class "TweetBar"]
                 [ actionBar
+                , recommendations model
                 , inputBoxView model.tweetText
                 ]
 
@@ -53,6 +54,15 @@ root model =
                     , Generic.Animations.cross
                     ]
                 ]
+
+
+
+recommendations : Model -> Html Msg
+recommendations model =
+    div [ class "TweetBar-recommendations"]
+        [ text "John Doe - @john \n"
+        , text "Mary Jane - @mary_jane"
+        ]
 
 
 

@@ -253,6 +253,7 @@ videoView videoMedia =
             [ src videoMedia.media_url
             , autoplay True
             , loop True
+            , attribute "muted" "true"
             , class "Tweet-media-video"
             ] []
         ]

@@ -3,7 +3,7 @@
   border: 1px solid $c-border;
   border-width: 0;
   border-top-width: 1px;
-  padding: 4px 1em 1em;
+  padding: 4px $side-padding 1em;
   width: 100%;
   min-height: 150px;
   display: flex;
@@ -97,4 +97,13 @@
   display: flex;
   flex-flow: column nowrap;
   padding: 2.5em;
+}
+
+.TweetBar-recommendations {
+    position: absolute;
+    bottom: 150px;
+    background-color: #009688;
+    padding: $side-padding;
+    color: white;
+    width: calc(100% - 2 * #{$side-padding} - .2em);
 }

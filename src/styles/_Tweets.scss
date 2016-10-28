@@ -30,7 +30,7 @@
   border: 6px solid $c-border;
   border-width: 0 6px;
   padding: .5em .5em 1em;
-  margin: 1em 1em;
+  margin: 1em $side-padding;
   transition: all .3s ease-out;
 }
 
