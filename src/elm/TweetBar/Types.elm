@@ -6,8 +6,9 @@ import Http
 
 
 type alias Model =
-  { submission: SubmissionData Http.Error TweetPostedResponse String
-  , tweetText: String
+  { submission : SubmissionData Http.Error TweetPostedResponse String
+  , tweetText : String
+  , suggestedHandlers : List String
   }
 
 

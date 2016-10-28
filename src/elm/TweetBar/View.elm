@@ -27,7 +27,7 @@ root model =
         NotSent ->
             div [ class "TweetBar"]
                 [ actionBar
-                , suggestions model
+                , suggestions model.suggestedHandlers
                 , inputBoxView model.tweetText
                 ]
 
@@ -57,12 +57,16 @@ root model =
 
 
 
-suggestions : Model -> Html Msg
-suggestions model =
-    div [ class "TweetBar-suggestions"]
-        [ div [ class "TweetBar-suggestions-option" ] [ text "John Doe - @john \n" ]
-        , div [ class "TweetBar-suggestions-option--selected" ] [ text "Mary Jane - @mary_jane" ]
-        ]
+suggestions : List String -> Html Msg
+suggestions suggestedHandlers =
+    if List.length suggestedHandlers == 0 then
+        text ""
+    else
+        div [ class "TweetBar-suggestions"]
+            (   List.map
+                (\h -> div [ class "TweetBar-suggestions-option" ] [ text h ])
+                suggestedHandlers
+            )
 
 
 

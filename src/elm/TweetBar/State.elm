@@ -16,12 +16,16 @@ import Generic.Types exposing
     )
 import Task
 import Process
+import Regex
+import String
+
 
 
 initialModel : Model
 initialModel =
     { submission = NotSent
     , tweetText = ""
+    , suggestedHandlers = []
     }
 
 
@@ -38,7 +42,24 @@ update msg model =
             ( model, Cmd.none, Cmd.none )
 
         LetterInput text ->
-            ( { model | tweetText = text }, Cmd.none, Cmd.none )
+            let
+                handlerBeingTyped =
+                    diffUsingPattern (Regex.regex "(^@|\\s@)(\\w){1,15}") model.tweetText text
+                        |> Maybe.withDefault ""
+
+                handlerSuggestions =
+                    if String.length handlerBeingTyped > 0 then
+                        [ handlerBeingTyped ]
+                    else
+                        []
+            in
+                (   { model
+                    | tweetText = text
+                    , suggestedHandlers = handlerSuggestions
+                    }
+                    , Cmd.none
+                    , Cmd.none
+                )
 
         SubmitTweet ->
             case model.submission of
@@ -54,7 +75,7 @@ update msg model =
         TweetSend status ->
             case status of
                 Success _ ->
-                    ( { model | tweetText = "", submission = status }
+                    ( { model | tweetText = "", submission = status, suggestedHandlers = [] }
                     , resetTweetText 1800
                     , Main.Global.refreshTweets
                     )
@@ -67,6 +88,25 @@ update msg model =
 
         RefreshTweets ->
             ( model, Cmd.none, Main.Global.refreshTweets)
+
+
+
+diffUsingPattern : Regex.Regex -> String -> String -> Maybe String
+diffUsingPattern reg oldText newText =
+    let
+        oldMatches = getMatches reg oldText
+        newMatches = getMatches reg newText
+    in
+        newMatches
+            |> List.filter (\h ->  not <| List.member h oldMatches)
+            |> List.head
+
+
+
+getMatches : Regex.Regex -> String -> List String
+getMatches reg text =
+    Regex.find Regex.All reg text
+        |> List.map (\match -> match.match)
 
 
 
