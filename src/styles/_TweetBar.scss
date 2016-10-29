@@ -107,6 +107,14 @@
   width: 100%;
   border-top: 5px solid #009688;
   background-color: inherit;
+  transition: all .2s ease-in-out;
+
+}
+
+.TweetBar-suggestions--loading {
+  @extend .TweetBar-suggestions;
+  min-height: 229px;
+  display: flex;
 }
 
 .TweetBar-suggestions-option {

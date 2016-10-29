@@ -82,6 +82,10 @@ suggestions users =
             div [ class "TweetBar-suggestions"]
                 ( List.map userSuggestion users )
 
+        RemoteData.Loading ->
+            div [ class "TweetBar-suggestions--loading"]
+                [ Generic.Animations.twistingCircle ]
+
         _ ->
             text ""
 
