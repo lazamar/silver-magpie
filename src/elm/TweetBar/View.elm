@@ -58,15 +58,29 @@ root model =
 
 
 
+userSuggestion : User -> Html Msg
+userSuggestion user =
+    div [ class "TweetBar-suggestions-option" ]
+        [ img
+            [ src user.profile_image_url_https
+            , class "TweetBar-suggestions-option-image"
+            ] []
+        , span
+            [ class "TweetBar-suggestions-option-name" ]
+            [ text user.name ]
+        , span
+            [ class "TweetBar-suggestions-option-screenName" ]
+            [ text ( "@" ++ user.screen_name ) ]
+        ]
+
+
+
 suggestions : WebData ( List User ) -> Html Msg
 suggestions users =
     case users of
         RemoteData.Success users ->
             div [ class "TweetBar-suggestions"]
-                (   List.map
-                    (\user -> div [ class "TweetBar-suggestions-option" ] [ text user.name ])
-                    users
-                )
+                ( List.map userSuggestion users )
 
         _ ->
             text ""

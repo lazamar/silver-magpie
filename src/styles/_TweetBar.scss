@@ -101,18 +101,42 @@
 
 .TweetBar-suggestions {
   position: absolute;
+  left: 0;
   bottom: 150px;
-  background-color: #009688;
   padding: .5em 0;
-  color: white;
-  width: calc(100% - 2 * #{$side-padding} - .2em);
+  width: 100%;
+  border-top: 5px solid #009688;
+  background-color: inherit;
 }
 
 .TweetBar-suggestions-option {
-  padding: .5em $side-padding;
+  padding: .5em calc(#{$side-padding} + .2em);
+  user-select: none;
+  cursor: pointer;
+
+  & > * {
+    margin-right: .5em;
+  }
+
+  &:hover {
+    background-color: $bg-lvl-2;
+  }
+
+  &:active {
+    background-color: $bg-lvl-3;
+  }
 }
 
 .TweetBar-suggestions-option--selected {
   @extend .TweetBar-suggestions-option;
   background-color: #e91e63;
+}
+
+.TweetBar-suggestions-option-image {
+  border-radius: 3px;
+  height: 2em;
+}
+
+.TweetBar-suggestions-option-name {
+  font-weight: bold;
 }
