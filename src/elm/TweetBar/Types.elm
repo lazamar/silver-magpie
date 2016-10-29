@@ -1,4 +1,4 @@
-module TweetBar.Types exposing (..)
+module TweetBar.Types exposing (Model, TweetPostedResponse, Msg (..))
 
 import Generic.Types exposing ( SubmissionData )
 import Twitter.Types exposing ( User )
@@ -10,7 +10,10 @@ import Http
 type alias Model =
   { submission : SubmissionData Http.Error TweetPostedResponse String
   , tweetText : String
-  , suggestedHandlers : WebData ( List User )
+  , handlerSuggestions :
+      { handler : Maybe String
+      , users : WebData ( List User )
+      }
   }
 
 
@@ -19,7 +22,8 @@ type alias TweetPostedResponse =
     { created_at: String
     }
 
-
+type alias Handler =
+    String
 
 type Msg
     = DoNothing
@@ -27,4 +31,4 @@ type Msg
     | SubmitTweet
     | TweetSend (SubmissionData Http.Error TweetPostedResponse String)
     | RefreshTweets
-    | SuggestedHandlersFetch ( WebData ( List User ) )
+    | SuggestedHandlersFetch Handler ( WebData ( List User ) )

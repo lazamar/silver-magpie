@@ -64,4 +64,4 @@ fetchHandlerSuggestion handler =
     in
         Http.get userListDecoder url
             |> Task.perform RemoteData.Failure RemoteData.Success
-            |> Cmd.map SuggestedHandlersFetch
+            |> Cmd.map ( SuggestedHandlersFetch handler )

@@ -14,7 +14,7 @@ import Generic.Types exposing
         )
     , never
     )
-import RemoteData exposing ( RemoteData ( NotAsked ) )
+import RemoteData exposing ( RemoteData )
 import Task
 import Process
 import Regex
@@ -26,7 +26,10 @@ initialModel : Model
 initialModel =
     { submission = NotSent
     , tweetText = ""
-    , suggestedHandlers = NotAsked
+    , handlerSuggestions =
+        { handler = Nothing
+        , users = RemoteData.NotAsked
+        }
     }
 
 
@@ -49,18 +52,49 @@ update msg model =
                         |> Maybe.map ( removeFromString "@" )
                         |> Maybe.map ( removeFromString " " )
 
-                suggestionCommand =
+                fetchCommand =
                     case handlerBeingTyped of
                         Nothing ->
                             Cmd.none
 
                         Just handler ->
                             fetchHandlerSuggestion handler
-            in
-                ( { model | tweetText = text }, suggestionCommand, Cmd.none )
 
-        SuggestedHandlersFetch fetchStatus ->
-            ( { model | suggestedHandlers = fetchStatus }, Cmd.none, Cmd.none )
+                usersStatus =
+                    case handlerBeingTyped of
+                        Nothing ->
+                            RemoteData.NotAsked
+
+                        Just handler ->
+                            RemoteData.Loading
+
+            in
+                (   { model
+                    | tweetText = text
+                    , handlerSuggestions =
+                        { handler = handlerBeingTyped
+                        , users = usersStatus
+                        }
+                    }
+                , fetchCommand
+                , Cmd.none
+                )
+
+        SuggestedHandlersFetch handler fetchStatus ->
+            -- If the users that arrived are for the handlers we are waiting for
+            if Just handler == model.handlerSuggestions.handler then
+                (   { model
+                    | handlerSuggestions =
+                        { handler = Just handler
+                        , users = fetchStatus
+                        }
+                    }
+                , Cmd.none
+                , Cmd.none
+                )
+
+            else
+                ( model, Cmd.none, Cmd.none )
 
         SubmitTweet ->
             case model.submission of
@@ -76,7 +110,7 @@ update msg model =
         TweetSend status ->
             case status of
                 Success _ ->
-                    ( { model | tweetText = "", submission = status, suggestedHandlers = NotAsked }
+                    ( initialModel
                     , resetTweetText 1800
                     , Main.Global.refreshTweets
                     )

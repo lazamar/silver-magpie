@@ -28,7 +28,7 @@ root model =
         NotSent ->
             div [ class "TweetBar"]
                 [ actionBar
-                , suggestions model.suggestedHandlers
+                , suggestions model.handlerSuggestions.users
                 , inputBoxView model.tweetText
                 ]
 
@@ -59,17 +59,14 @@ root model =
 
 
 suggestions : WebData ( List User ) -> Html Msg
-suggestions suggestedHandlers =
-    case suggestedHandlers of
-        RemoteData.Success handlers ->
-            if List.length handlers == 0 then
-                text ""
-            else
-                div [ class "TweetBar-suggestions"]
-                    (   List.map
-                        (\h -> div [ class "TweetBar-suggestions-option" ] [ text h.name ])
-                        handlers
-                    )
+suggestions users =
+    case users of
+        RemoteData.Success users ->
+            div [ class "TweetBar-suggestions"]
+                (   List.map
+                    (\user -> div [ class "TweetBar-suggestions-option" ] [ text user.name ])
+                    users
+                )
 
         _ ->
             text ""
