@@ -37,7 +37,7 @@ sendTweet tweetText =
         request =
             { verb = "POST"
             , headers = [ ("Content-Type", "application/json") ]
-            , url = "http://localhost:8080/statusUpdate"
+            , url = "http://localhost:8080/status-update"
             , body = createSendBody tweetText
             }
     in
