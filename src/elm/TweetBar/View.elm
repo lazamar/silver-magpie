@@ -2,6 +2,7 @@ module TweetBar.View exposing (..)
 
 
 import TweetBar.Types exposing (..)
+import Twitter.Types exposing ( User )
 import Generic.Utils exposing ( errorMessage )
 import Generic.Animations
 import Generic.Types exposing
@@ -12,7 +13,7 @@ import Generic.Types exposing
         , Failure
         )
     )
-
+import RemoteData exposing ( RemoteData, WebData )
 import Json.Decode
 import Json.Decode.Pipeline
 import String
@@ -57,16 +58,21 @@ root model =
 
 
 
-suggestions : List String -> Html Msg
+suggestions : WebData ( List User ) -> Html Msg
 suggestions suggestedHandlers =
-    if List.length suggestedHandlers == 0 then
-        text ""
-    else
-        div [ class "TweetBar-suggestions"]
-            (   List.map
-                (\h -> div [ class "TweetBar-suggestions-option" ] [ text h ])
-                suggestedHandlers
-            )
+    case suggestedHandlers of
+        RemoteData.Success handlers ->
+            if List.length handlers == 0 then
+                text ""
+            else
+                div [ class "TweetBar-suggestions"]
+                    (   List.map
+                        (\h -> div [ class "TweetBar-suggestions-option" ] [ text h.name ])
+                        handlers
+                    )
+
+        _ ->
+            text ""
 
 
 

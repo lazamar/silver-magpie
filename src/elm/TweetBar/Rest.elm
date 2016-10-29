@@ -1,11 +1,14 @@
-module TweetBar.Rest exposing (..)
+module TweetBar.Rest exposing ( sendTweet, fetchHandlerSuggestion )
 
-import Generic.Types exposing ( SubmissionData ( Failure, Success ) )
-import TweetBar.Types exposing ( Msg ( TweetSend ), TweetPostedResponse )
+import Generic.Types as SubmissionData
+import TweetBar.Types exposing ( Msg ( TweetSend, SuggestedHandlersFetch ), TweetPostedResponse )
+import Twitter.Decoders exposing ( userDecoder )
+import Twitter.Types exposing ( User )
 
+import RemoteData exposing ( RemoteData )
 import Http
 import Task
-import Json.Decode exposing ( Decoder, string )
+import Json.Decode exposing ( Decoder, string, list )
 import Json.Decode.Pipeline exposing ( decode, required )
 import Json.Encode
 
@@ -17,11 +20,16 @@ tweetPostedDecoder =
 
 
 
+userListDecoder : Decoder ( List User )
+userListDecoder =
+    list userDecoder
+
+
 -- DATA FETCHING
 
 
 
-createSendBody: String -> Http.Body
+createSendBody : String -> Http.Body
 createSendBody tweetText =
     [ ( "status", (Json.Encode.string tweetText) ) ]
         |> Json.Encode.object
@@ -43,5 +51,17 @@ sendTweet tweetText =
     in
         Http.send Http.defaultSettings request
             |> Http.fromJson tweetPostedDecoder
-            |> Task.perform Failure Success
+            |> Task.perform SubmissionData.Failure SubmissionData.Success
             |> Cmd.map TweetSend
+
+
+
+fetchHandlerSuggestion : String -> Cmd Msg
+fetchHandlerSuggestion handler =
+    let
+        url = Http.uriEncode handler
+            |> (++) "http://localhost:8080/user-search?q="
+    in
+        Http.get userListDecoder url
+            |> Task.perform RemoteData.Failure RemoteData.Success
+            |> Cmd.map SuggestedHandlersFetch

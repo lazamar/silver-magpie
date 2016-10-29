@@ -3,7 +3,7 @@ module TweetBar.State exposing ( init, update, subscriptions )
 
 import Main.Global
 import Main.Types
-import TweetBar.Rest exposing ( sendTweet )
+import TweetBar.Rest exposing ( sendTweet, fetchHandlerSuggestion )
 import TweetBar.Types exposing (..)
 import Generic.Types exposing
     ( SubmissionData
@@ -14,6 +14,7 @@ import Generic.Types exposing
         )
     , never
     )
+import RemoteData exposing ( RemoteData ( NotAsked ) )
 import Task
 import Process
 import Regex
@@ -25,7 +26,7 @@ initialModel : Model
 initialModel =
     { submission = NotSent
     , tweetText = ""
-    , suggestedHandlers = []
+    , suggestedHandlers = NotAsked
     }
 
 
@@ -45,21 +46,21 @@ update msg model =
             let
                 handlerBeingTyped =
                     diffUsingPattern (Regex.regex "(^@|\\s@)(\\w){1,15}") model.tweetText text
-                        |> Maybe.withDefault ""
+                        |> Maybe.map ( removeFromString "@" )
+                        |> Maybe.map ( removeFromString " " )
 
-                handlerSuggestions =
-                    if String.length handlerBeingTyped > 0 then
-                        [ handlerBeingTyped ]
-                    else
-                        []
+                suggestionCommand =
+                    case handlerBeingTyped of
+                        Nothing ->
+                            Cmd.none
+
+                        Just handler ->
+                            fetchHandlerSuggestion handler
             in
-                (   { model
-                    | tweetText = text
-                    , suggestedHandlers = handlerSuggestions
-                    }
-                    , Cmd.none
-                    , Cmd.none
-                )
+                ( { model | tweetText = text }, suggestionCommand, Cmd.none )
+
+        SuggestedHandlersFetch fetchStatus ->
+            ( { model | suggestedHandlers = fetchStatus }, Cmd.none, Cmd.none )
 
         SubmitTweet ->
             case model.submission of
@@ -75,7 +76,7 @@ update msg model =
         TweetSend status ->
             case status of
                 Success _ ->
-                    ( { model | tweetText = "", submission = status, suggestedHandlers = [] }
+                    ( { model | tweetText = "", submission = status, suggestedHandlers = NotAsked }
                     , resetTweetText 1800
                     , Main.Global.refreshTweets
                     )
@@ -88,6 +89,16 @@ update msg model =
 
         RefreshTweets ->
             ( model, Cmd.none, Main.Global.refreshTweets)
+
+
+
+removeFromString : String -> String -> String
+removeFromString toRemove str =
+    Regex.replace
+        Regex.All
+        ( Regex.regex ( Regex.escape toRemove ) )
+        (\_ -> "")
+        str
 
 
 

@@ -1,4 +1,4 @@
-module Tweets.View exposing (..)
+module Tweets.View exposing ( root )
 
 
 import Tweets.Types exposing (..)
