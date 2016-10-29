@@ -2,6 +2,7 @@ module Tweets.State exposing ( init, update, subscriptions )
 
 import Tweets.Rest exposing ( getTweets )
 import Tweets.Types exposing (..)
+import Twitter.Types exposing ( Tweet )
 import Generic.Types exposing (never)
 import Generic.Utils exposing (toCmd)
 import Main.Types

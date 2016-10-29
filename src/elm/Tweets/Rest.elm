@@ -1,7 +1,9 @@
 module Tweets.Rest exposing (..)
 
 import Tweets.Types exposing (..)
-import Tweets.TweetParser exposing ( tweetDecoder )
+import Twitter.Decoders exposing ( tweetDecoder )
+import Twitter.Types exposing ( Tweet )
+
 import Http
 import Json.Decode exposing ( Decoder, string, int, bool, list, dict, at )
 import Json.Decode.Pipeline exposing ( decode, required, optional )

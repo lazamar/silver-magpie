@@ -2,6 +2,16 @@ module Tweets.View exposing (..)
 
 
 import Tweets.Types exposing (..)
+import Twitter.Types exposing
+    ( Tweet
+    , UrlRecord
+    , UserMentionsRecord
+    , HashtagRecord
+    , MediaRecord (VideoMedia, MultiPhotoMedia)
+    , MultiPhoto
+    , Video
+    )
+
 import Generic.Utils exposing ( errorMessage )
 import Html exposing (..)
 import Html.Attributes exposing (..)

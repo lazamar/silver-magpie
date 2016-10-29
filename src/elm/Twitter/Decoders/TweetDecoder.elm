@@ -1,6 +1,6 @@
-module Tweets.TweetParser exposing (..)
+module Twitter.Decoders.TweetDecoder exposing (tweetDecoder)
 
-import Tweets.Types exposing
+import Twitter.Types exposing
     ( Tweet
     , User
     , TweetEntitiesRecord
@@ -12,6 +12,7 @@ import Tweets.Types exposing
     , UrlRecord
     )
 
+import Twitter.Decoders.UserDecoder exposing ( userDecoder )
 import Json.Decode exposing ( Decoder, string, int, bool, list, dict, at, andThen, fail, (:=) )
 import Json.Decode.Pipeline exposing ( decode, required, optional, requiredAt )
 
@@ -115,17 +116,6 @@ rawTweetDecoder =
         |> required "retweeted" bool
         |> required "entities" rawTweetEntitiesDecoder
         |> optional "extended_entities" extendedEntitiesDecoder ( ExtendedEntitiesRecord [] )
-
-
-
-
-userDecoder : Decoder User
-userDecoder =
-  decode User
-    |> required "name" string
-    |> required "screen_name" string
-    |> required "profile_image_url_https" string
-
 
 
 
