@@ -39,6 +39,12 @@ init = ( initialModel, Cmd.none, Cmd.none)
 
 
 
+hashtagRegex : Regex.Regex
+hashtagRegex =
+    Regex.regex "(^@|\\s@)(\\w){1,15}"
+
+
+    
 update : Msg -> Model -> ( Model, Cmd Msg, Cmd Main.Types.Msg )
 update msg model =
     case msg of
@@ -48,7 +54,7 @@ update msg model =
         LetterInput text ->
             let
                 handlerBeingTyped =
-                    diffUsingPattern (Regex.regex "(^@|\\s@)(\\w){1,15}") model.tweetText text
+                    diffUsingPattern hashtagRegex model.tweetText text
                         |> Maybe.map ( removeFromString "@" )
                         |> Maybe.map ( removeFromString " " )
 
