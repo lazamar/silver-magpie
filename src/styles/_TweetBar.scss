@@ -105,7 +105,7 @@
   bottom: 150px;
   padding: .5em 0;
   width: 100%;
-  border-top: 5px solid #009688;
+  border-top: 5px solid #673AB7;
   background-color: inherit;
   transition: all .2s ease-in-out;
 
@@ -142,9 +142,22 @@
 
 .TweetBar-suggestions-option-image {
   border-radius: 3px;
-  height: 2em;
+  height: 1.7em;
 }
 
 .TweetBar-suggestions-option-name {
-  font-weight: bold;
+}
+
+.TweetBar-suggestions-option-screenName {
+  background-color: $bg-lvl-2;
+  padding: .2em .5em .2em .45em;
+  border-radius: 3px;
+  border: 1px solid $c-border;
+  font-size: .9em;
+  font-weight: lighter;
+
+  .TweetBar-suggestions-option:hover &,
+  .TweetBar-suggestions-option--selected:hover & {
+    background-color: $bg-lvl-1;
+  }
 }

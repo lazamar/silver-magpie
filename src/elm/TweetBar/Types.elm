@@ -1,4 +1,9 @@
-module TweetBar.Types exposing (Model, TweetPostedResponse, Msg (..))
+module TweetBar.Types exposing
+    ( Model
+    , TweetPostedResponse
+    , Msg (..)
+    , KeyboardNavigation (..)
+    )
 
 import Generic.Types exposing ( SubmissionData )
 import Twitter.Types exposing ( User )
@@ -13,6 +18,7 @@ type alias Model =
   , handlerSuggestions :
       { handler : Maybe String
       , users : WebData ( List User )
+      , userSelected : Maybe Int
       }
   }
 
@@ -29,6 +35,13 @@ type alias Handler =
 
 
 
+type KeyboardNavigation
+    = EnterKey
+    | ArrowUp
+    | ArrowDown
+
+
+
 type Msg
     = DoNothing
     | LetterInput String
@@ -36,3 +49,4 @@ type Msg
     | TweetSend (SubmissionData Http.Error TweetPostedResponse String)
     | RefreshTweets
     | SuggestedHandlersFetch Handler ( WebData ( List User ) )
+    | SuggestedHandlersNavigation KeyboardNavigation

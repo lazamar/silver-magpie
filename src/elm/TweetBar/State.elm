@@ -29,6 +29,7 @@ initialModel =
     , handlerSuggestions =
         { handler = Nothing
         , users = RemoteData.NotAsked
+        , userSelected = Nothing
         }
     }
 
@@ -44,7 +45,7 @@ hashtagRegex =
     Regex.regex "(^@|\\s@)(\\w){1,15}"
 
 
-    
+
 update : Msg -> Model -> ( Model, Cmd Msg, Cmd Main.Types.Msg )
 update msg model =
     case msg of
@@ -80,6 +81,7 @@ update msg model =
                     , handlerSuggestions =
                         { handler = handlerBeingTyped
                         , users = usersStatus
+                        , userSelected = Nothing
                         }
                     }
                 , fetchCommand
@@ -93,6 +95,7 @@ update msg model =
                     | handlerSuggestions =
                         { handler = Just handler
                         , users = fetchStatus
+                        , userSelected = Nothing
                         }
                     }
                 , Cmd.none
@@ -101,6 +104,32 @@ update msg model =
 
             else
                 ( model, Cmd.none, Cmd.none )
+
+        SuggestedHandlersNavigation keyPressed ->
+            let
+                handlerSuggestions = model.handlerSuggestions
+            in
+                case keyPressed of
+                    EnterKey ->
+                        -- TODO: Create an action for enter key pressed
+                        ( model, Cmd.none, Cmd.none )
+
+                    ArrowUp ->
+                        (   { model
+                            | handlerSuggestions =
+                                { handlerSuggestions
+                                | userSelected =
+                                    Maybe.map ((+) -1) handlerSuggestions.userSelected
+                                    |> Maybe.map2 (%) handlerSuggestions.userSelected
+                                }
+                            }
+                            , Cmd.none
+                            , Cmd.none
+                        )
+
+                    ArrowDown ->
+                        ( model, Cmd.none, Cmd.none )
+
 
         SubmitTweet ->
             case model.submission of

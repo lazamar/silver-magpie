@@ -29,7 +29,7 @@ root model =
             div [ class "TweetBar"]
                 [ actionBar
                 , suggestions model.handlerSuggestions.users
-                , inputBoxView model.tweetText
+                , inputBoxView model.tweetText ( RemoteData.toMaybe model.handlerSuggestions.users )
                 ]
 
         Sending _ ->
@@ -106,21 +106,59 @@ actionBar =
 
 
 
-inputBoxView : String -> Html Msg
-inputBoxView tweetText =
-    div [ class "TweetBar-textBox" ]
-        [ span
-              [ class "TweetBar-textBox-charCount" ]
-              [ remainingCharacters tweetText ]
-        , textarea
-              [ class "TweetBar-textBox-input"
-              , placeholder "Write you tweet here ..."
-              , autofocus True
-              , onInput LetterInput
-              , onKeyDown submitOnCtrlEnter
-              , value tweetText
-              ] []
-        ]
+inputBoxView : String -> Maybe ( List User ) -> Html Msg
+inputBoxView tweetText suggestions =
+    let
+        keyListener =
+            case suggestions of
+                Nothing ->
+                    onKeyDown submitOnCtrlEnter
+
+                Just _ ->
+                    arrowNavigation SuggestedHandlersNavigation
+    in
+        div [ class "TweetBar-textBox" ]
+            [ span
+                  [ class "TweetBar-textBox-charCount" ]
+                  [ remainingCharacters tweetText ]
+            , textarea
+                  [ class "TweetBar-textBox-input"
+                  , placeholder "Write you tweet here ..."
+                  , autofocus True
+                  , onInput LetterInput
+                  , keyListener
+                  , value tweetText
+                  ] []
+            ]
+
+
+
+arrowNavigation : (KeyboardNavigation -> msg) -> Attribute msg
+arrowNavigation msg =
+    let
+        options =
+            { preventDefault = True, stopPropagation = False }
+
+        navigationDecoder =
+            Json.Decode.customDecoder keyCode
+                (\code ->
+                        case code of
+                            13 ->
+                                Ok EnterKey
+
+                            38 ->
+                                Ok ArrowUp
+
+                            40 ->
+                                Ok ArrowDown
+
+                            _ ->
+                                Err "Not handling that key"
+                )
+            |> Json.Decode.map msg
+
+    in
+        onWithOptions "keydown" options navigationDecoder
 
 
 
@@ -129,10 +167,13 @@ onKeyDown tagger =
   on "keydown" (Json.Decode.map tagger keyEventDecoder)
 
 
+
 type alias KeyDownEvent =
     { keyCode : Int
     , ctrlKey : Bool
     }
+
+
 
 keyEventDecoder : Json.Decode.Decoder KeyDownEvent
 keyEventDecoder =
