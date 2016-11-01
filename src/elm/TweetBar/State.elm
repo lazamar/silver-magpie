@@ -107,29 +107,44 @@ update msg model =
 
         SuggestedHandlersNavigation keyPressed ->
             let
-                handlerSuggestions = model.handlerSuggestions
+                handlerSuggestions =
+                    model.handlerSuggestions
+
+                suggestionsCount =
+                    handlerSuggestions.users
+                        |> RemoteData.toMaybe
+                        |> Maybe.map List.length
+
+                userShift =
+                    case keyPressed of
+                        EnterKey ->
+                            0
+
+                        ArrowUp ->
+                            -1
+
+                        ArrowDown ->
+                            1
+
+                newUserSelected =
+                    handlerSuggestions.userSelected
+                        |> Maybe.map (\x -> x + userShift)
+                        |> Maybe.map2 (\x y -> y % x) suggestionsCount
+
+                newHandlerSuggestions =
+                    { handlerSuggestions | userSelected = newUserSelected }
+
             in
                 case keyPressed of
                     EnterKey ->
                         -- TODO: Create an action for enter key pressed
                         ( model, Cmd.none, Cmd.none )
 
-                    ArrowUp ->
-                        (   { model
-                            | handlerSuggestions =
-                                { handlerSuggestions
-                                | userSelected =
-                                    Maybe.map ((+) -1) handlerSuggestions.userSelected
-                                    |> Maybe.map2 (%) handlerSuggestions.userSelected
-                                }
-                            }
-                            , Cmd.none
-                            , Cmd.none
+                    _ ->
+                        ( { model | handlerSuggestions = newHandlerSuggestions }
+                        , Cmd.none
+                        , Cmd.none
                         )
-
-                    ArrowDown ->
-                        ( model, Cmd.none, Cmd.none )
-
 
         SubmitTweet ->
             case model.submission of
