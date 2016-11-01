@@ -95,7 +95,7 @@ update msg model =
                     | handlerSuggestions =
                         { handler = Just handler
                         , users = fetchStatus
-                        , userSelected = Nothing
+                        , userSelected = Just 0
                         }
                     }
                 , Cmd.none
@@ -130,6 +130,8 @@ update msg model =
                     handlerSuggestions.userSelected
                         |> Maybe.map (\x -> x + userShift)
                         |> Maybe.map2 (\x y -> y % x) suggestionsCount
+                        |> Maybe.withDefault 0
+                        |> Just
 
                 newHandlerSuggestions =
                     { handlerSuggestions | userSelected = newUserSelected }

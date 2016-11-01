@@ -103,7 +103,7 @@
   position: absolute;
   left: 0;
   bottom: 150px;
-  padding: .5em 0;
+  padding: 0;
   width: 100%;
   border-top: 5px solid #673AB7;
   background-color: inherit;
@@ -137,7 +137,7 @@
 
 .TweetBar-suggestions-option--selected {
   @extend .TweetBar-suggestions-option;
-  background-color: #e91e63;
+  @extend .TweetBar-suggestions-option:hover;
 }
 
 .TweetBar-suggestions-option-image {
@@ -155,9 +155,15 @@
   border: 1px solid $c-border;
   font-size: .9em;
   font-weight: lighter;
+  float: right;
+  transition: all .1s ease-in-out;
 
   .TweetBar-suggestions-option:hover &,
   .TweetBar-suggestions-option--selected:hover & {
     background-color: $bg-lvl-1;
+  }
+
+  .TweetBar-suggestions-option--selected & {
+    transform: scale(1.05);
   }
 }

@@ -28,7 +28,7 @@ root model =
         NotSent ->
             div [ class "TweetBar"]
                 [ actionBar
-                , suggestions model.handlerSuggestions.users
+                , suggestions model.handlerSuggestions.users model.handlerSuggestions.userSelected
                 , inputBoxView model.tweetText ( RemoteData.toMaybe model.handlerSuggestions.users )
                 ]
 
@@ -58,29 +58,51 @@ root model =
 
 
 
-userSuggestion : User -> Html Msg
-userSuggestion user =
-    div [ class "TweetBar-suggestions-option" ]
-        [ img
-            [ src user.profile_image_url_https
-            , class "TweetBar-suggestions-option-image"
-            ] []
-        , span
-            [ class "TweetBar-suggestions-option-name" ]
-            [ text user.name ]
-        , span
-            [ class "TweetBar-suggestions-option-screenName" ]
-            [ text ( "@" ++ user.screen_name ) ]
-        ]
+userSuggestion : User -> Bool -> Html Msg
+userSuggestion user selected =
+    let
+        optionClass =
+            if selected then
+                "TweetBar-suggestions-option--selected"
+            else
+                "TweetBar-suggestions-option"
+
+    in
+        div [ class optionClass ]
+            [ img
+                [ src user.profile_image_url_https
+                , class "TweetBar-suggestions-option-image"
+                ] []
+            , span
+                [ class "TweetBar-suggestions-option-name" ]
+                [ text user.name ]
+            , span
+                [ class "TweetBar-suggestions-option-screenName" ]
+                [ text ( "@" ++ user.screen_name ) ]
+            ]
 
 
 
-suggestions : WebData ( List User ) -> Html Msg
-suggestions users =
+suggestions : WebData ( List User ) -> Maybe Int -> Html Msg
+suggestions users userSelected =
     case users of
         RemoteData.Success users ->
-            div [ class "TweetBar-suggestions"]
-                ( List.map userSuggestion users )
+            let
+                isSelected =
+                    (\n -> case userSelected of
+                        Nothing ->
+                            False
+
+                        Just num ->
+                            num == n
+                    )
+
+            in
+                div [ class "TweetBar-suggestions"]
+                    ( List.indexedMap
+                        (\index user -> userSuggestion user <| isSelected index )
+                        users
+                    )
 
         RemoteData.Loading ->
             div [ class "TweetBar-suggestions--loading"]
