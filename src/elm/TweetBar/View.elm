@@ -174,6 +174,9 @@ arrowNavigation msg =
                             40 ->
                                 Ok ArrowDown
 
+                            27 ->
+                                Ok EscKey
+
                             _ ->
                                 Err "Not handling that key"
                 )

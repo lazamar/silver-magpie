@@ -149,6 +149,7 @@
 }
 
 .TweetBar-suggestions-option-screenName {
+  position: relative;
   background-color: $bg-lvl-2;
   padding: .2em .5em .2em .45em;
   border-radius: 3px;
@@ -164,6 +165,7 @@
   }
 
   .TweetBar-suggestions-option--selected & {
-    transform: scale(1.05);
+    zoom: 110%;
+    top: -1px;
   }
 }

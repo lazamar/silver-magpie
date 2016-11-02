@@ -117,14 +117,14 @@ update msg model =
 
                 userShift =
                     case keyPressed of
-                        EnterKey ->
-                            0
-
                         ArrowUp ->
                             -1
 
                         ArrowDown ->
                             1
+
+                        _ ->
+                            0
 
                 newUserSelected =
                     handlerSuggestions.userSelected
@@ -141,6 +141,12 @@ update msg model =
                     EnterKey ->
                         -- TODO: Create an action for enter key pressed
                         ( model, Cmd.none, Cmd.none )
+
+                    EscKey ->
+                        ( { model | handlerSuggestions = initialModel.handlerSuggestions }
+                        , Cmd.none
+                        , Cmd.none
+                        )
 
                     _ ->
                         ( { model | handlerSuggestions = newHandlerSuggestions }

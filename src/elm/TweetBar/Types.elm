@@ -37,6 +37,7 @@ type alias Handler =
 
 type KeyboardNavigation
     = EnterKey
+    | EscKey
     | ArrowUp
     | ArrowDown
 
