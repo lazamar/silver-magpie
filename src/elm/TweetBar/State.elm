@@ -42,7 +42,9 @@ init = ( initialModel, Cmd.none, Cmd.none)
 
 hashtagRegex : Regex.Regex
 hashtagRegex =
-    Regex.regex "(^@|\\s@)(\\w){1,15}"
+    -- matches @asdfasfd and has just one submatch which
+    -- which is the handler part without the @
+    Regex.regex "(?:^@|\\s@)(\\w{1,15})"
 
 
 
@@ -54,13 +56,14 @@ update msg model =
 
         LetterInput text ->
             let
-                handlerBeingTyped =
+                handlerMatch =
                     diffUsingPattern hashtagRegex model.tweetText text
-                        |> Maybe.map ( removeFromString "@" )
-                        |> Maybe.map ( removeFromString " " )
+
+                handlerText =
+                    handlerMatch `Maybe.andThen` matchedText
 
                 fetchCommand =
-                    case handlerBeingTyped of
+                    case handlerText of
                         Nothing ->
                             Cmd.none
 
@@ -68,7 +71,7 @@ update msg model =
                             fetchHandlerSuggestion handler
 
                 usersStatus =
-                    case handlerBeingTyped of
+                    case handlerMatch of
                         Nothing ->
                             RemoteData.NotAsked
 
@@ -79,7 +82,7 @@ update msg model =
                 (   { model
                     | tweetText = text
                     , handlerSuggestions =
-                        { handler = handlerBeingTyped
+                        { handler = handlerMatch
                         , users = usersStatus
                         , userSelected = Nothing
                         }
@@ -89,18 +92,26 @@ update msg model =
                 )
 
         SuggestedHandlersFetch handler fetchStatus ->
-            -- If the users that arrived are for the handlers we are waiting for
-            if Just handler == model.handlerSuggestions.handler then
-                (   { model
-                    | handlerSuggestions =
-                        { handler = Just handler
-                        , users = fetchStatus
-                        , userSelected = Just 0
+            let
+                handlerSuggestions =
+                    model.handlerSuggestions
+
+                currentHandlerText =
+                    handlerSuggestions.handler `Maybe.andThen` matchedText
+
+            in
+                -- If the users that arrived are for the handlers we are waiting for
+                if Just handler == currentHandlerText then
+                    (   { model
+                        | handlerSuggestions =
+                            { handlerSuggestions
+                            | users = fetchStatus
+                            , userSelected = Just 0
+                            }
                         }
-                    }
-                , Cmd.none
-                , Cmd.none
-                )
+                    , Cmd.none
+                    , Cmd.none
+                    )
 
             else
                 ( model, Cmd.none, Cmd.none )
@@ -194,22 +205,23 @@ removeFromString toRemove str =
 
 
 
-diffUsingPattern : Regex.Regex -> String -> String -> Maybe String
+matchedText : Regex.Match -> Maybe String
+matchedText match =
+    List.head match.submatches
+        -- This joins the Maybe(Maybe(val)) making it Maybe(val)
+        |> Maybe.withDefault Nothing
+
+
+
+diffUsingPattern : Regex.Regex -> String -> String -> Maybe Regex.Match
 diffUsingPattern reg oldText newText =
     let
-        oldMatches = getMatches reg oldText
-        newMatches = getMatches reg newText
+        oldMatches = Regex.find Regex.All reg oldText
+        newMatches = Regex.find Regex.All reg newText
     in
         newMatches
             |> List.filter (\h ->  not <| List.member h oldMatches)
             |> List.head
-
-
-
-getMatches : Regex.Regex -> String -> List String
-getMatches reg text =
-    Regex.find Regex.All reg text
-        |> List.map (\match -> match.match)
 
 
 

@@ -9,6 +9,7 @@ import Generic.Types exposing ( SubmissionData )
 import Twitter.Types exposing ( User )
 import RemoteData exposing ( WebData )
 import Http
+import Regex
 
 
 
@@ -16,7 +17,7 @@ type alias Model =
   { submission : SubmissionData Http.Error TweetPostedResponse String
   , tweetText : String
   , handlerSuggestions :
-      { handler : Maybe String
+      { handler : Maybe Regex.Match
       , users : WebData ( List User )
       , userSelected : Maybe Int
       }
