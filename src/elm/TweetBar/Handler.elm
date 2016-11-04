@@ -41,7 +41,7 @@ findChanged oldText newText =
         newMatches = find newText
     in
         newMatches
-            |> List.filter (\h ->  not <| List.member h oldMatches)
+            |> List.filter (\h ->  not <| List.any (sameMatch h) oldMatches)
             |> List.head
 
 
