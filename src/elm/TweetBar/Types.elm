@@ -5,11 +5,11 @@ module TweetBar.Types exposing
     , KeyboardNavigation (..)
     )
 
+import TweetBar.Handler exposing ( Handler, HandlerMatch )
 import Generic.Types exposing ( SubmissionData )
 import Twitter.Types exposing ( User )
 import RemoteData exposing ( WebData )
 import Http
-import Regex
 
 
 
@@ -17,7 +17,7 @@ type alias Model =
   { submission : SubmissionData Http.Error TweetPostedResponse String
   , tweetText : String
   , handlerSuggestions :
-      { handler : Maybe Regex.Match
+      { handler : Maybe HandlerMatch
       , users : WebData ( List User )
       , userSelected : Maybe Int
       }
@@ -28,11 +28,6 @@ type alias Model =
 type alias TweetPostedResponse =
     { created_at: String
     }
-
-
-
-type alias Handler =
-    String
 
 
 

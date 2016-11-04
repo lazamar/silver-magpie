@@ -5,6 +5,7 @@ import Main.Global
 import Main.Types
 import TweetBar.Rest exposing ( sendTweet, fetchHandlerSuggestion )
 import TweetBar.Types exposing (..)
+import TweetBar.Handler as TwHandler exposing ( Handler, HandlerMatch )
 import Generic.Types exposing
     ( SubmissionData
         ( Success
@@ -40,14 +41,6 @@ init = ( initialModel, Cmd.none, Cmd.none)
 
 
 
-hashtagRegex : Regex.Regex
-hashtagRegex =
-    -- matches @asdfasfd and has just one submatch which
-    -- which is the handler part without the @
-    Regex.regex "(?:^@|\\s@)(\\w{1,15})"
-
-
-
 update : Msg -> Model -> ( Model, Cmd Msg, Cmd Main.Types.Msg )
 update msg model =
     case msg of
@@ -57,10 +50,10 @@ update msg model =
         LetterInput text ->
             let
                 handlerMatch =
-                    diffUsingPattern hashtagRegex model.tweetText text
+                    TwHandler.findChanged model.tweetText text
 
                 handlerText =
-                    handlerMatch `Maybe.andThen` matchedText
+                    handlerMatch `Maybe.andThen` TwHandler.matchedName
 
                 fetchCommand =
                     case handlerText of
@@ -97,7 +90,7 @@ update msg model =
                     model.handlerSuggestions
 
                 currentHandlerText =
-                    handlerSuggestions.handler `Maybe.andThen` matchedText
+                    handlerSuggestions.handler `Maybe.andThen` TwHandler.matchedName
 
             in
                 -- If the users that arrived are for the handlers we are waiting for
@@ -165,7 +158,7 @@ update msg model =
 
                             newTweetText =
                                 Maybe.map2
-                                    (replaceHandler model.tweetText)
+                                    (TwHandler.replaceMatch model.tweetText)
                                     handlerSuggestions.handler
                                     replacement
                                 |> Maybe.withDefault model.tweetText
@@ -218,65 +211,6 @@ update msg model =
 
         RefreshTweets ->
             ( model, Cmd.none, Main.Global.refreshTweets)
-
-
-
-replaceHandler : String -> Regex.Match -> String -> String
-replaceHandler text match replacement =
-    Regex.replace
-        Regex.All
-        hashtagRegex
-        (\m ->
-            if sameMatch m match then
-                -- Replace just the handler from the match, not any
-                -- spaces that my or may not exist before it
-                Regex.replace
-                    Regex.All
-                    (Regex.regex "[^\\s@]+")
-                    (\_ -> replacement ++ " ")
-                    m.match
-            else
-                m.match
-        )
-        text
-
-
-
-sameMatch : Regex.Match -> Regex.Match -> Bool
-sameMatch match1 match2 =
-    match1.match == match2.match
-    && match1.submatches == match2.submatches
-    && match1.number == match2.number
-
-
-
-removeFromString : String -> String -> String
-removeFromString toRemove str =
-    Regex.replace
-        Regex.All
-        ( Regex.regex ( Regex.escape toRemove ) )
-        (\_ -> "")
-        str
-
-
-
-matchedText : Regex.Match -> Maybe String
-matchedText match =
-    List.head match.submatches
-        -- This joins the Maybe(Maybe(val)) making it Maybe(val)
-        |> Maybe.withDefault Nothing
-
-
-
-diffUsingPattern : Regex.Regex -> String -> String -> Maybe Regex.Match
-diffUsingPattern reg oldText newText =
-    let
-        oldMatches = Regex.find Regex.All reg oldText
-        newMatches = Regex.find Regex.All reg newText
-    in
-        newMatches
-            |> List.filter (\h ->  not <| List.member h oldMatches)
-            |> List.head
 
 
 
