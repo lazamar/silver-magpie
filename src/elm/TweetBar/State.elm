@@ -233,7 +233,7 @@ replaceHandler text match replacement =
                 Regex.replace
                     Regex.All
                     (Regex.regex "[^\\s@]+")
-                    (\_ -> replacement)
+                    (\_ -> replacement ++ " ")
                     m.match
             else
                 m.match
