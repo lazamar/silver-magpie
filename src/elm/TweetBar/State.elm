@@ -165,7 +165,7 @@ update msg model =
 
                             newTweetText =
                                 Maybe.map2
-                                    (replaceMatch hashtagRegex model.tweetText)
+                                    (replaceHandler model.tweetText)
                                     handlerSuggestions.handler
                                     replacement
                                 |> Maybe.withDefault model.tweetText
@@ -221,14 +221,20 @@ update msg model =
 
 
 
-replaceMatch : Regex.Regex -> String -> Regex.Match -> String -> String
-replaceMatch reg text match replacement =
+replaceHandler : String -> Regex.Match -> String -> String
+replaceHandler text match replacement =
     Regex.replace
         Regex.All
-        reg
+        hashtagRegex
         (\m ->
             if sameMatch m match then
-                text
+                -- Replace just the handler from the match, not any
+                -- spaces that my or may not exist before it
+                Regex.replace
+                    Regex.All
+                    (Regex.regex "[^\\s@]+")
+                    (\_ -> replacement)
+                    m.match
             else
                 m.match
         )
