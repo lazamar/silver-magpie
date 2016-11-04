@@ -74,11 +74,11 @@ userSuggestion user selected =
                 , class "TweetBar-suggestions-option-image"
                 ] []
             , span
-                [ class "TweetBar-suggestions-option-name" ]
-                [ text user.name ]
-            , span
                 [ class "TweetBar-suggestions-option-screenName" ]
                 [ text ( "@" ++ user.screen_name ) ]
+            , span
+                [ class "TweetBar-suggestions-option-name" ]
+                [ text user.name ]
             ]
 
 
