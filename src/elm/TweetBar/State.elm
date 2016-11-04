@@ -150,8 +150,34 @@ update msg model =
             in
                 case keyPressed of
                     EnterKey ->
-                        -- TODO: Create an action for enter key pressed
-                        ( model, Cmd.none, Cmd.none )
+                        let
+                            replacement =
+                                Maybe.map2
+                                    (\users selected ->
+                                        users
+                                            |> List.drop selected
+                                            |> List.head
+                                    )
+                                    (RemoteData.toMaybe handlerSuggestions.users)
+                                    handlerSuggestions.userSelected
+                                |> Maybe.withDefault Nothing
+                                |> Maybe.map (\user -> user.screen_name)
+
+                            newTweetText =
+                                Maybe.map2
+                                    (replaceMatch hashtagRegex model.tweetText)
+                                    handlerSuggestions.handler
+                                    replacement
+                                |> Maybe.withDefault model.tweetText
+
+                        in
+                            (   { model
+                                | tweetText = newTweetText
+                                , handlerSuggestions = initialModel.handlerSuggestions
+                                }
+                            , Cmd.none
+                            , Cmd.none
+                            )
 
                     EscKey ->
                         ( { model | handlerSuggestions = initialModel.handlerSuggestions }
@@ -192,6 +218,29 @@ update msg model =
 
         RefreshTweets ->
             ( model, Cmd.none, Main.Global.refreshTweets)
+
+
+
+replaceMatch : Regex.Regex -> String -> Regex.Match -> String -> String
+replaceMatch reg text match replacement =
+    Regex.replace
+        Regex.All
+        reg
+        (\m ->
+            if sameMatch m match then
+                text
+            else
+                m.match
+        )
+        text
+
+
+
+sameMatch : Regex.Match -> Regex.Match -> Bool
+sameMatch match1 match2 =
+    match1.match == match2.match
+    && match1.submatches == match2.submatches
+    && match1.number == match2.number
 
 
 
