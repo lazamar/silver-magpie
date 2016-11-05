@@ -75,16 +75,44 @@
   }
 }
 
-.TweetBar-textBox-input {
+.TweetBar-textBox-inputContainer {
+  position: relative; // It will contain the display and input elements
+  width: 100%;
+}
+
+.TweetBar-textBox-input,
+.TweetBar-textBox-display {
+  position: absolute;
+  display: block;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  resize: none;
+  border: 0;
   padding: 0 7px;
   width: 100%;
-  border: 0;
-  resize: none;
+  background-color: transparent;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
 
   &:active,
   &:focus,
   &:hover {
     outline: 0;
+  }
+}
+
+.TweetBar-textBox-input {
+  color: inherit;
+  -webkit-text-fill-color: transparent;
+
+  // So that our placeholder text still appears
+  &::-webkit-input-placeholder{
+    text-shadow: none;
+    -webkit-text-fill-color: initial;
   }
 }
 

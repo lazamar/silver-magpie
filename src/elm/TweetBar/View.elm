@@ -2,6 +2,7 @@ module TweetBar.View exposing (..)
 
 
 import TweetBar.Types exposing (..)
+import TweetBar.Handler as TwHandler
 import Twitter.Types exposing ( User )
 import Generic.Utils exposing ( errorMessage )
 import Generic.Animations
@@ -14,9 +15,11 @@ import Generic.Types exposing
         )
     )
 import RemoteData exposing ( RemoteData, WebData )
+import Json.Encode
 import Json.Decode
 import Json.Decode.Pipeline
 import String
+import Regex
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -143,14 +146,27 @@ inputBoxView tweetText suggestions =
             [ span
                   [ class "TweetBar-textBox-charCount" ]
                   [ remainingCharacters tweetText ]
-            , textarea
-                  [ class "TweetBar-textBox-input"
-                  , placeholder "Write you tweet here ..."
-                  , autofocus True
-                  , onInput LetterInput
-                  , keyListener
-                  , value tweetText
-                  ] []
+            , div
+                [ class "TweetBar-textBox-inputContainer"]
+                [ div
+                    [ class "TweetBar-textBox-display"
+                    , property "innerHTML" <| Json.Encode.string (
+                        Regex.replace
+                            Regex.All
+                            TwHandler.handlerRegex
+                            (\m -> "<span style='color:blue;'> " ++ m.match ++ " </span>")
+                            tweetText
+                        )
+                    ] []
+                , textarea
+                    [ class "TweetBar-textBox-input"
+                    , placeholder "Write you tweet here ..."
+                    , autofocus True
+                    , keyListener
+                    , onInput LetterInput
+                    , value tweetText
+                    ] []
+                ]
             ]
 
 

@@ -4,6 +4,7 @@ module TweetBar.Handler exposing
     , findChanged
     , replaceMatch
     , matchedName
+    , handlerRegex
     )
 
 import Regex
