@@ -148,16 +148,7 @@ inputBoxView tweetText suggestions =
                   [ remainingCharacters tweetText ]
             , div
                 [ class "TweetBar-textBox-inputContainer"]
-                [ div
-                    [ class "TweetBar-textBox-display"
-                    , property "innerHTML" <| Json.Encode.string (
-                        Regex.replace
-                            Regex.All
-                            TwHandler.handlerRegex
-                            (\m -> "<span style='color:blue;'> " ++ m.match ++ " </span>")
-                            tweetText
-                        )
-                    ] []
+                [ colouredTweetView tweetText
                 , textarea
                     [ class "TweetBar-textBox-input"
                     , placeholder "Write you tweet here ..."
@@ -168,6 +159,37 @@ inputBoxView tweetText suggestions =
                     ] []
                 ]
             ]
+
+
+
+colouredTweetView : String -> Html Msg
+colouredTweetView tweetText =
+    let
+        styledText =
+            tweetText
+                |> highlightMatches TwHandler.handlerRegex
+                |> highlightMatches urlRegex
+    in
+        div
+            [ class "TweetBar-textBox-display"
+            , property "innerHTML" <| Json.Encode.string styledText
+            ] []
+
+
+
+urlRegex : Regex.Regex
+urlRegex =
+    Regex.regex "(https?:\\/\\/(?:www\\.|(?!www))[^\\s\\.]+\\.[^\\s]{2,}|www\\.[^\\s]+\\.[^\\s]{2,})"
+
+
+
+highlightMatches : Regex.Regex -> String -> String
+highlightMatches reg txt =
+    Regex.replace
+        Regex.All
+        reg
+        (\m -> "<span class='TweetBar-textBox-display-highlight'>" ++ m.match ++ "</span>")
+        txt
 
 
 
