@@ -41,6 +41,10 @@
   user-select: none;
 }
 
+.Tweet-content {
+  width: 100%;
+}
+
 .Tweet-userInfoContainer {
   white-space: nowrap;
   overflow: hidden;
@@ -59,6 +63,8 @@
 
 .Tweet-text {
   margin: 0;
+  word-break: break-word;
+  word-wrap: break-word;
 }
 
 .Tweet-media {

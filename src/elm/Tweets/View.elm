@@ -62,7 +62,7 @@ tweetView index tweet =
         [ class "Tweet-userImage"
         , src tweet.user.profile_image_url_https
         ] []
-    , div []
+    , div [ class "Tweet-content" ]
         [ div
             [ class "Tweet-userInfoContainer"]
             [ a
