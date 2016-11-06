@@ -2,6 +2,7 @@ module Twitter.Decoders.TweetDecoder exposing (tweetDecoder)
 
 import Twitter.Types exposing
     ( Tweet
+    , Retweet (..)
     , User
     , TweetEntitiesRecord
     , UserMentionsRecord
@@ -14,7 +15,7 @@ import Twitter.Types exposing
 
 import Twitter.Decoders.UserDecoder exposing ( userDecoder )
 import Json.Decode exposing ( Decoder, string, int, bool, list, dict, at, andThen, fail, (:=) )
-import Json.Decode.Pipeline exposing ( decode, required, optional, requiredAt )
+import Json.Decode.Pipeline exposing ( decode, required, optional, requiredAt, hardcoded, nullable )
 
 
 
@@ -26,13 +27,14 @@ import Json.Decode.Pipeline exposing ( decode, required, optional, requiredAt )
 type alias RawTweet =
   { user : User
   , created_at : String
-  , text: String
+  , text : String
   , retweet_count : Int
   , favorite_count : Int
   , favorited : Bool
   , retweeted : Bool
-  , entities: RawTweetEntitiesRecord
-  , extended_entities: ExtendedEntitiesRecord
+  , entities : RawTweetEntitiesRecord
+  , extended_entities : ExtendedEntitiesRecord
+  , retweet_status : Maybe Retweet
   }
 
 
@@ -106,6 +108,26 @@ tweetDecoder =
 
 rawTweetDecoder : Decoder RawTweet
 rawTweetDecoder =
+    rawTweetDecoderFirstPart
+        |> optional "retweet_status" ( nullable retweetDecoder ) Nothing
+
+
+
+retweetDecoder : Decoder Retweet
+retweetDecoder =
+    rawTweetDecoderFirstPart
+        |> hardcoded Nothing -- retweet_status
+        |> Json.Decode.map preprocessTweet
+        |> Json.Decode.map Retweet
+
+
+
+-- Elm has problems parsing recursive JSON values, so
+-- in this function we only parse the first part of
+-- RawTweet and leave the recursive part to be implemented
+-- according to whether we are parsing the top tweet or the retweet
+-- and thus prevent parsing recursion
+rawTweetDecoderFirstPart =
     decode RawTweet
         |> required "user" userDecoder
         |> required "created_at" string
@@ -116,7 +138,6 @@ rawTweetDecoder =
         |> required "retweeted" bool
         |> required "entities" rawTweetEntitiesDecoder
         |> optional "extended_entities" extendedEntitiesDecoder ( ExtendedEntitiesRecord [] )
-
 
 
 rawTweetEntitiesDecoder : Decoder RawTweetEntitiesRecord
@@ -232,6 +253,7 @@ preprocessTweet raw =
             raw.entities.urls
             raw.entities.user_mentions
         )
+        raw.retweet_status
 
 
 -- FIXME: It is currently ignoring the raw media

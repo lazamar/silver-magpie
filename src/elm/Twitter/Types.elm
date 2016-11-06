@@ -18,7 +18,12 @@ type alias Tweet =
   , favorited : Bool
   , retweeted : Bool
   , entities: TweetEntitiesRecord -- TODO: inline this
+  , retweet_statusl : Maybe Retweet
   }
+
+
+type Retweet =
+    Retweet Tweet
 
 
 
