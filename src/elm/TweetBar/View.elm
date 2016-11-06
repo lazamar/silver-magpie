@@ -169,6 +169,7 @@ colouredTweetView tweetText =
             tweetText
                 |> highlightMatches TwHandler.handlerRegex
                 |> highlightMatches urlRegex
+                |> Regex.replace Regex.All (Regex.regex "\\n") (\_ -> "<br/>")
     in
         div
             [ class "TweetBar-textBox-display"
