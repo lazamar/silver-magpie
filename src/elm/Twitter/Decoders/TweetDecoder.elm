@@ -34,7 +34,7 @@ type alias RawTweet =
   , retweeted : Bool
   , entities : RawTweetEntitiesRecord
   , extended_entities : ExtendedEntitiesRecord
-  , retweet_status : Maybe Retweet
+  , retweeted_status : Maybe Retweet
   }
 
 
@@ -109,14 +109,14 @@ tweetDecoder =
 rawTweetDecoder : Decoder RawTweet
 rawTweetDecoder =
     rawTweetDecoderFirstPart
-        |> optional "retweet_status" ( nullable retweetDecoder ) Nothing
+        |> optional "retweeted_status" ( nullable retweetDecoder ) Nothing
 
 
 
 retweetDecoder : Decoder Retweet
 retweetDecoder =
     rawTweetDecoderFirstPart
-        |> hardcoded Nothing -- retweet_status
+        |> hardcoded Nothing -- retweeted_status
         |> Json.Decode.map preprocessTweet
         |> Json.Decode.map Retweet
 
@@ -253,7 +253,7 @@ preprocessTweet raw =
             raw.entities.urls
             raw.entities.user_mentions
         )
-        raw.retweet_status
+        raw.retweeted_status
 
 
 -- FIXME: It is currently ignoring the raw media

@@ -165,11 +165,14 @@ inputBoxView tweetText suggestions =
 colouredTweetView : String -> Html Msg
 colouredTweetView tweetText =
     let
+        replaceLineBreaks =
+            Regex.replace Regex.All (Regex.regex "\\n") (\_ -> "<br/>")
+
         styledText =
             tweetText
                 |> highlightMatches TwHandler.handlerRegex
                 |> highlightMatches urlRegex
-                |> Regex.replace Regex.All (Regex.regex "\\n") (\_ -> "<br/>")
+                |> replaceLineBreaks
     in
         div
             [ class "TweetBar-textBox-display"
