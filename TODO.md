@@ -3,6 +3,8 @@
   - Infinite scroll
   - Make retweets look good
   - Allow retweeting and favouriting
+  - Highlight hashtags
+  - Show user info when hovering handler in timeline
 
 ## FIX
   - too long word in tweetbar
