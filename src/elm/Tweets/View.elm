@@ -13,16 +13,12 @@ import Twitter.Types exposing
     , Video
     )
 
+import Http
 import Generic.Utils exposing ( errorMessage )
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Http
-import Array
-import Regex
-import RemoteData exposing (..)
-import Json.Encode
-
 import Tweets.TweetView exposing ( tweetView )
+import RemoteData exposing (..)
 
 
 root : Model -> Html Msg
@@ -51,3 +47,9 @@ loadingBar request =
 
             otherwise ->
                 div [] []
+
+errorView : Http.Error -> Html Msg
+errorView error =
+    div [ class "Tweets-error animated fadeInDown" ]
+        [ text ( errorMessage error)
+        ]

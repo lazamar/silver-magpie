@@ -1,5 +1,6 @@
-module Tweets.TweetView.elm
+module Tweets.TweetView exposing ( tweetView )
 
+import Tweets.Types exposing (..)
 import Twitter.Types exposing
     ( Tweet
     , Retweet (..)
@@ -10,6 +11,11 @@ import Twitter.Types exposing
     , MultiPhoto
     , Video
     )
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Array
+import Regex
+import Json.Encode
 
 
 
@@ -91,7 +97,7 @@ tweetActions tweet =
             , text (toStringNotZero tweet.retweet_count)
             ]
         ]
-    ]
+
 
 
 getColor : Int -> String
@@ -142,14 +148,6 @@ toStringNotZero num =
         toString num
     else
         ""
-
-
-
-errorView : Http.Error -> Html Msg
-errorView error =
-    div [ class "Tweets-error animated fadeInDown" ]
-        [ text ( errorMessage error)
-        ]
 
 
 

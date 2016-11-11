@@ -21,10 +21,6 @@
 }
 
 .Tweet {
-  display: flex;
-  flex-flow: row nowrap;
-  align-content: flex-start;
-  align-items: flex-start;
   background-color: $bg-light;
   margin-bottom: .5em;
   border: 6px solid $c-border;
