@@ -48,7 +48,7 @@ retweetInfo topTweet =
 
 tweetContent : Tweet -> Html Msg
 tweetContent tweet =
-    div []
+    div [ class "Tweet-body" ]
     [ img
         [ class "Tweet-userImage"
         , src tweet.user.profile_image_url_https

@@ -30,6 +30,11 @@
   transition: all .3s ease-out;
 }
 
+.Tweet-body {
+  display: flex;
+  align-items: flex-start;  
+}
+
 .Tweet-userImage {
   margin: .2em .5em 0 0;
   border-radius: $border-radius;
