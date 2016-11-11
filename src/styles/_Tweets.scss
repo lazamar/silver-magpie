@@ -30,9 +30,27 @@
   transition: all .3s ease-out;
 }
 
+.Tweet-retweet-info {
+  margin-bottom: .5em;
+  font-size: .8em;
+  opacity: .8;
+}
+
+.Tweet-retweet-info-icons {
+  background-color: #4CAF50;
+  color: white;
+  padding: .13em .26em;
+  border-radius: 2px;
+  font-weight: bold;
+  margin-right: .3em;
+  display: inline-block;
+  width: 1.3em;
+  height: 1.3em;
+}
+
 .Tweet-body {
   display: flex;
-  align-items: flex-start;  
+  align-items: flex-start;
 }
 
 .Tweet-userImage {
