@@ -96,6 +96,12 @@
   border-radius: $border-radius;
 }
 
+.Tweet-media-video {
+  background-image: url('../images/video-placeholder.svg');
+  background-size: cover;
+  background-position: center;
+}
+
 .Tweet-actions {
   display: flex;
   justify-content: space-around;
