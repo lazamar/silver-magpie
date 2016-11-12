@@ -1,4 +1,5 @@
 .TweetBar {
+  flex-shrink: 0;
   background-color: $bg-lvl-1;
   border: 1px solid $c-border;
   border-width: 0;
@@ -21,7 +22,7 @@
   display: flex;
   flex-flow: row nowrap;
   width: 100%;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .TweetBar-sendBtn {
@@ -32,7 +33,7 @@
   padding: .5em 7px;
   width: 100%;
   resize: none;
-  height: 11em;
+  min-height: 8em;
   background-color: white;
   border: 1px solid $c-border;
   border-radius: 2px;
@@ -82,12 +83,7 @@
 
 .TweetBar-textBox-input,
 .TweetBar-textBox-display {
-  position: absolute;
   display: block;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
   resize: none;
   border: 0;
   padding: 0 7px;
@@ -108,6 +104,14 @@
   &:hover {
     outline: 0;
   }
+}
+
+.TweetBar-textBox-input {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 
 .TweetBar-textBox-input {
