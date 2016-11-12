@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
 
-  "name": "Silver Magpi",
+  "name": "Silver Magpie",
   "description": "Elm Twitter Client for Chrome",
   "version": "1.0",
   "browser_action": {
