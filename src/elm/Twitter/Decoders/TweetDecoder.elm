@@ -16,7 +16,7 @@ import Twitter.Types exposing
 import Twitter.Decoders.UserDecoder exposing ( userDecoder )
 import Json.Decode exposing ( Decoder, string, int, bool, list, dict, at, andThen, fail, (:=) )
 import Json.Decode.Pipeline exposing ( decode, required, optional, requiredAt, hardcoded, nullable )
-
+import List.Extra
 
 
 -- Types
@@ -347,8 +347,11 @@ extendedVideoToVideo : ExtendedVideo -> Video
 extendedVideoToVideo extendedVideo =
     let
         videoVariant =
-            List.head extendedVideo.variants
-                |> Maybe.withDefault ( VariantRecord "nothingHere" "nothingHere" )
+            Maybe.oneOf
+                [ List.Extra.find (\v -> v.content_type == "video/mp4") extendedVideo.variants
+                , List.head extendedVideo.variants
+                ]
+            |> Maybe.withDefault ( VariantRecord "nothingHere" "nothingHere" )
     in
         Video
             extendedVideo.url
