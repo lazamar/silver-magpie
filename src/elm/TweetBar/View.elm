@@ -162,6 +162,12 @@ inputBoxView tweetText suggestions =
 
 
 
+hashtagRegex : Regex.Regex
+hashtagRegex =
+    Regex.regex "(^|\\s)#[\\w]+"
+
+
+
 colouredTweetView : String -> Html Msg
 colouredTweetView tweetText =
     let
@@ -172,6 +178,7 @@ colouredTweetView tweetText =
             tweetText
                 |> highlightMatches TwHandler.handlerRegex
                 |> highlightMatches urlRegex
+                |> highlightMatches hashtagRegex
                 |> replaceLineBreaks
     in
         div
