@@ -4,6 +4,7 @@ import Tweets.Types exposing (..)
 import Twitter.Types exposing
     ( Tweet
     , Retweet (..)
+    , User
     , UrlRecord
     , UserMentionsRecord
     , HashtagRecord
@@ -20,15 +21,24 @@ import Json.Encode
 
 
 tweetView : Int -> Tweet -> Html Msg
-tweetView index tweet =
-  div
-    [ class "Tweet"
-    , style [ ("borderColor", ( getColor index ) )]
-    ]
-    [ retweetInfo tweet
-    , tweetContent tweet
-    , tweetActions tweet
-    ]
+tweetView index mainTweet =
+    let
+        tweet =
+            case mainTweet.retweeted_status of
+                Nothing ->
+                    mainTweet
+
+                Just ( Retweet retweet ) ->
+                    retweet
+    in
+        div
+            [ class "Tweet"
+            , style [ ("borderColor", ( getColor index ) )]
+            ]
+            [ retweetInfo mainTweet
+            , tweetContent tweet
+            , tweetActions tweet
+            ]
 
 
 
@@ -41,7 +51,9 @@ retweetInfo topTweet =
         Just _ ->
             div [ class "Tweet-retweet-info" ]
                 [ i [ class "zmdi zmdi-repeat Tweet-retweet-info-icons" ] []
-                , text ( "retweeted by @" ++ topTweet.user.screen_name )
+                , text "retweeted by "
+                , a [ href <| userProfileLink topTweet.user ]
+                    [ text ("@" ++ topTweet.user.screen_name )]
                 ]
 
 
@@ -58,13 +70,13 @@ tweetContent tweet =
            [ class "Tweet-userInfoContainer"]
            [ a
                [ class "Tweet-userName"
-               , href ( "https://twitter.com/" ++ tweet.user.screen_name )
+               , href <| userProfileLink tweet.user
                , target "_blank"
                ]
                [ text tweet.user.name ]
            , a
                [ class "Tweet-userHandler"
-               , href ( "https://twitter.com/" ++ tweet.user.screen_name )
+               , href <| userProfileLink tweet.user
                , target "_blank"
                ]
                [ text ( "@" ++ tweet.user.screen_name ) ]
@@ -81,6 +93,10 @@ tweetContent tweet =
    ]
 
 
+
+userProfileLink : User -> String
+userProfileLink user =
+    "https://twitter.com/" ++ user.screen_name
 
 
 
