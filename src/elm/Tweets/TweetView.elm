@@ -170,16 +170,11 @@ toStringNotZero num =
 tweetTextView : Tweet -> String
 tweetTextView { text, entities } =
     text
-     |> (flip23 List.foldl) linkUrl entities.urls
-     |> (flip23 List.foldl) removeMediaUrl entities.media
-     |> (flip23 List.foldl) linkHashtags entities.hashtags
-     |> (flip23 List.foldl) linkUserMentions entities.user_mentions
-
-
-
-flip23 : (a -> b -> c -> d) -> a -> c -> b -> d
-flip23 f =
-    (\a c b -> f a b c)
+     |> (flip <| List.foldl linkUrl )  entities.urls
+     |> (flip <| List.foldl removeMediaUrl ) entities.media
+     |> (flip <| List.foldl linkHashtags ) entities.hashtags
+     |> (flip <| List.foldl linkUserMentions ) entities.user_mentions
+     |> Regex.replace Regex.All ( Regex.regex "\\n") (\_ -> "<br/>")
 
 
 
