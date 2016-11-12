@@ -180,6 +180,7 @@ colouredTweetView tweetText =
                 |> highlightMatches urlRegex
                 |> highlightMatches hashtagRegex
                 |> replaceLineBreaks
+                |> (flip (++) ) "&zwnj;" -- invisible character to allow line-breaks at the end of sentences
     in
         div
             [ class "TweetBar-textBox-display"
