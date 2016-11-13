@@ -8,3 +8,5 @@ To build from source run
 ```
 npm install && gulp build
 ```
+
+Logo by [Jozef Krajcovic](http://jozefkrajcovic.sk/)
