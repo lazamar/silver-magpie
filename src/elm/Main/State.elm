@@ -39,7 +39,7 @@ initialCmd =
     ( tweetBarModel, tweetBarCmd, tweetBarGlobalCmd ) =
         TweetBar.State.init
 
-    ( loginModel, loginCmd, loginGlobalCmd ) =
+    ( loginModel, loginCmd ) =
         Login.State.init
 
   in
@@ -107,5 +107,5 @@ update message model =
                     Login.State.update subMsg model.loginModel
             in
                 ( { model | loginModel = updatedLoginModel }
-                , Cmd.map LoginMsg tweetsCmd
+                , Cmd.map LoginMsg loginCmd
                 )

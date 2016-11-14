@@ -1,4 +1,4 @@
-module Login.Types exposing ( Model, UserInfo )
+module Login.Types exposing ( Model, UserInfo, Msg ( UserCredentialsFetch ) )
 
 import RemoteData exposing ( WebData )
 
@@ -12,8 +12,8 @@ type alias Model =
 
 
 type alias UserInfo =
-    { accessToken : String,
-    , screenName : String,
+    { accessToken : String
+    , screenName : String
     }
 
 

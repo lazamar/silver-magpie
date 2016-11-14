@@ -1,6 +1,6 @@
 module Login.State exposing ( init, update )
 
-import Login.Types exposing ( Module, UserInfo )
+import Login.Types exposing ( Model, UserInfo, Msg (..) )
 import Login.Rest exposing ( fetchUserInfo )
 import Generic.LocalStorage
 import RemoteData exposing ( RemoteData )
@@ -34,8 +34,7 @@ initialModel =
 init : ( Model, Cmd Msg )
 init =
     ( initialModel
-    , Cmd.map UserCredentialsFetch <| Task.succeed initialModel.userInfo
-    , Cmd.none
+    , Task.perform identity identity <| Task.succeed ( UserCredentialsFetch initialModel.userInfo )
     )
 
 
@@ -77,7 +76,7 @@ getSessionID : () -> String
 getSessionID _ =
     Maybe.withDefault
         ( generateSessionID "random_string" )
-        Generic.LocalStorage.getItem "sessionID"
+        ( Generic.LocalStorage.getItem "sessionID" )
 
 
 

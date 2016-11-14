@@ -3,6 +3,7 @@ module Login.View exposing ( root )
 import Login.Types exposing (..)
 import Generic.Animations
 import RemoteData exposing ( RemoteData )
+import Http
 import Html exposing (..)
 import Html.Attributes exposing (..)
 
@@ -15,7 +16,7 @@ root model =
             case error of
               Http.UnexpectedPayload errDescription ->
                 div [ class "Login" ]
-                    [ a [ href "http://localhost:8080/sign-in/?app_session_id=" ++ model.sessionID ]
+                    [ a [ href <| "http://localhost:8080/sign-in/?app_session_id=" ++ model.sessionID ]
                         [ text "Sign in with Twitter" ]
                     ]
 
@@ -28,7 +29,7 @@ root model =
             div [ class "Login" ]
                 [ Generic.Animations.twistingCircle ]
 
-        RemoteData.Success ->
+        RemoteData.Success _ ->
             div [ class "Login" ]
                 [ text "You are logged in" ]
 
