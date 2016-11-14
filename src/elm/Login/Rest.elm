@@ -25,5 +25,5 @@ fetchUserInfo sessionID =
 userInfoDecoder : Decoder UserInfo
 userInfoDecoder =
     decode UserInfo
-        |> required "accessToken" string
-        |> required "screenName" string
+        |> required "access_token" string
+        |> required "screen_name" string
