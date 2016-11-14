@@ -1,4 +1,4 @@
-module Login.State exposing ( init, update, subscriptions )
+module Login.State exposing ( init, update )
 
 import Login.Types exposing ( Module, UserInfo )
 import Login.Rest exposing ( fetchUserInfo )
@@ -31,7 +31,7 @@ initialModel =
 
 
 
-init : ( Model, Cmd Msg, Cmd Main.Types.Msg )
+init : ( Model, Cmd Msg )
 init =
     ( initialModel
     , Cmd.map UserCredentialsFetch <| Task.succeed initialModel.userInfo
@@ -40,7 +40,7 @@ init =
 
 
 
-update : Msg -> Model -> ( Model, Cmd Msg, Cmd Main.Types.Msg )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         UserCredentialsFetch request ->
@@ -48,26 +48,17 @@ update msg model =
                 RemoteData.Success _ ->
                     ( { model | userInfo = request, loggedIn = True }
                     , Cmd.none
-                    , Cmd.none
                     )
 
                 RemoteData.NotAsked ->
-                    ( { model | userInfo = request , loggedIn = False }
-                    , fetchUserInfo
-                    , Cmd.none
+                    ( { model | userInfo = RemoteData.Loading , loggedIn = False }
+                    , fetchUserInfo model.sessionID
                     )
 
                 _ ->
                     ( { model | userInfo = request , loggedIn = False }
                     , Cmd.none
-                    , Cmd.none
                     )
-
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none
 
 
 

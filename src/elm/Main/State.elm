@@ -3,6 +3,7 @@ module Main.State exposing (..)
 import Main.Types exposing (..)
 import Tweets.State
 import TweetBar.State
+import Login.State
 
 
 -- INITIALISATION
@@ -12,13 +13,19 @@ import TweetBar.State
 initialModel : MainModel
 initialModel =
   let
-    (tweetsModel, tweetsCmd) =
-      Tweets.State.init
-    (tweetBarModel, tweetBarCmd, tweetBarGlobalCmd) =
-      TweetBar.State.init
+    ( tweetsModel, tweetsCmd ) =
+        Tweets.State.init
+
+    ( tweetBarModel, tweetBarCmd, tweetBarGlobalCmd ) =
+        TweetBar.State.init
+
+    ( loginModel, loginCmd ) =
+        Login.State.init
+
   in
     { tweetsModel = tweetsModel
     , tweetBarModel = tweetBarModel
+    , loginModel = loginModel
     }
 
 
@@ -26,14 +33,20 @@ initialModel =
 initialCmd : Cmd Msg
 initialCmd =
   let
-    (tweetsModel, tweetsCmd) =
-      Tweets.State.init
-    (tweetBarModel, tweetBarCmd, tweetBarGlobalCmd) =
-      TweetBar.State.init
+    ( tweetsModel, tweetsCmd ) =
+        Tweets.State.init
+
+    ( tweetBarModel, tweetBarCmd, tweetBarGlobalCmd ) =
+        TweetBar.State.init
+
+    ( loginModel, loginCmd, loginGlobalCmd ) =
+        Login.State.init
+
   in
     Cmd.batch
       [ Cmd.map TweetsMsg tweetsCmd
       , Cmd.map TweetBarMsg tweetBarCmd
+      , Cmd.map LoginMsg loginCmd
       , tweetBarGlobalCmd
       ]
 
@@ -86,4 +99,13 @@ update message model =
                     [ Cmd.map TweetBarMsg tweetBarCmd
                     , globalCmd
                     ]
+                )
+
+        LoginMsg subMsg ->
+            let
+                ( updatedLoginModel, loginCmd ) =
+                    Login.State.update subMsg model.loginModel
+            in
+                ( { model | loginModel = updatedLoginModel }
+                , Cmd.map LoginMsg tweetsCmd
                 )
