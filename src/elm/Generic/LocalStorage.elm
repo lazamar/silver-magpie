@@ -6,7 +6,7 @@ import Result
 
 setItem : String -> String -> String
 setItem key value =
-    Native.LocalStorage.setItem key value
+    Native.LocalStorage.setItem { key = key, value = value }
 
 
 getItem : String -> Maybe String
@@ -14,7 +14,6 @@ getItem key =
     Native.LocalStorage.getItem key
         |> decodeString ( nullOr string )
         |> Result.withDefault Nothing
-        |> Debug.log "Value parsed"
 
 
 

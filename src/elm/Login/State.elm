@@ -3,6 +3,7 @@ module Login.State exposing ( init, update )
 import Login.Types exposing ( Model, UserInfo, Msg (..) )
 import Login.Rest exposing ( fetchUserInfo )
 import Generic.LocalStorage
+import Generic.UniqueID
 import RemoteData exposing ( RemoteData )
 import Task
 
@@ -83,4 +84,5 @@ getSessionID _ =
 -- Generates a random uinique session ID
 generateSessionID : String -> String
 generateSessionID seed =
-    seed ++ "abc" -- TODO: Make this actually generate something random
+    Generic.UniqueID.generate seed
+        |> Generic.LocalStorage.setItem "sessionID"
