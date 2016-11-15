@@ -2,6 +2,7 @@ module Login.View exposing ( root )
 
 import Login.Types exposing (..)
 import Generic.Animations
+import Generic.Utils
 import RemoteData exposing ( RemoteData )
 import Http
 import Html exposing (..)
@@ -16,7 +17,7 @@ root model =
             case error of
               Http.UnexpectedPayload errDescription ->
                 div [ class "Login" ]
-                    [ a [ href <| "http://localhost:8080/sign-in/?app_session_id=" ++ model.sessionID ]
+                    [ a [ href <| Generic.Utils.sameDomain <| "/sign-in/?app_session_id=" ++ model.sessionID ]
                         [ text "Sign in with Twitter" ]
                     ]
 

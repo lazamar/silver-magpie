@@ -1,6 +1,7 @@
 module TweetBar.Rest exposing ( sendTweet, fetchHandlerSuggestion )
 
 import Generic.Types as SubmissionData
+import Generic.Utils
 import TweetBar.Types exposing ( Msg ( TweetSend, SuggestedHandlersFetch ), TweetPostedResponse )
 import Twitter.Decoders exposing ( userDecoder )
 import Twitter.Types exposing ( User )
@@ -45,7 +46,7 @@ sendTweet tweetText =
         request =
             { verb = "POST"
             , headers = [ ("Content-Type", "application/json") ]
-            , url = "http://localhost:8080/status-update"
+            , url = Generic.Utils.sameDomain "/status-update"
             , body = createSendBody tweetText
             }
     in
@@ -60,7 +61,7 @@ fetchHandlerSuggestion : String -> Cmd Msg
 fetchHandlerSuggestion handler =
     let
         url = Http.uriEncode handler
-            |> (++) "http://localhost:8080/user-search?q="
+            |> (++) ( Generic.Utils.sameDomain "/user-search?q=" )
     in
         Http.get userListDecoder url
             |> Task.perform RemoteData.Failure RemoteData.Success

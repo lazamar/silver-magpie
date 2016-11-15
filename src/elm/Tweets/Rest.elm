@@ -3,6 +3,7 @@ module Tweets.Rest exposing (..)
 import Tweets.Types exposing (..)
 import Twitter.Decoders exposing ( tweetDecoder )
 import Twitter.Types exposing ( Tweet )
+import Generic.Utils
 
 import Http
 import Json.Decode exposing ( Decoder, string, int, bool, list, dict, at )
@@ -36,7 +37,9 @@ getTweets position route =
                 MentionsRoute ->
                     "mentions"
 
-        url = "http://localhost:8080/" ++ section
+        url =
+            Generic.Utils.sameDomain <| "/" ++ section
+
     in
         Http.get serverMsgDecoder url
             |> Task.perform Failure Success
