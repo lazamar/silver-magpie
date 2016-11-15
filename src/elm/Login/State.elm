@@ -75,9 +75,16 @@ getUserInfo nothing =
 
 getSessionID : () -> String
 getSessionID _ =
-    Maybe.withDefault
-        ( generateSessionID "random_string" )
-        ( Generic.LocalStorage.getItem "sessionID" )
+    let
+        retrieved =
+            Generic.LocalStorage.getItem "sessionID"
+    in
+        case Debug.log "retrieved value: " retrieved of
+            Nothing ->
+                generateSessionID "random_string"
+
+            Just sessionID ->
+                sessionID
 
 
 
@@ -86,3 +93,4 @@ generateSessionID : String -> String
 generateSessionID seed =
     Generic.UniqueID.generate seed
         |> Generic.LocalStorage.setItem "sessionID"
+        |> Debug.log "Generated session id"
