@@ -21,6 +21,7 @@ root model =
                         [ text "Sign in with Twitter" ]
                     ]
 
+            -- TODO: Handle other HTTP errors properly
               _ ->
                 div [ class "Login" ]
                     [ text "There was an error loading your credentials. Please retry."
