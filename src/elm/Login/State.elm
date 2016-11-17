@@ -2,8 +2,10 @@ module Login.State exposing ( init, update )
 
 import Login.Types exposing ( Model, UserInfo, Msg (..) )
 import Login.Rest exposing ( fetchUserInfo )
+import Main.Types
 import Generic.LocalStorage
 import Generic.UniqueID
+import Generic.Utils
 import RemoteData exposing ( RemoteData )
 import Task
 
@@ -32,31 +34,35 @@ initialModel =
 
 
 
-init : ( Model, Cmd Msg )
+init : ( Model, Cmd Msg, Cmd Main.Types.Msg )
 init =
     ( initialModel
     , Task.perform identity identity <| Task.succeed ( UserCredentialsFetch initialModel.userInfo )
+    , Cmd.none
     )
 
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> ( Model, Cmd Msg, Cmd Main.Types.Msg )
 update msg model =
     case msg of
         UserCredentialsFetch request ->
             case request of
-                RemoteData.Success _ ->
+                RemoteData.Success userInfo ->
                     ( { model | userInfo = request, loggedIn = True }
                     , Cmd.none
+                    , Generic.Utils.toCmd ( Main.Types.Login userInfo.app_access_token )
                     )
 
                 RemoteData.NotAsked ->
                     ( { model | userInfo = RemoteData.Loading , loggedIn = False }
                     , fetchUserInfo model.sessionID
+                    , Cmd.none
                     )
 
                 _ ->
                     ( { model | userInfo = request , loggedIn = False }
+                    , Cmd.none
                     , Cmd.none
                     )
 
@@ -66,10 +72,10 @@ update msg model =
 getUserInfo : () -> Maybe UserInfo
 getUserInfo nothing =
     let
-        accessToken = Generic.LocalStorage.getItem "accessToken"
+        app_access_token = Generic.LocalStorage.getItem "app_access_token"
         screenName = Generic.LocalStorage.getItem "screenName"
     in
-        Maybe.map2 UserInfo accessToken screenName
+        Maybe.map2 UserInfo app_access_token screenName
 
 
 

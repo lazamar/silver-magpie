@@ -118,11 +118,14 @@ updateHomeRoute msg model =
 initLoginRoute : ( MainModel, Cmd Msg )
 initLoginRoute =
     let
-        ( loginModel, loginCmd ) =
+        ( loginModel, loginCmd, globalCmd ) =
             Login.State.init
     in
         ( LoginRoute loginModel
-        , Cmd.map LoginMsg loginCmd
+        , Cmd.batch
+            [ Cmd.map LoginMsg loginCmd
+            , globalCmd
+            ]
         )
 
 
@@ -132,11 +135,14 @@ updateLoginRoute msg model =
     case msg of
         LoginMsg subMsg ->
             let
-                ( loginModel, loginCmd ) =
+                ( loginModel, loginCmd, globalCmd ) =
                     Login.State.update subMsg model
             in
                 ( loginModel
-                , Cmd.map LoginMsg loginCmd
+                , Cmd.batch
+                    [ Cmd.map LoginMsg loginCmd
+                    , globalCmd
+                    ]
                 )
 
         _ ->

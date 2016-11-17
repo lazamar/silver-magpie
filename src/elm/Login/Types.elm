@@ -12,7 +12,7 @@ type alias Model =
 
 
 type alias UserInfo =
-    { accessToken : String
+    { app_access_token : String
     , screenName : String
     }
 
