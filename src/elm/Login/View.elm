@@ -13,7 +13,21 @@ import Html.Attributes exposing (..)
 root : Model -> Html Msg
 root model =
     div [ class "Login" ]
-        [ div
+        [ h1
+            [ class "Login-title"]
+            [ span
+                [ class "Login-title-silver" ]
+                [ text "Silver"]
+            , text "Magpie"
+            ]
+        , h1
+            [ class "Login-title"]
+            [ span
+                [ class "Login-title-silver" ]
+                [ text "Silver"]
+            , text "Magpie"
+            ]
+        , div
             [ class "Login-content" ]
             [ img
                 [ src "../images/logo.png"
@@ -27,12 +41,16 @@ root model =
                 [ text "Created with "
                 , i [ class "zmdi zmdi-favorite Login-footer-heartIcon" ] []
                 , text " by "
-                , a [ href "http://lazamar.github.io"]
+                , a [ href "http://lazamar.github.io"
+                    , target "blank"
+                    ]
                     [ text "Marcelo Lazaroni" ]
                 ]
             , p []
                 [ text "Poetically written in "
-                , a [ href "http://elm-lang.org" ]
+                , a [ href "http://elm-lang.org"
+                    , target "blank"
+                    ]
                     [ text "Elm"]
                 ]
             ]
