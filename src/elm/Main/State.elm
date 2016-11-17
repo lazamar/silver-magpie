@@ -37,10 +37,8 @@ update msg model =
             initHomeRoute appToken
 
         Logout ->
-            let
-                void = Login.State.logout ()
-            in
-                initLoginRoute
+            Login.State.logout ()
+                |> \_ -> initLoginRoute
 
         _ ->
             case model of
@@ -122,7 +120,7 @@ initLoginRoute : ( MainModel, Cmd Msg )
 initLoginRoute =
     let
         ( loginModel, loginCmd, globalCmd ) =
-            Login.State.init
+            Login.State.init ()
     in
         ( LoginRoute loginModel
         , Cmd.batch

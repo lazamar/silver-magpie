@@ -5,14 +5,14 @@ import Login.Rest exposing ( fetchUserInfo )
 import Main.Types
 import Generic.LocalStorage
 import Generic.UniqueID
-import Generic.Utils
+import Generic.Utils exposing ( toCmd )
 import RemoteData exposing ( RemoteData )
 import Task
 
 
 
-initialModel : Model
-initialModel =
+initialModel : () -> Model
+initialModel _ =
     let
         userInfo =
             getUserInfo ()
@@ -34,12 +34,15 @@ initialModel =
 
 
 
-init : ( Model, Cmd Msg, Cmd Main.Types.Msg )
-init =
-    ( initialModel
-    , Task.perform identity identity <| Task.succeed ( UserCredentialsFetch initialModel.userInfo )
-    , Cmd.none
-    )
+init : () -> ( Model, Cmd Msg, Cmd Main.Types.Msg )
+init _ =
+    let
+        model = initialModel ()
+    in
+        ( model
+        , toCmd <| UserCredentialsFetch model.userInfo
+        , Cmd.none
+        )
 
 
 

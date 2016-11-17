@@ -1,0 +1,48 @@
+.Login {
+  background-color: $bg-lvl-1;
+  height: 100%;
+  width: 100%;
+  display: flex;
+}
+
+.Login-content {
+  position: relative;
+  top: -50px;
+  margin: auto;
+  max-width: 300px;
+}
+
+.Login-logo {
+  width: 120px;
+  display: block;
+  margin-bottom: 50px;
+}
+
+.Login-signinBtn {
+  display: inline-block;
+  position: relative;
+  /* width: 120px; */
+  /* height: 32px; */
+  line-height: 2.6em;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  font-size: 0.9em;
+  background-color: $brand-info;
+  color: white;
+  padding: 0 1.2em;
+  transition: all .1s ease-in-out;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+
+  &:hover {
+    background-color: darken($brand-info, 5%);
+  }
+
+  &:active {
+    background-color: darken($brand-info, 10%);
+  }
+
+  &:visited, &:active, &:focus, &:hover {
+    color: white;
+    text-decoration: none;
+  }
+}
