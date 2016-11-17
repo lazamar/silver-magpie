@@ -21,6 +21,22 @@ root model =
                 ] []
             , loginContent model
             ]
+        , div
+            [ class "Login-footer" ]
+            [ p []
+                [ text "Created with "
+                , i [ class "zmdi zmdi-favorite Login-footer-heartIcon" ] []
+                , text " by "
+                , a [ href "http://lazamar.github.io"]
+                    [ text "Marcelo Lazaroni" ]
+                ]
+            , p []
+                [ text "Poetically written in "
+                , a [ href "http://elm-lang.org" ]
+                    [ text "Elm"]
+                ]
+            ]
+
         ]
 
 

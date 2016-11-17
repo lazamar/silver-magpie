@@ -12,10 +12,17 @@
   max-width: 300px;
 }
 
+@-webkit-keyframes logoFadeInDown {
+  from { transform: translateY(-30px); opacity: .5 }
+  to { transform: translateY(0px); opacity: 1 }
+}
+
 .Login-logo {
+  position: relative;
   width: 120px;
   display: block;
-  margin-bottom: 50px;
+  margin: 0 auto 50px;
+  animation: logoFadeInDown 1s ease-out forwards;
 }
 
 .Login-signinBtn {
@@ -45,4 +52,36 @@
     color: white;
     text-decoration: none;
   }
+}
+
+@-webkit-keyframes footerFadeInUp {
+  0% { transform: translateY(5px); opacity: 0 }
+  100% { transform: translateY(0px); opacity: 1 }
+}
+
+.Login-footer {
+  position: absolute;
+  bottom: 0;
+  margin: auto;
+  left: 0;
+  right: 0;
+  margin-bottom: 1em;
+  height: 50px;
+  opacity: 0;
+  animation: footerFadeInUp 1s ease-in-out forwards;
+
+  p {
+    text-align: center;
+    margin-bottom: .2em;
+    font-size: .8em;
+    color: #455A64;
+  }
+}
+
+.Login-footer-heartIcon {
+  color: #e61865;
+  font-size: .9em;
+  position: relative;
+  top: .05em;
+  margin: 0 .1em;
 }
