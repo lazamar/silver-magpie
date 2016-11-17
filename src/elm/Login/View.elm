@@ -15,17 +15,19 @@ root model =
     case model.userInfo of
         RemoteData.Failure error ->
             case error of
-              Http.UnexpectedPayload errDescription ->
-                div [ class "Login" ]
-                    [ a [ href <| Generic.Utils.sameDomain <| "/sign-in/?app_session_id=" ++ model.sessionID ]
-                        [ text "Sign in with Twitter" ]
-                    ]
+                Http.BadResponse 401 errDescription ->
+                    div [ class "Login" ]
+                        [ a [ href <| Generic.Utils.sameDomain <| "/sign-in/?app_session_id=" ++ model.sessionID
+                        , target "blank"
+                        ]
+                            [ text "Sign in with Twitter" ]
+                        ]
 
-            -- TODO: Handle other HTTP errors properly
-              _ ->
-                div [ class "Login" ]
-                    [ text "There was an error loading your credentials. Please retry."
-                    ]
+                -- TODO: Handle other HTTP errors properly
+                _ ->
+                    div [ class "Login" ]
+                        [ text "There was an error loading your credentials. Please retry."
+                        ]
 
         RemoteData.Loading ->
             div [ class "Login" ]

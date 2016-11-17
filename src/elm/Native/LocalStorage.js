@@ -18,4 +18,9 @@ const _user$project$Native_LocalStorage = { // eslint-disable-line no-underscore
     return value;
   },
 
+  clear: () => {
+    window.localStorage.clear();
+    return true;
+  },
+
 };

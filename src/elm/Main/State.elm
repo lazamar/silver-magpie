@@ -37,7 +37,10 @@ update msg model =
             initHomeRoute appToken
 
         Logout ->
-            initLoginRoute
+            let
+                void = Login.State.logout ()
+            in
+                initLoginRoute
 
         _ ->
             case model of

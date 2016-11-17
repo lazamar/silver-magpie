@@ -1,4 +1,4 @@
-module Login.State exposing ( init, update )
+module Login.State exposing ( init, update, logout )
 
 import Login.Types exposing ( Model, UserInfo, Msg (..) )
 import Login.Rest exposing ( fetchUserInfo )
@@ -100,3 +100,10 @@ generateSessionID seed =
     Generic.UniqueID.generate seed
         |> Generic.LocalStorage.setItem "sessionID"
         |> Debug.log "Generated session id"
+
+
+
+-- Erase all stored credentials
+logout : () -> Bool
+logout _ =
+    Generic.LocalStorage.clear ()
