@@ -1,11 +1,16 @@
 module Generic.Http exposing ( get, post )
 
+import Generic.Types exposing ( Credentials )
+import Http
+import Task exposing ( Task )
+
+
 serverURL =
     "http://localhost:8080"
 
 
 
-get : String -> String-> Cmd msg
+get : Credentials -> String-> Task Http.RawError Http.Response
 get appToken endpoint =
     let
         request =
@@ -19,7 +24,7 @@ get appToken endpoint =
 
 
 
-post : String -> String-> Http.Body -> Cmd msg
+post : Credentials -> String-> Http.Body -> Task Http.RawError Http.Response
 post appToken endpoint body =
     let
         request =
@@ -33,7 +38,7 @@ post appToken endpoint body =
 
 
 
-headers : String -> List ( String, String )
+headers : Credentials -> List ( String, String )
 headers appToken =
     [ ( "Content-Type", "application/json" )
     , ( "X-App-Token", appToken)

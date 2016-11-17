@@ -13,3 +13,8 @@ type SubmissionData e r c
 never : Never -> a
 never a =
     never a
+
+
+
+type alias Credentials
+    = String
