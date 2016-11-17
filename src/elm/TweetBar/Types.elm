@@ -46,5 +46,6 @@ type Msg
     | SubmitTweet
     | TweetSend (SubmissionData Http.Error TweetPostedResponse String)
     | RefreshTweets
+    | Logout
     | SuggestedHandlersFetch Handler ( WebData ( List User ) )
     | SuggestedHandlersNavigation KeyboardNavigation

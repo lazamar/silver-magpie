@@ -3,7 +3,8 @@ module Tweets.Rest exposing (..)
 import Tweets.Types exposing (..)
 import Twitter.Decoders exposing ( tweetDecoder )
 import Twitter.Types exposing ( Tweet )
-import Generic.Utils
+import Generic.Types
+import Generic.Http
 
 import Http
 import Json.Decode exposing ( Decoder, string, int, bool, list, dict, at )
@@ -26,8 +27,8 @@ serverMsgDecoder =
 
 
 
-getTweets : FetchType -> Route -> Cmd Msg
-getTweets position route =
+getTweets : Generic.Types.Credentials -> FetchType -> Route -> Cmd Msg
+getTweets credentials position route =
     let
         section =
             case route of
@@ -37,10 +38,8 @@ getTweets position route =
                 MentionsRoute ->
                     "mentions"
 
-        url =
-            Generic.Utils.sameDomain <| "/" ++ section
-
     in
-        Http.get serverMsgDecoder url
+        Generic.Http.get credentials ("/" ++ section)
+            |> Http.fromJson serverMsgDecoder
             |> Task.perform Failure Success
             |> Cmd.map (TweetFetch position)

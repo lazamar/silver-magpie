@@ -41,7 +41,7 @@ update msg model =
     case msg of
         FetchTweets tweetsPosition ->
             ( { model | newTweets = Loading }
-            , getTweets tweetsPosition model.tab
+            , getTweets model.credentials tweetsPosition model.tab
             )
 
         TweetFetch tweetsPosition request ->

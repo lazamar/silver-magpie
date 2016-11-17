@@ -6,6 +6,7 @@ import Main.Types
 import TweetBar.Rest exposing ( sendTweet, fetchHandlerSuggestion )
 import TweetBar.Types exposing (..)
 import TweetBar.Handler as TwHandler exposing ( Handler, HandlerMatch )
+import Generic.Utils exposing ( toCmd )
 import Generic.Types exposing
     ( SubmissionData
         ( Success
@@ -67,7 +68,7 @@ update msg model =
                             Cmd.none
 
                         Just handler ->
-                            fetchHandlerSuggestion handler
+                            fetchHandlerSuggestion model.credentials handler
 
                 usersStatus =
                     case handlerMatch of
@@ -194,7 +195,7 @@ update msg model =
             case model.submission of
                 NotSent ->
                     ( { model | submission = Sending model.tweetText }
-                    , sendTweet model.tweetText
+                    , sendTweet model.credentials model.tweetText
                     , Cmd.none
                     )
 
@@ -217,6 +218,9 @@ update msg model =
 
         RefreshTweets ->
             ( model, Cmd.none, Main.Global.refreshTweets)
+
+        Logout ->
+            ( model, Cmd.none, toCmd Main.Types.Logout)
 
 
 

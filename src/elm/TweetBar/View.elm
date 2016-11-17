@@ -127,6 +127,10 @@ actionBar =
             [ class "zmdi zmdi-refresh-alt btn btn-default btn-icon"
             , onClick RefreshTweets
             ] []
+        , button
+            [ class "zmdi zmdi-power btn btn-default btn-icon"
+            , onClick Logout
+            ] []
         ]
 
 

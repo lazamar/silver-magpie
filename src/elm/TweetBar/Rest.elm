@@ -1,10 +1,13 @@
 module TweetBar.Rest exposing ( sendTweet, fetchHandlerSuggestion )
 
 import Generic.Types as SubmissionData
+import Generic.Types exposing ( Credentials )
+import Generic.Http
 import Generic.Utils
 import TweetBar.Types exposing ( Msg ( TweetSend, SuggestedHandlersFetch ), TweetPostedResponse )
 import Twitter.Decoders exposing ( userDecoder )
 import Twitter.Types exposing ( User )
+
 
 import RemoteData exposing ( RemoteData )
 import Http
@@ -40,29 +43,21 @@ createSendBody tweetText =
 
 
 
-sendTweet : String -> Cmd Msg
-sendTweet tweetText =
-    let
-        request =
-            { verb = "POST"
-            , headers = [ ("Content-Type", "application/json") ]
-            , url = Generic.Utils.sameDomain "/status-update"
-            , body = createSendBody tweetText
-            }
-    in
-        Http.send Http.defaultSettings request
-            |> Http.fromJson tweetPostedDecoder
-            |> Task.perform SubmissionData.Failure SubmissionData.Success
-            |> Cmd.map TweetSend
+sendTweet : Credentials -> String -> Cmd Msg
+sendTweet credentials tweetText =
+    createSendBody tweetText
+        |> Generic.Http.post credentials "/status-update"
+        |> Http.fromJson tweetPostedDecoder
+        |> Task.perform SubmissionData.Failure SubmissionData.Success
+        |> Cmd.map TweetSend
 
 
 
-fetchHandlerSuggestion : String -> Cmd Msg
-fetchHandlerSuggestion handler =
-    let
-        url = Http.uriEncode handler
-            |> (++) ( Generic.Utils.sameDomain "/user-search?q=" )
-    in
-        Http.get userListDecoder url
-            |> Task.perform RemoteData.Failure RemoteData.Success
-            |> Cmd.map ( SuggestedHandlersFetch handler )
+fetchHandlerSuggestion : Credentials -> String -> Cmd Msg
+fetchHandlerSuggestion credentials handler =
+    Http.uriEncode handler
+        |> (++) "/user-search?q="
+        |> Generic.Http.get credentials
+        |> Http.fromJson userListDecoder
+        |> Task.perform RemoteData.Failure RemoteData.Success
+        |> Cmd.map ( SuggestedHandlersFetch handler )
