@@ -23,21 +23,27 @@ import String
 
 
 
-initialModel : Model
-initialModel =
-    { submission = NotSent
-    , tweetText = ""
-    , handlerSuggestions =
-        { handler = Nothing
-        , users = RemoteData.NotAsked
-        , userSelected = Nothing
-        }
+emptySuggestions =
+    { handler = Nothing
+    , users = RemoteData.NotAsked
+    , userSelected = Nothing
     }
 
 
 
-init : ( Model, Cmd Msg, Cmd Main.Types.Msg )
-init = ( initialModel, Cmd.none, Cmd.none)
+initialModel : String -> Model
+initialModel credentials =
+    { credentials = credentials
+    , submission = NotSent
+    , tweetText = ""
+    , handlerSuggestions = emptySuggestions
+    }
+
+
+
+init : String -> ( Model, Cmd Msg, Cmd Main.Types.Msg )
+init credentials =
+    ( initialModel credentials, Cmd.none, Cmd.none)
 
 
 
@@ -166,14 +172,14 @@ update msg model =
                         in
                             (   { model
                                 | tweetText = newTweetText
-                                , handlerSuggestions = initialModel.handlerSuggestions
+                                , handlerSuggestions = emptySuggestions
                                 }
                             , Cmd.none
                             , Cmd.none
                             )
 
                     EscKey ->
-                        ( { model | handlerSuggestions = initialModel.handlerSuggestions }
+                        ( { model | handlerSuggestions = emptySuggestions }
                         , Cmd.none
                         , Cmd.none
                         )
@@ -198,7 +204,7 @@ update msg model =
         TweetSend status ->
             case status of
                 Success _ ->
-                    ( initialModel
+                    ( initialModel model.credentials
                     , resetTweetText 1800
                     , Main.Global.refreshTweets
                     )

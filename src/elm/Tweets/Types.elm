@@ -6,9 +6,10 @@ import Twitter.Types exposing (Tweet)
 
 
 type alias Model =
-  { tab: Route
-  , tweets: List Tweet
-  , newTweets: WebData ( List Tweet )
+  { credentials : String
+  , tab : Route
+  , tweets : List Tweet
+  , newTweets : WebData ( List Tweet )
   }
 
 

@@ -16,17 +16,19 @@ import Process
 
 
 
-initialModel : Model
-initialModel =
-    { tab = HomeRoute
+initialModel : String -> Model
+initialModel credentials =
+    { credentials = credentials
+    , tab = HomeRoute
     , tweets = []
     , newTweets = Loading
     }
 
 
 
-init : ( Model, Cmd Msg )
-init = ( initialModel, toCmd (FetchTweets Refresh) )
+init : String -> ( Model, Cmd Msg )
+init credentials =
+    ( initialModel credentials, toCmd (FetchTweets Refresh) )
 
 
 

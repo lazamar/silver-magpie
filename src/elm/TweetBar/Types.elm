@@ -14,7 +14,8 @@ import Http
 
 
 type alias Model =
-  { submission : SubmissionData Http.Error TweetPostedResponse String
+  { credentials: String
+  , submission : SubmissionData Http.Error TweetPostedResponse String
   , tweetText : String
   , handlerSuggestions :
       { handler : Maybe HandlerMatch

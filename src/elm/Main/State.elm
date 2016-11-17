@@ -1,6 +1,7 @@
 module Main.State exposing (..)
 
 import Main.Types exposing (..)
+import Login.Types
 import Tweets.State
 import TweetBar.State
 import Login.State
@@ -10,51 +11,8 @@ import Login.State
 
 
 
-initialModel : MainModel
-initialModel =
-  let
-    ( tweetsModel, tweetsCmd ) =
-        Tweets.State.init
-
-    ( tweetBarModel, tweetBarCmd, tweetBarGlobalCmd ) =
-        TweetBar.State.init
-
-    ( loginModel, loginCmd ) =
-        Login.State.init
-
-  in
-    { tweetsModel = tweetsModel
-    , tweetBarModel = tweetBarModel
-    , loginModel = loginModel
-    }
-
-
-
-initialCmd : Cmd Msg
-initialCmd =
-  let
-    ( tweetsModel, tweetsCmd ) =
-        Tweets.State.init
-
-    ( tweetBarModel, tweetBarCmd, tweetBarGlobalCmd ) =
-        TweetBar.State.init
-
-    ( loginModel, loginCmd ) =
-        Login.State.init
-
-  in
-    Cmd.batch
-      [ Cmd.map TweetsMsg tweetsCmd
-      , Cmd.map TweetBarMsg tweetBarCmd
-      , Cmd.map LoginMsg loginCmd
-      , tweetBarGlobalCmd
-      ]
-
-
-
-init : ( MainModel, Cmd Msg )
 init =
-    ( initialModel, initialCmd )
+    initLoginRoute
 
 
 
@@ -64,12 +22,7 @@ init =
 
 subscriptions : MainModel -> Sub Msg
 subscriptions model =
-    Sub.batch
-      [ Tweets.State.subscriptions model.tweetsModel
-          |> Sub.map TweetsMsg
-      , TweetBar.State.subscriptions model.tweetBarModel
-          |> Sub.map TweetBarMsg
-      ]
+    Sub.none
 
 
 
@@ -78,8 +31,60 @@ subscriptions model =
 
 
 update : Msg -> MainModel -> ( MainModel, Cmd Msg )
-update message model =
-    case message of
+update msg model =
+    case msg of
+        Login appToken ->
+            initHomeRoute appToken
+
+        Logout ->
+            initLoginRoute
+
+        _ ->
+            case model of
+                LoginRoute subModel ->
+                    let
+                        ( mdl, cmd ) = updateLoginRoute msg subModel
+                    in
+                        ( LoginRoute mdl, cmd )
+
+                HomeRoute subModel ->
+                    let
+                        ( mdl, cmd ) = updateHomeRoute msg subModel
+                    in
+                        ( HomeRoute mdl, cmd )
+
+
+
+
+--- HOME ROUTE
+
+
+
+initHomeRoute : String -> ( MainModel, Cmd Msg )
+initHomeRoute appToken =
+    let
+        ( tweetsModel, tweetsCmd ) =
+            Tweets.State.init appToken
+
+        ( tweetBarModel, tweetBarCmd, tweetBarGlobalCmd ) =
+            TweetBar.State.init appToken
+  in
+        ( HomeRoute
+            { tweetsModel = tweetsModel
+            , tweetBarModel = tweetBarModel
+            }
+        , Cmd.batch
+            [ Cmd.map TweetsMsg tweetsCmd
+            , Cmd.map TweetBarMsg tweetBarCmd
+            , tweetBarGlobalCmd
+            ]
+        )
+
+
+
+updateHomeRoute : Msg -> HomeRouteModel -> ( HomeRouteModel, Cmd Msg )
+updateHomeRoute msg model =
+    case msg of
         TweetsMsg subMsg ->
             let
                 ( updatedTweetsModel, tweetsCmd ) =
@@ -101,11 +106,38 @@ update message model =
                     ]
                 )
 
+        _ ->
+            ( model, Cmd.none )
+
+
+
+--- LOGIN ROUTE
+
+
+
+initLoginRoute : ( MainModel, Cmd Msg )
+initLoginRoute =
+    let
+        ( loginModel, loginCmd ) =
+            Login.State.init
+    in
+        ( LoginRoute loginModel
+        , Cmd.map LoginMsg loginCmd
+        )
+
+
+
+updateLoginRoute : Msg -> Login.Types.Model -> ( Login.Types.Model, Cmd Msg )
+updateLoginRoute msg model =
+    case msg of
         LoginMsg subMsg ->
             let
-                ( updatedLoginModel, loginCmd ) =
-                    Login.State.update subMsg model.loginModel
+                ( loginModel, loginCmd ) =
+                    Login.State.update subMsg model
             in
-                ( { model | loginModel = updatedLoginModel }
+                ( loginModel
                 , Cmd.map LoginMsg loginCmd
                 )
+
+        _ ->
+            ( model, Cmd.none )
