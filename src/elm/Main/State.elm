@@ -12,7 +12,7 @@ import Login.State
 
 
 init =
-    initLoginRoute
+    initLoginRoute ()
 
 
 
@@ -38,7 +38,7 @@ update msg model =
 
         Logout ->
             Login.State.logout ()
-                |> \_ -> initLoginRoute
+                |> \_ -> initLoginRoute ()
 
         _ ->
             case model of
@@ -116,8 +116,8 @@ updateHomeRoute msg model =
 
 
 
-initLoginRoute : ( MainModel, Cmd Msg )
-initLoginRoute =
+initLoginRoute : () -> ( MainModel, Cmd Msg )
+initLoginRoute _ =
     let
         ( loginModel, loginCmd, globalCmd ) =
             Login.State.init ()

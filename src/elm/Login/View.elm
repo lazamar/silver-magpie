@@ -73,13 +73,16 @@ loginContent model =
 
                 -- TODO: Handle other HTTP errors properly
                 _ ->
-                    text "There was an error loading your credentials. Please retry."
+                    p   [ class "Loading-content-info" ]
+                        [ text "There was an error loading your credentials. Please retry." ]
 
         RemoteData.Loading ->
             Generic.Animations.twistingCircle
 
         RemoteData.Success _ ->
-            text "You are logged in"
+            p   [ class "Loading-content-info" ]
+                [ text "You are logged in." ]
 
         RemoteData.NotAsked ->
-            text "Uh, I'm stuck. Something went wrong."
+            p   [ class "Loading-content-info" ]
+                [ text "Uh, I'm stuck. Something went wrong." ]

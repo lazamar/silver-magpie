@@ -17,6 +17,7 @@
 }
 
 .Login-title {
+  pointer-events: none;
   user-select: none;
   position: absolute;
   width: 100%;
@@ -54,6 +55,15 @@
   top: -50px;
   margin: auto;
   max-width: 300px;
+  text-align: center;
+}
+
+.Loading-content-info {
+  color: white;
+  background-color: #607D8B;
+  display: block;
+  padding: .5em;
+  border-radius: 3px;
 }
 
 @-webkit-keyframes logoFadeInDown {
