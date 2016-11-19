@@ -1,6 +1,9 @@
 module Twitter.Types exposing (..)
 
 
+type alias Credentials
+    = String
+
 type alias User =
   { name : String
   , screen_name : String

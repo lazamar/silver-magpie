@@ -9,8 +9,8 @@ type Msg
   = TweetsMsg Routes.Timelines.Timeline.Types.Msg
   | TweetBarMsg Routes.Timelines.TweetBar.Types.Msg
   | LoginMsg Routes.Login.Types.Msg
+  | LoginBroadcast Routes.Login.Types.BroadcastMsg
   | Logout
-  | Login String
 
 
 

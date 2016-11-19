@@ -1,12 +1,11 @@
 module Routes.Timelines.TweetBar.Rest exposing ( sendTweet, fetchHandlerSuggestion, sendLogoutMessasge )
 
 import Generic.Types as SubmissionData
-import Generic.Types exposing ( Credentials )
 import Generic.Http
 import Generic.Utils
 import Routes.Timelines.TweetBar.Types exposing ( Msg ( TweetSend, SuggestedHandlersFetch, DoNothing ), TweetPostedResponse )
 import Twitter.Decoders exposing ( userDecoder )
-import Twitter.Types exposing ( User )
+import Twitter.Types exposing ( User, Credentials )
 
 
 import RemoteData exposing ( RemoteData )

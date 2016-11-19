@@ -3,7 +3,7 @@ module Routes.Login.Rest exposing ( fetchUserInfo )
 
 import Routes.Login.Types exposing ( Msg ( UserCredentialsFetch ), UserInfo )
 import Generic.Http
-import Generic.Types
+import Twitter.Types exposing ( Credentials )
 
 import Http
 import Json.Decode exposing ( Decoder, string )
@@ -13,7 +13,7 @@ import RemoteData
 
 
 
-fetchUserInfo : Generic.Types.Credentials -> Cmd Msg
+fetchUserInfo : Credentials -> Cmd Msg
 fetchUserInfo sessionID =
     Generic.Http.get sessionID "/app-get-access"
         |> Http.fromJson userInfoDecoder

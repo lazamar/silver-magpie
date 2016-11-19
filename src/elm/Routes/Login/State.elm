@@ -1,8 +1,12 @@
 module Routes.Login.State exposing ( init, update, logout )
 
-import Routes.Login.Types exposing ( Model, UserInfo, Msg (..) )
+import Routes.Login.Types exposing
+    ( Model
+    , UserInfo
+    , Msg (..)
+    , BroadcastMsg ( Authenticated )
+    )
 import Routes.Login.Rest exposing ( fetchUserInfo )
-import Main.Types
 import Generic.LocalStorage
 import Generic.UniqueID
 import Generic.Utils exposing ( toCmd )
@@ -34,7 +38,7 @@ initialModel _ =
 
 
 
-init : () -> ( Model, Cmd Msg, Cmd Main.Types.Msg )
+init : () -> ( Model, Cmd Msg, Cmd BroadcastMsg )
 init _ =
     let
         model = initialModel ()
@@ -46,7 +50,7 @@ init _ =
 
 
 
-update : Msg -> Model -> ( Model, Cmd Msg, Cmd Main.Types.Msg )
+update : Msg -> Model -> ( Model, Cmd Msg, Cmd BroadcastMsg )
 update msg model =
     case msg of
         UserCredentialsFetch request ->
@@ -54,7 +58,7 @@ update msg model =
                 RemoteData.Success userInfo ->
                     ( { model | userInfo = request, loggedIn = True }
                     , Cmd.none
-                    , Generic.Utils.toCmd ( Main.Types.Login userInfo.app_access_token )
+                    , Generic.Utils.toCmd ( Authenticated userInfo.app_access_token )
                     )
 
                 RemoteData.NotAsked ->

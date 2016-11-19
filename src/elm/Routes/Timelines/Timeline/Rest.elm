@@ -2,8 +2,7 @@ module Routes.Timelines.Timeline.Rest exposing (..)
 
 import Routes.Timelines.Timeline.Types exposing (..)
 import Twitter.Decoders exposing ( tweetDecoder )
-import Twitter.Types exposing ( Tweet )
-import Generic.Types
+import Twitter.Types exposing ( Tweet, Credentials )
 import Generic.Http
 
 import Http
@@ -27,7 +26,7 @@ serverMsgDecoder =
 
 
 
-getTweets : Generic.Types.Credentials -> FetchType -> Route -> Cmd Msg
+getTweets : Credentials -> FetchType -> Route -> Cmd Msg
 getTweets credentials position route =
     let
         section =

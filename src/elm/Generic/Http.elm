@@ -1,6 +1,6 @@
 module Generic.Http exposing ( get, post, delete, sameDomain )
 
-import Generic.Types exposing ( Credentials )
+import Twitter.Types exposing ( Credentials )
 import Http
 import Task exposing ( Task )
 

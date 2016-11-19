@@ -1,7 +1,12 @@
-module Routes.Login.Types exposing ( Model, UserInfo, Msg ( UserCredentialsFetch ) )
+module Routes.Login.Types exposing
+    ( Model
+    , UserInfo
+    , Msg (..)
+    , BroadcastMsg (..)
+    )
 
 import RemoteData exposing ( WebData )
-
+import Twitter.Types exposing ( Credentials )
 
 type alias Model =
     { sessionID : String
@@ -20,3 +25,8 @@ type alias UserInfo =
 
 type Msg
     = UserCredentialsFetch ( WebData UserInfo )
+
+
+
+type BroadcastMsg
+    = Authenticated Credentials

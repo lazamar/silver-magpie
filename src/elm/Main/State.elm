@@ -33,7 +33,7 @@ subscriptions model =
 update : Msg -> MainModel -> ( MainModel, Cmd Msg )
 update msg model =
     case msg of
-        Login appToken ->
+        LoginBroadcast ( Routes.Login.Types.Authenticated appToken ) ->
             initHomeRoute appToken
 
         Logout ->
@@ -119,13 +119,13 @@ updateHomeRoute msg model =
 initLoginRoute : () -> ( MainModel, Cmd Msg )
 initLoginRoute _ =
     let
-        ( loginModel, loginCmd, globalCmd ) =
+        ( loginModel, loginCmd, broadcastMsg ) =
             Routes.Login.State.init ()
     in
         ( LoginRoute loginModel
         , Cmd.batch
             [ Cmd.map LoginMsg loginCmd
-            , globalCmd
+            , Cmd.map LoginBroadcast broadcastMsg
             ]
         )
 
@@ -136,13 +136,13 @@ updateLoginRoute msg model =
     case msg of
         LoginMsg subMsg ->
             let
-                ( loginModel, loginCmd, globalCmd ) =
+                ( loginModel, loginCmd, broadcastMsg ) =
                     Routes.Login.State.update subMsg model
             in
                 ( loginModel
                 , Cmd.batch
                     [ Cmd.map LoginMsg loginCmd
-                    , globalCmd
+                    , Cmd.map LoginBroadcast broadcastMsg
                     ]
                 )
 
