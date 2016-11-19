@@ -45,8 +45,7 @@ createSendBody tweetText =
 
 sendTweet : Credentials -> String -> Cmd Msg
 sendTweet credentials tweetText =
-    createSendBody tweetText
-        |> Generic.Http.post credentials "/status-update"
+    Generic.Http.post ( createSendBody tweetText ) credentials "/status-update"
         |> Http.fromJson tweetPostedDecoder
         |> Task.perform SubmissionData.Failure SubmissionData.Success
         |> Cmd.map TweetSend
