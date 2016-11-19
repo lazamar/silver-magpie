@@ -12,7 +12,7 @@ import Html.App
 main : Program Never
 main =
     Html.App.program
-        { init = init
+        { init = init ()
         , view = view
         , update = update
         , subscriptions = subscriptions

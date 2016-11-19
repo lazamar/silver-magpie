@@ -1,6 +1,5 @@
 module Main.Types exposing (..)
 
-import Generic.Types exposing ( SubMsg (..) )
 import Routes.Timelines.Timeline.Types as TimelineT
 import Routes.Timelines.TweetBar.Types as TweetBarT
 import Routes.Login.Types as LoginT
@@ -9,7 +8,8 @@ import Routes.Login.Types as LoginT
 type Msg
   = TweetsMsg TimelineT.Msg
   | TweetBarMsg TweetBarT.Msg
-  | LoginMsg ( SubMsg LoginT.Msg LoginT.Broadcast )
+  | LoginMsgLocal LoginT.Msg
+  | LoginMsgBroadcast LoginT.Broadcast
   | Logout
 
 

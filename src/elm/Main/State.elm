@@ -1,16 +1,20 @@
 module Main.State exposing (..)
 
 import Main.Types exposing (..)
-import Generic.Types exposing ( SubMsg (..) )
 import Routes.Login.Types as LoginT
 import Routes.Timelines.Timeline.State
 import Routes.Timelines.TweetBar.State
 import Routes.Login.State
 
 
-translate : (a -> MainModel) -> (b -> Msg) -> ( a, Cmd b ) -> ( MainModel, Cmd Msg )
-translate modelTag msgTag ( one, two ) =
-    ( modelTag one, Cmd.map msgTag two )
+translate : (a -> MainModel) -> (b -> Msg) -> (c -> Msg) -> ( a, Cmd b, Cmd c ) -> ( MainModel, Cmd Msg )
+translate modelTag localMsgTag broadcastMsgTag ( model, localMsg, broadcastMsg ) =
+    ( modelTag model
+    , Cmd.batch
+        [ Cmd.map localMsgTag localMsg
+        , Cmd.map broadcastMsgTag broadcastMsg
+        ]
+    )
 
 
 
@@ -19,9 +23,11 @@ translate modelTag msgTag ( one, two ) =
 
 
 
-init =
-    initLoginRoute ()
-        |> translate LoginRoute LoginMsg
+init : () -> ( MainModel, Cmd Msg )
+init _ =
+    Routes.Login.State.init ()
+        |> translate LoginRoute LoginMsgLocal LoginMsgBroadcast
+
 
 
 
@@ -42,16 +48,14 @@ subscriptions model =
 update : Msg -> MainModel -> ( MainModel, Cmd Msg )
 update msg model =
     case msg of
-        LoginMsg ( SubMsgBroadcast ( LoginT.Authenticated appToken ) ) ->
+        LoginMsgBroadcast ( LoginT.Authenticated appToken ) ->
             initHomeRoute appToken
 
-        LoginMsg ( SubMsgLocal subMsg ) ->
+        LoginMsgLocal subMsg ->
             case model of
                 LoginRoute subModel ->
-                    let
-                        ( mdl, cmd ) = updateLoginRoute subMsg subModel
-                    in
-                        ( LoginRoute mdl, Cmd.map LoginMsg cmd )
+                    Routes.Login.State.update subMsg subModel
+                        |> translate LoginRoute LoginMsgLocal LoginMsgBroadcast
 
                 _ ->
                     ( model, Cmd.none )
@@ -60,9 +64,7 @@ update msg model =
             let
                 ignore = Routes.Login.State.logout ()
             in
-                initLoginRoute ()
-                    |> translate LoginRoute LoginMsg
-
+                init ()
 
         _ ->
             case model of
@@ -131,39 +133,3 @@ updateHomeRoute msg model =
 
         _ ->
             ( model, Cmd.none )
-
-
-
---- LOGIN ROUTE
-
-
-
-initLoginRoute : () -> ( LoginT.Model, Cmd ( SubMsg LoginT.Msg LoginT.Broadcast ) )
-initLoginRoute _ =
-    let
-        ( loginModel, loginCmd, broadcastMsg ) =
-            Routes.Login.State.init ()
-
-    in
-        ( loginModel
-        , Cmd.batch
-            [ Cmd.map SubMsgLocal loginCmd
-            , Cmd.map SubMsgBroadcast broadcastMsg
-            ]
-        )
-
-
-
-updateLoginRoute : LoginT.Msg -> LoginT.Model -> ( LoginT.Model, Cmd ( SubMsg LoginT.Msg LoginT.Broadcast ) )
-updateLoginRoute msg model =
-    let
-        ( loginModel, loginCmd, broadcastMsg ) =
-            Routes.Login.State.update msg model
-
-    in
-        ( loginModel
-        , Cmd.batch
-            [ Cmd.map SubMsgLocal loginCmd
-            , Cmd.map SubMsgBroadcast broadcastMsg
-            ]
-        )
