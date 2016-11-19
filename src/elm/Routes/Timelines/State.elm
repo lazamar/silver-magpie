@@ -46,7 +46,7 @@ update msg model =
                 TweetBarT.RefreshTweets ->
                     ( model
                     , toCmd <| TimelineMsgLocal <| TimelineT.FetchTweets TimelineT.Refresh
-                    , toCmd Logout
+                    , Cmd.none
                     )
 
         TimelineMsgLocal subMsg ->
