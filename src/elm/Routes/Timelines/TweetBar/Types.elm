@@ -2,19 +2,20 @@ module Routes.Timelines.TweetBar.Types exposing
     ( Model
     , TweetPostedResponse
     , Msg (..)
+    , Broadcast (..)
     , KeyboardNavigation (..)
     )
 
 import Routes.Timelines.TweetBar.Handler exposing ( Handler, HandlerMatch )
 import Generic.Types exposing ( SubmissionData )
-import Twitter.Types exposing ( User )
+import Twitter.Types exposing ( User, Credentials )
 import RemoteData exposing ( WebData )
 import Http
 
 
 
 type alias Model =
-  { credentials: String
+  { credentials: Credentials
   , submission : SubmissionData Http.Error TweetPostedResponse String
   , tweetText : String
   , handlerSuggestions :
@@ -45,7 +46,13 @@ type Msg
     | LetterInput String
     | SubmitTweet
     | TweetSend (SubmissionData Http.Error TweetPostedResponse String)
-    | RefreshTweets
-    | Logout
+    | MsgRefreshTweets
+    | MsgLogout
     | SuggestedHandlersFetch Handler ( WebData ( List User ) )
     | SuggestedHandlersNavigation KeyboardNavigation
+
+
+
+type Broadcast
+    = Logout
+    | RefreshTweets

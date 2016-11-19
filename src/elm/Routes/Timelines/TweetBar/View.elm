@@ -1,4 +1,4 @@
-module Routes.Timelines.TweetBar.View exposing (..)
+module Routes.Timelines.TweetBar.View exposing ( root )
 
 
 import Routes.Timelines.TweetBar.Types exposing (..)
@@ -125,11 +125,11 @@ actionBar =
             ] []
         , button
             [ class "zmdi zmdi-refresh-alt btn btn-default btn-icon"
-            , onClick RefreshTweets
+            , onClick MsgRefreshTweets
             ] []
         , button
             [ class "zmdi zmdi-power btn btn-default btn-icon"
-            , onClick Logout
+            , onClick MsgLogout
             ] []
         ]
 

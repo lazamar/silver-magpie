@@ -1,8 +1,8 @@
-module Routes.Timelines.Timeline.State exposing ( init, update, subscriptions )
+module Routes.Timelines.Timeline.State exposing ( init, update )
 
 import Routes.Timelines.Timeline.Rest exposing ( getTweets )
 import Routes.Timelines.Timeline.Types exposing (..)
-import Twitter.Types exposing ( Tweet )
+import Twitter.Types exposing ( Tweet, Credentials )
 import Generic.Types exposing (never)
 import Generic.Utils exposing (toCmd)
 import Main.Types
@@ -16,7 +16,7 @@ import Process
 
 
 
-initialModel : String -> Model
+initialModel : Credentials -> Model
 initialModel credentials =
     { credentials = credentials
     , tab = HomeRoute
@@ -26,9 +26,12 @@ initialModel credentials =
 
 
 
-init : String -> ( Model, Cmd Msg )
+init : Credentials -> ( Model, Cmd Msg, Cmd Broadcast )
 init credentials =
-    ( initialModel credentials, toCmd (FetchTweets Refresh) )
+    ( initialModel credentials
+    , toCmd (FetchTweets Refresh)
+    , Cmd.none
+    )
 
 
 
@@ -36,12 +39,13 @@ init credentials =
 
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
 update msg model =
     case msg of
         FetchTweets tweetsPosition ->
             ( { model | newTweets = Loading }
             , getTweets model.credentials tweetsPosition model.tab
+            , Cmd.none
             )
 
         TweetFetch tweetsPosition request ->
@@ -52,10 +56,12 @@ update msg model =
                         , newTweets = NotAsked
                         }
                     , Cmd.none
+                    , Cmd.none
                     )
 
                 Failure error ->
                     ( { model | newTweets = request }
+                    , Cmd.none
                     , Cmd.none
                     -- , resetTweetFetch tweetsPosition 3000
                     )
@@ -63,10 +69,12 @@ update msg model =
                 _ ->
                     ( { model | newTweets = request }
                     , Cmd.none
+                    , Cmd.none
                     )
 
         ChangeRoute route ->
             ( { model | tab = route }
+            , Cmd.none
             , Cmd.none
             )
 
@@ -80,15 +88,6 @@ combineTweets tweetsPosition newTweets oldTweets =
 
           BottomTweets ->
               List.concat [ oldTweets, newTweets ]
-
-
--- SUBSCRIPTIONS
-
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none
 
 
 

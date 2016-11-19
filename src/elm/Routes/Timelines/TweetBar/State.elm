@@ -1,11 +1,9 @@
-module Routes.Timelines.TweetBar.State exposing ( init, update, subscriptions )
+module Routes.Timelines.TweetBar.State exposing ( init, update )
 
-
-import Main.Global
-import Main.Types
-import Routes.Timelines.TweetBar.Rest exposing ( sendTweet, fetchHandlerSuggestion, sendLogoutMessasge )
 import Routes.Timelines.TweetBar.Types exposing (..)
+import Routes.Timelines.TweetBar.Rest exposing ( sendTweet, fetchHandlerSuggestion, sendLogoutMessasge )
 import Routes.Timelines.TweetBar.Handler as TwHandler exposing ( Handler, HandlerMatch )
+import Twitter.Types exposing ( Credentials )
 import Generic.Utils exposing ( toCmd )
 import Generic.Types exposing
     ( SubmissionData
@@ -32,7 +30,7 @@ emptySuggestions =
 
 
 
-initialModel : String -> Model
+initialModel : Credentials -> Model
 initialModel credentials =
     { credentials = credentials
     , submission = NotSent
@@ -42,13 +40,13 @@ initialModel credentials =
 
 
 
-init : String -> ( Model, Cmd Msg, Cmd Main.Types.Msg )
+init : Credentials -> ( Model, Cmd Msg, Cmd Broadcast )
 init credentials =
     ( initialModel credentials, Cmd.none, Cmd.none)
 
 
 
-update : Msg -> Model -> ( Model, Cmd Msg, Cmd Main.Types.Msg )
+update : Msg -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
 update msg model =
     case msg of
         DoNothing ->
@@ -207,29 +205,26 @@ update msg model =
                 Success _ ->
                     ( initialModel model.credentials
                     , resetTweetText 1800
-                    , Main.Global.refreshTweets
+                    , toCmd RefreshTweets
                     )
 
                 Failure _ ->
-                    ( { model | submission = status }, resetTweetText 4000, Cmd.none)
+                    ( { model | submission = status }
+                    , resetTweetText 4000
+                    , Cmd.none
+                    )
 
                 _ ->
                     ( { model | submission = status }, Cmd.none, Cmd.none)
 
-        RefreshTweets ->
-            ( model, Cmd.none, Main.Global.refreshTweets)
+        MsgRefreshTweets ->
+            ( model, Cmd.none, toCmd RefreshTweets)
 
-        Logout ->
+        MsgLogout ->
             ( model
             , sendLogoutMessasge model.credentials
-            , toCmd Main.Types.Logout
+            , toCmd Logout
             )
-
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none
 
 
 
