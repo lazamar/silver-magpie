@@ -4,7 +4,7 @@ import Routes.Login.Types exposing
     ( Model
     , UserInfo
     , Msg (..)
-    , BroadcastMsg ( Authenticated )
+    , Broadcast ( Authenticated )
     )
 import Routes.Login.Rest exposing ( fetchUserInfo )
 import Generic.LocalStorage
@@ -38,7 +38,7 @@ initialModel _ =
 
 
 
-init : () -> ( Model, Cmd Msg, Cmd BroadcastMsg )
+init : () -> ( Model, Cmd Msg, Cmd Broadcast )
 init _ =
     let
         model = initialModel ()
@@ -50,7 +50,7 @@ init _ =
 
 
 
-update : Msg -> Model -> ( Model, Cmd Msg, Cmd BroadcastMsg )
+update : Msg -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
 update msg model =
     case msg of
         UserCredentialsFetch request ->

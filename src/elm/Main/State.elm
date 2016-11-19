@@ -1,10 +1,17 @@
 module Main.State exposing (..)
 
 import Main.Types exposing (..)
-import Routes.Login.Types
+import Routes.Login.Types as LoginT
 import Routes.Timelines.Timeline.State
 import Routes.Timelines.TweetBar.State
 import Routes.Login.State
+
+
+translate : (a -> MainModel) -> (b -> Msg) -> ( a, Cmd b ) -> ( MainModel, Cmd Msg )
+translate modelTag msgTag ( one, two ) =
+    ( modelTag one, Cmd.map msgTag two )
+
+
 
 
 -- INITIALISATION
@@ -13,6 +20,7 @@ import Routes.Login.State
 
 init =
     initLoginRoute ()
+        |> translate LoginRoute LoginMsg
 
 
 
@@ -33,26 +41,39 @@ subscriptions model =
 update : Msg -> MainModel -> ( MainModel, Cmd Msg )
 update msg model =
     case msg of
-        LoginBroadcast ( Routes.Login.Types.Authenticated appToken ) ->
+        LoginMsg ( SubMsgBroadcast ( LoginT.Authenticated appToken ) ) ->
             initHomeRoute appToken
 
-        Logout ->
-            Routes.Login.State.logout ()
-                |> \_ -> initLoginRoute ()
-
-        _ ->
+        LoginMsg ( SubMsgLocal subMsg ) ->
             case model of
                 LoginRoute subModel ->
                     let
-                        ( mdl, cmd ) = updateLoginRoute msg subModel
+                        ( mdl, cmd ) = updateLoginRoute subMsg subModel
                     in
-                        ( LoginRoute mdl, cmd )
+                        ( LoginRoute mdl, Cmd.map LoginMsg cmd )
 
+                _ ->
+                    ( model, Cmd.none )
+
+        Logout ->
+            let
+                ignore = Routes.Login.State.logout ()
+            in
+                initLoginRoute ()
+                    |> translate LoginRoute LoginMsg
+
+
+        _ ->
+            case model of
                 HomeRoute subModel ->
                     let
                         ( mdl, cmd ) = updateHomeRoute msg subModel
                     in
                         ( HomeRoute mdl, cmd )
+
+                _ ->
+                    ( model, Cmd.none )
+                        |> Debug.log "ERROR SHOULD HAVE NEVER ARRIVED HERE"
 
 
 
@@ -116,35 +137,32 @@ updateHomeRoute msg model =
 
 
 
-initLoginRoute : () -> ( MainModel, Cmd Msg )
+initLoginRoute : () -> ( LoginT.Model, Cmd ( SubMsg LoginT.Msg LoginT.Broadcast ) )
 initLoginRoute _ =
     let
         ( loginModel, loginCmd, broadcastMsg ) =
             Routes.Login.State.init ()
+
     in
-        ( LoginRoute loginModel
+        ( loginModel
         , Cmd.batch
-            [ Cmd.map LoginMsg loginCmd
-            , Cmd.map LoginBroadcast broadcastMsg
+            [ Cmd.map SubMsgLocal loginCmd
+            , Cmd.map SubMsgBroadcast broadcastMsg
             ]
         )
 
 
 
-updateLoginRoute : Msg -> Routes.Login.Types.Model -> ( Routes.Login.Types.Model, Cmd Msg )
+updateLoginRoute : LoginT.Msg -> LoginT.Model -> ( LoginT.Model, Cmd ( SubMsg LoginT.Msg LoginT.Broadcast ) )
 updateLoginRoute msg model =
-    case msg of
-        LoginMsg subMsg ->
-            let
-                ( loginModel, loginCmd, broadcastMsg ) =
-                    Routes.Login.State.update subMsg model
-            in
-                ( loginModel
-                , Cmd.batch
-                    [ Cmd.map LoginMsg loginCmd
-                    , Cmd.map LoginBroadcast broadcastMsg
-                    ]
-                )
+    let
+        ( loginModel, loginCmd, broadcastMsg ) =
+            Routes.Login.State.update msg model
 
-        _ ->
-            ( model, Cmd.none )
+    in
+        ( loginModel
+        , Cmd.batch
+            [ Cmd.map SubMsgLocal loginCmd
+            , Cmd.map SubMsgBroadcast broadcastMsg
+            ]
+        )

@@ -2,7 +2,7 @@ module Routes.Login.Types exposing
     ( Model
     , UserInfo
     , Msg (..)
-    , BroadcastMsg (..)
+    , Broadcast (..)
     )
 
 import RemoteData exposing ( WebData )
@@ -28,5 +28,5 @@ type Msg
 
 
 
-type BroadcastMsg
+type Broadcast
     = Authenticated Credentials
