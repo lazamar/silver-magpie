@@ -1,12 +1,12 @@
 module Main.Types exposing (..)
 
-import Tweets.Types
+import Timeline.Types
 import TweetBar.Types
 import Login.Types
 
 
 type Msg
-  = TweetsMsg Tweets.Types.Msg
+  = TweetsMsg Timeline.Types.Msg
   | TweetBarMsg TweetBar.Types.Msg
   | LoginMsg Login.Types.Msg
   | Logout
@@ -21,6 +21,6 @@ type MainModel
 
 
 type alias HomeRouteModel =
-    { tweetsModel : Tweets.Types.Model
+    { tweetsModel : Timeline.Types.Model
     , tweetBarModel : TweetBar.Types.Model
     }

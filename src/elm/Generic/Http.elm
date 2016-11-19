@@ -1,4 +1,4 @@
-module Generic.Http exposing ( get, post )
+module Generic.Http exposing ( get, post, delete )
 
 import Generic.Types exposing ( Credentials )
 import Http

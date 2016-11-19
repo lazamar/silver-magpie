@@ -65,6 +65,6 @@ fetchHandlerSuggestion credentials handler =
 
 sendLogoutMessasge : Credentials -> Cmd Msg
 sendLogoutMessasge credentials =
-    Generic.Http.get credentials "/app-revoke-access"
+    Generic.Http.delete credentials "/app-revoke-access"
         |> Http.fromJson string
         |> Task.perform ( \_ -> DoNothing ) ( \_ -> DoNothing )

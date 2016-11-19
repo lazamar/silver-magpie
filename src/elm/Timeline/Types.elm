@@ -1,4 +1,4 @@
-module Tweets.Types exposing (..)
+module Timeline.Types exposing (..)
 
 import Http
 import RemoteData exposing (WebData)

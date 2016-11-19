@@ -1,7 +1,7 @@
-module Tweets.View exposing ( root )
+module Timeline.View exposing ( root )
 
 
-import Tweets.Types exposing (..)
+import Timeline.Types exposing (..)
 import Twitter.Types exposing
     ( Tweet
     , Retweet (..)
@@ -17,7 +17,7 @@ import Http
 import Generic.Utils exposing ( errorMessage )
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Tweets.TweetView exposing ( tweetView )
+import Timeline.TweetView exposing ( tweetView )
 import RemoteData exposing (..)
 
 

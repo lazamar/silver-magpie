@@ -8,7 +8,7 @@ import Html exposing (Html)
 import Html.Attributes exposing (class)
 import Html.App
 
-import Tweets.View
+import Timeline.View
 import TweetBar.View
 import Login.View
 
@@ -24,7 +24,7 @@ view modelRoute =
 
         HomeRoute model ->
             Html.div [ class "Main"]
-                [ Tweets.View.root model.tweetsModel
+                [ Timeline.View.root model.tweetsModel
                     |> Html.App.map TweetsMsg
                 , TweetBar.View.root model.tweetBarModel
                     |> Html.App.map TweetBarMsg

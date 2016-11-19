@@ -1,6 +1,6 @@
-module Tweets.Rest exposing (..)
+module Timeline.Rest exposing (..)
 
-import Tweets.Types exposing (..)
+import Timeline.Types exposing (..)
 import Twitter.Decoders exposing ( tweetDecoder )
 import Twitter.Types exposing ( Tweet )
 import Generic.Types

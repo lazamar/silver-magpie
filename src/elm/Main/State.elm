@@ -2,7 +2,7 @@ module Main.State exposing (..)
 
 import Main.Types exposing (..)
 import Login.Types
-import Tweets.State
+import Timeline.State
 import TweetBar.State
 import Login.State
 
@@ -65,7 +65,7 @@ initHomeRoute : String -> ( MainModel, Cmd Msg )
 initHomeRoute appToken =
     let
         ( tweetsModel, tweetsCmd ) =
-            Tweets.State.init appToken
+            Timeline.State.init appToken
 
         ( tweetBarModel, tweetBarCmd, tweetBarGlobalCmd ) =
             TweetBar.State.init appToken
@@ -89,7 +89,7 @@ updateHomeRoute msg model =
         TweetsMsg subMsg ->
             let
                 ( updatedTweetsModel, tweetsCmd ) =
-                    Tweets.State.update subMsg model.tweetsModel
+                    Timeline.State.update subMsg model.tweetsModel
             in
                 ( { model | tweetsModel = updatedTweetsModel }
                 , Cmd.map TweetsMsg tweetsCmd

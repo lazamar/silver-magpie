@@ -1,7 +1,7 @@
-module Tweets.State exposing ( init, update, subscriptions )
+module Timeline.State exposing ( init, update, subscriptions )
 
-import Tweets.Rest exposing ( getTweets )
-import Tweets.Types exposing (..)
+import Timeline.Rest exposing ( getTweets )
+import Timeline.Types exposing (..)
 import Twitter.Types exposing ( Tweet )
 import Generic.Types exposing (never)
 import Generic.Utils exposing (toCmd)
