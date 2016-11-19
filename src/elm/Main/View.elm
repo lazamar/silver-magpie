@@ -8,9 +8,9 @@ import Html exposing (Html)
 import Html.Attributes exposing (class)
 import Html.App
 
-import Timeline.View
-import TweetBar.View
-import Login.View
+import Routes.Timelines.Timeline.View
+import Routes.Timelines.TweetBar.View
+import Routes.Login.View
 
 
 view : MainModel -> Html Msg
@@ -18,14 +18,14 @@ view modelRoute =
     case modelRoute of
         LoginRoute model ->
             Html.div [ class "Main"]
-            [ Login.View.root model
+            [ Routes.Login.View.root model
                 |> Html.App.map LoginMsg
             ]
 
         HomeRoute model ->
             Html.div [ class "Main"]
-                [ Timeline.View.root model.tweetsModel
+                [ Routes.Timelines.Timeline.View.root model.tweetsModel
                     |> Html.App.map TweetsMsg
-                , TweetBar.View.root model.tweetBarModel
+                , Routes.Timelines.TweetBar.View.root model.tweetBarModel
                     |> Html.App.map TweetBarMsg
                 ]

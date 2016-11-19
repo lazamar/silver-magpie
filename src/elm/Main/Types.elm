@@ -1,26 +1,26 @@
 module Main.Types exposing (..)
 
-import Timeline.Types
-import TweetBar.Types
-import Login.Types
+import Routes.Timelines.Timeline.Types
+import Routes.Timelines.TweetBar.Types
+import Routes.Login.Types
 
 
 type Msg
-  = TweetsMsg Timeline.Types.Msg
-  | TweetBarMsg TweetBar.Types.Msg
-  | LoginMsg Login.Types.Msg
+  = TweetsMsg Routes.Timelines.Timeline.Types.Msg
+  | TweetBarMsg Routes.Timelines.TweetBar.Types.Msg
+  | LoginMsg Routes.Login.Types.Msg
   | Logout
   | Login String
 
 
 
 type MainModel
-    = LoginRoute Login.Types.Model
+    = LoginRoute Routes.Login.Types.Model
     | HomeRoute HomeRouteModel
 
 
 
 type alias HomeRouteModel =
-    { tweetsModel : Timeline.Types.Model
-    , tweetBarModel : TweetBar.Types.Model
+    { tweetsModel : Routes.Timelines.Timeline.Types.Model
+    , tweetBarModel : Routes.Timelines.TweetBar.Types.Model
     }

@@ -1,4 +1,4 @@
-module Generic.Http exposing ( get, post, delete )
+module Generic.Http exposing ( get, post, delete, sameDomain )
 
 import Generic.Types exposing ( Credentials )
 import Http
@@ -39,7 +39,7 @@ makeRequest method body appToken endpoint =
         request =
             { verb = method
             , headers = headers appToken
-            , url = serverURL ++ endpoint
+            , url = sameDomain endpoint
             , body = body
             }
     in
@@ -52,3 +52,9 @@ headers appToken =
     [ ( "Content-Type", "application/json" )
     , ( "X-App-Token", appToken)
     ]
+
+
+
+sameDomain : String -> String
+sameDomain =
+    (++) serverURL

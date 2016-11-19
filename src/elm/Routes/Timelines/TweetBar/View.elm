@@ -1,8 +1,8 @@
-module TweetBar.View exposing (..)
+module Routes.Timelines.TweetBar.View exposing (..)
 
 
-import TweetBar.Types exposing (..)
-import TweetBar.Handler as TwHandler
+import Routes.Timelines.TweetBar.Types exposing (..)
+import Routes.Timelines.TweetBar.Handler as TwHandler
 import Twitter.Types exposing ( User )
 import Generic.Utils exposing ( errorMessage )
 import Generic.Animations

@@ -1,11 +1,11 @@
-module TweetBar.State exposing ( init, update, subscriptions )
+module Routes.Timelines.TweetBar.State exposing ( init, update, subscriptions )
 
 
 import Main.Global
 import Main.Types
-import TweetBar.Rest exposing ( sendTweet, fetchHandlerSuggestion, sendLogoutMessasge )
-import TweetBar.Types exposing (..)
-import TweetBar.Handler as TwHandler exposing ( Handler, HandlerMatch )
+import Routes.Timelines.TweetBar.Rest exposing ( sendTweet, fetchHandlerSuggestion, sendLogoutMessasge )
+import Routes.Timelines.TweetBar.Types exposing (..)
+import Routes.Timelines.TweetBar.Handler as TwHandler exposing ( Handler, HandlerMatch )
 import Generic.Utils exposing ( toCmd )
 import Generic.Types exposing
     ( SubmissionData

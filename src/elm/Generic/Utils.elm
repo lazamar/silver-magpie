@@ -23,9 +23,3 @@ errorMessage error =
 toCmd : msg -> Cmd msg
 toCmd message =
     Task.perform never identity (Task.succeed message )
-
-
-
-sameDomain : String -> String
-sameDomain endPoint =
-    "http://localhost:8080" ++ endPoint

@@ -1,7 +1,7 @@
-module Login.State exposing ( init, update, logout )
+module Routes.Login.State exposing ( init, update, logout )
 
-import Login.Types exposing ( Model, UserInfo, Msg (..) )
-import Login.Rest exposing ( fetchUserInfo )
+import Routes.Login.Types exposing ( Model, UserInfo, Msg (..) )
+import Routes.Login.Rest exposing ( fetchUserInfo )
 import Main.Types
 import Generic.LocalStorage
 import Generic.UniqueID

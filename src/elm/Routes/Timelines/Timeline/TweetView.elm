@@ -1,6 +1,6 @@
-module Timeline.TweetView exposing ( tweetView )
+module Routes.Timelines.Timeline.TweetView exposing ( tweetView )
 
-import Timeline.Types exposing (..)
+import Routes.Timelines.Timeline.Types exposing (..)
 import Twitter.Types exposing
     ( Tweet
     , Retweet (..)

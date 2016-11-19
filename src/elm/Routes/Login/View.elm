@@ -1,8 +1,8 @@
-module Login.View exposing ( root )
+module Routes.Login.View exposing ( root )
 
-import Login.Types exposing (..)
+import Routes.Login.Types exposing (..)
 import Generic.Animations
-import Generic.Utils
+import Generic.Http
 import RemoteData exposing ( RemoteData )
 import Http
 import Html exposing (..)
@@ -64,7 +64,7 @@ loginContent model =
         RemoteData.Failure error ->
             case error of
                 Http.BadResponse 401 errDescription ->
-                    a   [ href <| Generic.Utils.sameDomain <| "/sign-in/?app_session_id=" ++ model.sessionID
+                    a   [ href <| Generic.Http.sameDomain <| "/sign-in/?app_session_id=" ++ model.sessionID
                         , target "blank"
                         , class "Login-signinBtn"
                         ]

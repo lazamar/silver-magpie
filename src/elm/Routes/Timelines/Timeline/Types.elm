@@ -1,4 +1,4 @@
-module Timeline.Types exposing (..)
+module Routes.Timelines.Timeline.Types exposing (..)
 
 import Http
 import RemoteData exposing (WebData)

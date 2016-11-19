@@ -1,7 +1,7 @@
-module Login.Rest exposing ( fetchUserInfo )
+module Routes.Login.Rest exposing ( fetchUserInfo )
 
 
-import Login.Types exposing ( Msg ( UserCredentialsFetch ), UserInfo )
+import Routes.Login.Types exposing ( Msg ( UserCredentialsFetch ), UserInfo )
 import Generic.Http
 import Generic.Types
 

@@ -1,4 +1,4 @@
-module Login.Types exposing ( Model, UserInfo, Msg ( UserCredentialsFetch ) )
+module Routes.Login.Types exposing ( Model, UserInfo, Msg ( UserCredentialsFetch ) )
 
 import RemoteData exposing ( WebData )
 

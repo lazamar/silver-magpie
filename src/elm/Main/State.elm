@@ -1,10 +1,10 @@
 module Main.State exposing (..)
 
 import Main.Types exposing (..)
-import Login.Types
-import Timeline.State
-import TweetBar.State
-import Login.State
+import Routes.Login.Types
+import Routes.Timelines.Timeline.State
+import Routes.Timelines.TweetBar.State
+import Routes.Login.State
 
 
 -- INITIALISATION
@@ -37,7 +37,7 @@ update msg model =
             initHomeRoute appToken
 
         Logout ->
-            Login.State.logout ()
+            Routes.Login.State.logout ()
                 |> \_ -> initLoginRoute ()
 
         _ ->
@@ -65,10 +65,10 @@ initHomeRoute : String -> ( MainModel, Cmd Msg )
 initHomeRoute appToken =
     let
         ( tweetsModel, tweetsCmd ) =
-            Timeline.State.init appToken
+            Routes.Timelines.Timeline.State.init appToken
 
         ( tweetBarModel, tweetBarCmd, tweetBarGlobalCmd ) =
-            TweetBar.State.init appToken
+            Routes.Timelines.TweetBar.State.init appToken
   in
         ( HomeRoute
             { tweetsModel = tweetsModel
@@ -89,7 +89,7 @@ updateHomeRoute msg model =
         TweetsMsg subMsg ->
             let
                 ( updatedTweetsModel, tweetsCmd ) =
-                    Timeline.State.update subMsg model.tweetsModel
+                    Routes.Timelines.Timeline.State.update subMsg model.tweetsModel
             in
                 ( { model | tweetsModel = updatedTweetsModel }
                 , Cmd.map TweetsMsg tweetsCmd
@@ -98,7 +98,7 @@ updateHomeRoute msg model =
         TweetBarMsg subMsg ->
             let
                 ( updatedTweetBarModel, tweetBarCmd, globalCmd ) =
-                    TweetBar.State.update subMsg model.tweetBarModel
+                    Routes.Timelines.TweetBar.State.update subMsg model.tweetBarModel
             in
                 ( { model | tweetBarModel = updatedTweetBarModel }
                 , Cmd.batch
@@ -120,7 +120,7 @@ initLoginRoute : () -> ( MainModel, Cmd Msg )
 initLoginRoute _ =
     let
         ( loginModel, loginCmd, globalCmd ) =
-            Login.State.init ()
+            Routes.Login.State.init ()
     in
         ( LoginRoute loginModel
         , Cmd.batch
@@ -131,13 +131,13 @@ initLoginRoute _ =
 
 
 
-updateLoginRoute : Msg -> Login.Types.Model -> ( Login.Types.Model, Cmd Msg )
+updateLoginRoute : Msg -> Routes.Login.Types.Model -> ( Routes.Login.Types.Model, Cmd Msg )
 updateLoginRoute msg model =
     case msg of
         LoginMsg subMsg ->
             let
                 ( loginModel, loginCmd, globalCmd ) =
-                    Login.State.update subMsg model
+                    Routes.Login.State.update subMsg model
             in
                 ( loginModel
                 , Cmd.batch

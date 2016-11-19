@@ -1,4 +1,4 @@
-module TweetBar.Handler exposing
+module Routes.Timelines.TweetBar.Handler exposing
     ( Handler
     , HandlerMatch
     , findChanged
