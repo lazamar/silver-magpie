@@ -1,6 +1,7 @@
 module Main.State exposing (..)
 
 import Main.Types exposing (..)
+import Generic.Types exposing ( SubMsg (..) )
 import Routes.Login.Types as LoginT
 import Routes.Timelines.Timeline.State
 import Routes.Timelines.TweetBar.State

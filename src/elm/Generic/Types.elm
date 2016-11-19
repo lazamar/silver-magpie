@@ -18,3 +18,9 @@ never a =
 
 type alias Credentials
     = String
+
+
+
+type SubMsg a b
+    = SubMsgLocal a
+    | SubMsgBroadcast b
