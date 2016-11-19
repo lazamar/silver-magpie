@@ -3,7 +3,7 @@ module TweetBar.State exposing ( init, update, subscriptions )
 
 import Main.Global
 import Main.Types
-import TweetBar.Rest exposing ( sendTweet, fetchHandlerSuggestion )
+import TweetBar.Rest exposing ( sendTweet, fetchHandlerSuggestion, sendLogoutMessasge )
 import TweetBar.Types exposing (..)
 import TweetBar.Handler as TwHandler exposing ( Handler, HandlerMatch )
 import Generic.Utils exposing ( toCmd )
@@ -220,7 +220,10 @@ update msg model =
             ( model, Cmd.none, Main.Global.refreshTweets)
 
         Logout ->
-            ( model, Cmd.none, toCmd Main.Types.Logout)
+            ( model
+            , sendLogoutMessasge model.credentials
+            , toCmd Main.Types.Logout
+            )
 
 
 
