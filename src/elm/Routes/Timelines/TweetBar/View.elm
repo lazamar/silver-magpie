@@ -155,7 +155,7 @@ inputBoxView tweetText suggestions =
                 [ colouredTweetView tweetText
                 , textarea
                     [ class "TweetBar-textBox-input"
-                    , placeholder "Write you tweet here ..."
+                    , placeholder "Write your tweet here ..."
                     , autofocus True
                     , keyListener
                     , onInput LetterInput
