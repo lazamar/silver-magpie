@@ -15,11 +15,11 @@ view modelRoute =
         LoginRoute model ->
             Html.div [ class "Main"]
                 [ Routes.Login.View.root model
-                    |> Html.App.map LoginMsgLocal
+                    |> Html.App.map LoginMsg
                 ]
 
         TimelinesRoute model ->
             Html.div [ class "Main"]
                 [ Routes.Timelines.View.root model
-                    |> Html.App.map TimelinesMsgLocal
+                    |> Html.App.map TimelinesMsg
                 ]

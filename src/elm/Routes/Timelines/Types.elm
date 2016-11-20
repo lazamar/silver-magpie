@@ -6,10 +6,10 @@ import Routes.Timelines.TweetBar.Types as TweetBarT
 
 
 type Msg
-    = TimelineMsgLocal TimelineT.Msg
-    | TimelineMsgBroadcast TimelineT.Broadcast
-    | TweetBarMsgLocal TweetBarT.Msg
-    | TweetBarMsgBroadcast TweetBarT.Broadcast
+    = TimelineMsg TimelineT.Msg
+    | TimelineBroadcast TimelineT.Broadcast
+    | TweetBarMsg TweetBarT.Msg
+    | TweetBarBroadcast TweetBarT.Broadcast
 
 
 

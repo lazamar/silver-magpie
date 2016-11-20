@@ -22,10 +22,10 @@ init credentials =
   in
         ( Model timelineModel tweetBarModel
         , Cmd.batch
-            [ Cmd.map TimelineMsgLocal timelineMsg
-            , Cmd.map TimelineMsgBroadcast timelineBroadcast
-            , Cmd.map TweetBarMsgLocal tweetBarMsg
-            , Cmd.map TweetBarMsgBroadcast tweetBarBroadcast
+            [ Cmd.map TimelineMsg timelineMsg
+            , Cmd.map TimelineBroadcast timelineBroadcast
+            , Cmd.map TweetBarMsg tweetBarMsg
+            , Cmd.map TweetBarBroadcast tweetBarBroadcast
             ]
         , Cmd.none
         )
@@ -35,42 +35,51 @@ init credentials =
 update : Msg -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
 update msg model =
     case msg of
-        TimelineMsgBroadcast subMsg ->
+    -- Broadcast
+        TimelineBroadcast subMsg ->
             ( model, Cmd.none, Cmd.none )
 
-        TweetBarMsgBroadcast subMsg ->
+        TweetBarBroadcast subMsg ->
             case subMsg of
                 TweetBarT.Logout ->
                     ( model, Cmd.none, toCmd Logout )
 
                 TweetBarT.RefreshTweets ->
-                    ( model
-                    , toCmd <| TimelineMsgLocal <| TimelineT.FetchTweets TimelineT.Refresh
-                    , Cmd.none
-                    )
+                            TimelineS.refreshTweets model.timelineModel
+                                |> timelineUpdate model
+    -- Msg
+        TimelineMsg subMsg ->
+            TimelineS.update subMsg model.timelineModel
+                |> timelineUpdate model
 
-        TimelineMsgLocal subMsg ->
-            let
-                ( timelineModel, timelineMsg, timelineBroadcast ) =
-                    TimelineS.update subMsg model.timelineModel
-            in
-                ( { model | timelineModel = timelineModel }
-                , Cmd.batch
-                    [ Cmd.map TimelineMsgLocal timelineMsg
-                    , Cmd.map TimelineMsgBroadcast timelineBroadcast
-                    ]
-                , Cmd.none
-                )
+        TweetBarMsg subMsg ->
+            TweetBarS.update subMsg model.tweetBarModel
+                |> tweetBarUpdate model
 
-        TweetBarMsgLocal subMsg ->
-            let
-                ( tweetBarModel, tweetBarMsg, tweetBarBroadcast ) =
-                    TweetBarS.update subMsg model.tweetBarModel
-            in
-                ( { model | tweetBarModel = tweetBarModel }
-                , Cmd.batch
-                    [ Cmd.map TweetBarMsgLocal tweetBarMsg
-                    , Cmd.map TweetBarMsgBroadcast tweetBarBroadcast
-                    ]
-                , Cmd.none
-                )
+
+
+timelineUpdate : Model
+    -> ( TimelineT.Model, Cmd TimelineT.Msg, Cmd TimelineT.Broadcast )
+    -> ( Model, Cmd Msg, Cmd Broadcast )
+timelineUpdate model ( timelineModel, timelineMsg, timelineBroadcast ) =
+    ( { model | timelineModel = timelineModel }
+    , Cmd.batch
+        [ Cmd.map TimelineMsg timelineMsg
+        , Cmd.map TimelineBroadcast timelineBroadcast
+        ]
+    , Cmd.none
+    )
+
+
+
+tweetBarUpdate : Model
+    -> ( TweetBarT.Model, Cmd TweetBarT.Msg, Cmd TweetBarT.Broadcast )
+    -> ( Model, Cmd Msg, Cmd Broadcast )
+tweetBarUpdate model ( tweetBarModel, tweetBarMsg, tweetBarBroadcast ) =
+    ( { model | tweetBarModel = tweetBarModel }
+    , Cmd.batch
+        [ Cmd.map TweetBarMsg tweetBarMsg
+        , Cmd.map TweetBarBroadcast tweetBarBroadcast
+        ]
+    , Cmd.none
+    )

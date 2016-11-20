@@ -1,4 +1,4 @@
-module Routes.Timelines.Timeline.State exposing ( init, update )
+module Routes.Timelines.Timeline.State exposing ( init, update, refreshTweets )
 
 import Routes.Timelines.Timeline.Rest exposing ( getTweets )
 import Routes.Timelines.Timeline.Types exposing (..)
@@ -95,3 +95,10 @@ resetTweetFetch : FetchType -> Float -> Cmd Msg
 resetTweetFetch tweetsPosition time =
     Process.sleep time
         |> Task.perform never (\_ -> TweetFetch tweetsPosition NotAsked)
+
+
+
+-- Public
+refreshTweets : Model -> ( Model, Cmd Msg, Cmd Broadcast )
+refreshTweets =
+    update ( FetchTweets Refresh )

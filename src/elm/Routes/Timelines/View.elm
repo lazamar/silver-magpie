@@ -13,8 +13,8 @@ root : Model -> Html Msg
 root model =
     div [ class "Timelines" ]
         [ Routes.Timelines.Timeline.View.root model.timelineModel
-            |> Html.App.map TimelineMsgLocal
+            |> Html.App.map TimelineMsg
 
         , Routes.Timelines.TweetBar.View.root model.tweetBarModel
-            |> Html.App.map TweetBarMsgLocal
+            |> Html.App.map TweetBarMsg
         ]

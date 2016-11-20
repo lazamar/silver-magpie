@@ -26,7 +26,7 @@ translate modelTag localMsgTag broadcastMsgTag ( model, localMsg, broadcastMsg )
 init : () -> ( Model, Cmd Msg )
 init _ =
     LoginS.init ()
-        |> translate LoginRoute LoginMsgLocal LoginMsgBroadcast
+        |> translate LoginRoute LoginMsg LoginBroadcast
 
 
 
@@ -48,28 +48,30 @@ subscriptions model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        LoginMsgBroadcast ( LoginT.Authenticated appToken ) ->
+    -- Broadcast
+        LoginBroadcast ( LoginT.Authenticated appToken ) ->
             TimelinesS.init appToken
-                |> translate TimelinesRoute TimelinesMsgLocal TimelinesMsgBroadcast
+                |> translate TimelinesRoute TimelinesMsg TimelinesBroadcast
 
-        LoginMsgLocal subMsg ->
+        TimelinesBroadcast TimelinesT.Logout ->
+            LoginS.logout ()
+                |> \_ -> init ()
+
+    -- Msg
+        LoginMsg subMsg ->
             case model of
                 LoginRoute subModel ->
                     LoginS.update subMsg subModel
-                        |> translate LoginRoute LoginMsgLocal LoginMsgBroadcast
+                        |> translate LoginRoute LoginMsg LoginBroadcast
 
                 _ ->
                     ( model, Cmd.none )
 
-        TimelinesMsgBroadcast TimelinesT.Logout ->
-            LoginS.logout ()
-                |> \_ -> init ()
-
-        TimelinesMsgLocal subMsg ->
+        TimelinesMsg subMsg ->
             case model of
                 TimelinesRoute subModel ->
                     TimelinesS.update subMsg subModel
-                        |> translate TimelinesRoute TimelinesMsgLocal TimelinesMsgBroadcast
+                        |> translate TimelinesRoute TimelinesMsg TimelinesBroadcast
 
                 _ ->
                     ( model, Cmd.none )
