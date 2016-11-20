@@ -111,7 +111,7 @@ tweetActions tweet =
     div [ class "Tweet-actions" ]
         [ button
             [ class "Tweet-actions-reply zmdi zmdi-mail-reply"
-            , tooltip "Reply (still not implemented)"
+            , tooltip "Reply - coming soon :)"
             ] []
         , button
             ( if tweet.favorited then
