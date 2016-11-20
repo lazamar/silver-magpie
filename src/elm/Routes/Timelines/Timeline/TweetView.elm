@@ -14,6 +14,7 @@ import Twitter.Types exposing
     )
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing ( onClick )
 import Array
 import Regex
 import Json.Encode
@@ -104,7 +105,10 @@ tweetActions : Tweet -> Html Msg
 tweetActions tweet =
     div [ class "Tweet-actions" ]
         [ a [ class "Tweet-actions-reply zmdi zmdi-mail-reply" ] []
-        , a [ class "Tweet-actions-favourite" ]
+        , button
+            [ class "Tweet-actions-favourite"
+            , onClick <| Favorite ( not tweet.favorited ) tweet.id
+            ]
             [ i [ class "zmdi zmdi-favorite" ] []
             , text (toStringNotZero tweet.favorite_count)
             ]

@@ -1,9 +1,9 @@
-module Generic.Http exposing ( get, post, delete, sameDomain )
+module Generic.Http exposing ( get, post, delete, sameDomain, toJsonBody )
 
 import Twitter.Types exposing ( Credentials )
 import Http
 import Task exposing ( Task )
-
+import Json.Encode
 
 
 type alias Endpoint
@@ -27,9 +27,9 @@ delete =
 
 
 
-post : Http.Body -> Credentials -> Endpoint -> Task Http.RawError Http.Response
-post =
-    makeRequest "POST"
+post : Credentials -> Endpoint -> Http.Body -> Task Http.RawError Http.Response
+post credentials endpoint body =
+    makeRequest "POST" body credentials endpoint
 
 
 
@@ -58,3 +58,12 @@ headers appToken =
 sameDomain : String -> String
 sameDomain =
     (++) serverURL
+
+
+
+toJsonBody : List (String, Json.Encode.Value) -> Http.Body
+toJsonBody tupleList =
+    tupleList
+        |> Json.Encode.object
+        |> Json.Encode.encode 2
+        |> Http.string

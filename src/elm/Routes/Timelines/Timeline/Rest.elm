@@ -6,6 +6,7 @@ import Twitter.Types exposing ( Tweet, Credentials )
 import Generic.Http
 
 import Http
+import Json.Encode
 import Json.Decode exposing ( Decoder, string, int, bool, list, dict, at )
 import Json.Decode.Pipeline exposing ( decode, required, optional )
 import RemoteData exposing ( RemoteData ( Success, Failure ))
@@ -46,10 +47,12 @@ getTweets credentials position route =
 
 -- TODO: A service worker must make sure that this
 -- request is always successfully sent, even when offline.
-favoriteTweet : Credentials -> String -> Cmd Msg
-favoriteTweet credentials tweetId =
-    "{ \"id\": " ++ tweetId ++ " }"
-        |> Http.string
-        |> \body -> Generic.Http.post body credentials "/favourite"
+favoriteTweet : Credentials -> Bool -> String -> Cmd Msg
+favoriteTweet credentials shouldFavorite tweetId =
+    [ ( "id", Json.Encode.string tweetId)
+    , ( "favorite", Json.Encode.bool shouldFavorite )
+    ]
+        |> Generic.Http.toJsonBody
+        |> Generic.Http.post credentials "/favourite"
         |> Http.fromJson string
         |> Task.perform (\_ -> DoNothing) (\_ -> DoNothing)

@@ -81,26 +81,29 @@ update msg model =
             , Cmd.none
             )
 
-        Favorite tweetId ->
-            let
-                tweetUpdate tweet =
-                    if tweet.id == tweetId then
-                        { tweet
-                        | favorite_count = tweet.favorite_count + 1
-                        , favorited = True
-                        }
-                    else
-                        tweet
+        Favorite shouldFavorite tweetId ->
+            ( { model
+              | tweets = favoriteTweetInList shouldFavorite tweetId model.tweets 
+              }
+            , favoriteTweet model.credentials shouldFavorite tweetId
+            , Cmd.none
+            )
 
-                updatedTweets =
-                    List.map tweetUpdate model.tweets
 
-            in
-                ( { model | tweets = updatedTweets }
-                , favoriteTweet model.credentials tweetId
-                    |> Cmd.map (\_ -> FetchTweets Refresh)
-                , Cmd.none
-                )
+
+favoriteTweetInList : Bool -> String -> List Tweet -> List Tweet
+favoriteTweetInList toFavorite tweetId tweetList =
+    let
+        tweetUpdate tweet =
+            if tweet.id == tweetId && xor tweet.favorited toFavorite then
+                { tweet
+                | favorite_count = tweet.favorite_count + if toFavorite then 1 else -1
+                , favorited = toFavorite
+                }
+            else
+                tweet
+    in
+        List.map tweetUpdate tweetList
 
 
 

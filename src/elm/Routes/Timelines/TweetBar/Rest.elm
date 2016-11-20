@@ -35,16 +35,15 @@ userListDecoder =
 createSendBody : String -> Http.Body
 createSendBody tweetText =
     [ ( "status", (Json.Encode.string tweetText) ) ]
-        |> Json.Encode.object
-        |> Json.Encode.encode 2
-        |> Http.string
+        |> Generic.Http.toJsonBody
 
 
 
 
 sendTweet : Credentials -> String -> Cmd Msg
 sendTweet credentials tweetText =
-    Generic.Http.post ( createSendBody tweetText ) credentials "/status-update"
+    createSendBody tweetText
+        |> Generic.Http.post credentials "/status-update"
         |> Http.fromJson tweetPostedDecoder
         |> Task.perform SubmissionData.Failure SubmissionData.Success
         |> Cmd.map TweetSend

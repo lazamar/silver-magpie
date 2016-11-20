@@ -31,7 +31,7 @@ type Msg
   | TweetFetch FetchType ( WebData (List Tweet) )
   | ChangeRoute Route
   | FetchTweets FetchType
-  | Favorite String
+  | Favorite Bool String
 
 
 type Broadcast =
