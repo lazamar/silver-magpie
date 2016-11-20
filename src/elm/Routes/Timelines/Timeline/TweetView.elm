@@ -122,7 +122,7 @@ tweetActions tweet =
             ]
         , button
             [ class
-                <| if tweet.favorited then
+                <| if tweet.retweeted then
                         "Tweet-actions-retweet--retweeted"
                     else
                         "Tweet-actions-retweet"
