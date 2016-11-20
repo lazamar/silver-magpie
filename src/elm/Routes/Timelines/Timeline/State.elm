@@ -2,7 +2,7 @@ module Routes.Timelines.Timeline.State exposing ( init, update, refreshTweets )
 
 import Routes.Timelines.Timeline.Rest exposing ( getTweets, favoriteTweet )
 import Routes.Timelines.Timeline.Types exposing (..)
-import Twitter.Types exposing ( Tweet, Credentials )
+import Twitter.Types exposing ( Tweet, Retweet, Credentials )
 import Generic.Types exposing (never)
 import Generic.Utils exposing (toCmd)
 import Main.Types
@@ -83,7 +83,7 @@ update msg model =
 
         Favorite shouldFavorite tweetId ->
             ( { model
-              | tweets = favoriteTweetInList shouldFavorite tweetId model.tweets 
+              | tweets = favoriteTweetInList shouldFavorite tweetId model.tweets
               }
             , favoriteTweet model.credentials shouldFavorite tweetId
             , Cmd.none
@@ -102,8 +102,14 @@ favoriteTweetInList toFavorite tweetId tweetList =
                 }
             else
                 tweet
+
+        favoriteTweetWithId tweet =
+            { tweet
+            | retweeted_status = Maybe.map (\(Twitter.Types.Retweet rt) -> tweetUpdate rt |> Twitter.Types.Retweet) tweet.retweeted_status
+            }
+                |> tweetUpdate
     in
-        List.map tweetUpdate tweetList
+        List.map favoriteTweetWithId tweetList
 
 
 

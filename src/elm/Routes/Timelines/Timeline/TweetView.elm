@@ -18,19 +18,14 @@ import Html.Events exposing ( onClick )
 import Array
 import Regex
 import Json.Encode
-
+import Maybe
 
 
 tweetView : Int -> Tweet -> Html Msg
 tweetView index mainTweet =
     let
         tweet =
-            case mainTweet.retweeted_status of
-                Nothing ->
-                    mainTweet
-
-                Just ( Retweet retweet ) ->
-                    retweet
+            getRetweet mainTweet
     in
         div
             [ class "Tweet"
@@ -40,6 +35,15 @@ tweetView index mainTweet =
             , tweetContent tweet
             , tweetActions tweet
             ]
+
+
+
+getRetweet : Tweet -> Tweet
+getRetweet tweet =
+    tweet
+        |> .retweeted_status
+        |> Maybe.map (\(Retweet retweet) -> retweet)
+        |> Maybe.withDefault tweet
 
 
 
