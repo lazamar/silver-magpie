@@ -56,6 +56,6 @@ favoriteTweet credentials shouldFavorite tweetId =
             else
                 Generic.Http.delete
     in
-        httpMethod credentials ( "/favourite?id=" ++ tweetId )
+        httpMethod credentials ( "/favorite?id=" ++ tweetId )
         |> Http.fromJson string
         |> Task.perform (\_ -> DoNothing) (\_ -> DoNothing)
