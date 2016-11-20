@@ -109,9 +109,12 @@ userProfileLink user =
 tweetActions : Tweet -> Html Msg
 tweetActions tweet =
     div [ class "Tweet-actions" ]
-        [ a [ class "Tweet-actions-reply zmdi zmdi-mail-reply" ] []
+        [ button
+            [ class "Tweet-actions-reply zmdi zmdi-mail-reply"
+            , tooltip "Reply (still not implemented)"
+            ] []
         , button
-            ( if tweet.retweeted then
+            ( if tweet.favorited then
                 [ class "Tweet-actions-favourite--favorited"
                 , onClick <| Favorite ( not tweet.favorited ) tweet.id
                 , tooltip "Favorite"

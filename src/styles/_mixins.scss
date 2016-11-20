@@ -19,6 +19,8 @@
 }
 
 @mixin custom-tooltip() {
+  position: relative;
+
   &[data-title]:after {
     content: attr(data-title);
     position: absolute;
@@ -40,6 +42,6 @@
   &[data-title]:hover:after {
     visibility: visible;
     opacity: 1;
-    transition-delay: 0s;
+    transition-delay: .5s;
   }
 }
