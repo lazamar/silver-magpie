@@ -106,7 +106,11 @@ tweetActions tweet =
     div [ class "Tweet-actions" ]
         [ a [ class "Tweet-actions-reply zmdi zmdi-mail-reply" ] []
         , button
-            [ class "Tweet-actions-favourite"
+            [ class
+                <| if tweet.favorited then
+                    "Tweet-actions-favourite--favorited"
+                    else
+                    "Tweet-actions-favourite"
             , onClick <| Favorite ( not tweet.favorited ) tweet.id
             ]
             [ i [ class "zmdi zmdi-favorite" ] []

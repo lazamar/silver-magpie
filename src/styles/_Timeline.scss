@@ -112,11 +112,27 @@
   i {
     margin-right: .2em;
   }
+
+  button {
+    background-color: transparent;
+
+    &, &:hover, &:active, &:focus {
+      border: none;
+      outline: none;
+    }
+  }
 }
+
+
 
 .Tweet-actions-favourite {
   color: inherit;
+
   &:hover {
+    color: $brand-danger;
+  }
+
+  &--favorited {
     color: $brand-danger;
   }
 }
