@@ -1,4 +1,4 @@
-module Routes.Timelines.Timeline.Rest exposing (..)
+module Routes.Timelines.Timeline.Rest exposing ( getTweets, favoriteTweet )
 
 import Routes.Timelines.Timeline.Types exposing (..)
 import Twitter.Decoders exposing ( tweetDecoder )
@@ -42,3 +42,14 @@ getTweets credentials position route =
             |> Http.fromJson serverMsgDecoder
             |> Task.perform Failure Success
             |> Cmd.map (TweetFetch position)
+
+
+-- TODO: A service worker must make sure that this
+-- request is always successfully sent, even when offline.
+favoriteTweet : Credentials -> String -> Cmd Msg
+favoriteTweet credentials tweetId =
+    "{ \"id\": " ++ tweetId ++ " }"
+        |> Http.string
+        |> \body -> Generic.Http.post body credentials "/favourite"
+        |> Http.fromJson string
+        |> Task.perform (\_ -> DoNothing) (\_ -> DoNothing)

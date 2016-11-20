@@ -27,10 +27,11 @@ type FetchType
 
 
 type Msg
-  = TweetFetch FetchType ( WebData (List Tweet) )
+  = DoNothing
+  | TweetFetch FetchType ( WebData (List Tweet) )
   | ChangeRoute Route
   | FetchTweets FetchType
-  -- | Favourite Tweet
+  | Favorite String
 
 
 type Broadcast =

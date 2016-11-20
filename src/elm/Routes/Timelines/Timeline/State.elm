@@ -1,6 +1,6 @@
 module Routes.Timelines.Timeline.State exposing ( init, update, refreshTweets )
 
-import Routes.Timelines.Timeline.Rest exposing ( getTweets )
+import Routes.Timelines.Timeline.Rest exposing ( getTweets, favoriteTweet )
 import Routes.Timelines.Timeline.Types exposing (..)
 import Twitter.Types exposing ( Tweet, Credentials )
 import Generic.Types exposing (never)
@@ -42,6 +42,9 @@ init credentials =
 update : Msg -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
 update msg model =
     case msg of
+        DoNothing ->
+            ( model, Cmd.none, Cmd.none )
+
         FetchTweets tweetsPosition ->
             ( { model | newTweets = Loading }
             , getTweets model.credentials tweetsPosition model.tab
@@ -77,6 +80,27 @@ update msg model =
             , Cmd.none
             , Cmd.none
             )
+
+        Favorite tweetId ->
+            let
+                tweetUpdate tweet =
+                    if tweet.id == tweetId then
+                        { tweet
+                        | favorite_count = tweet.favorite_count + 1
+                        , favorited = True
+                        }
+                    else
+                        tweet
+
+                updatedTweets =
+                    List.map tweetUpdate model.tweets
+
+            in
+                ( { model | tweets = updatedTweets }
+                , favoriteTweet model.credentials tweetId
+                    |> Cmd.map (\_ -> FetchTweets Refresh)
+                , Cmd.none
+                )
 
 
 
