@@ -30,6 +30,7 @@ type Msg
   = TweetFetch FetchType ( WebData (List Tweet) )
   | ChangeRoute Route
   | FetchTweets FetchType
+  -- | Favourite Tweet
 
 
 type Broadcast =

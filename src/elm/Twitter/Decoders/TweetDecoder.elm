@@ -25,7 +25,8 @@ import List.Extra
 
 -- Raw as in not preprocessed. It is just like the server sent
 type alias RawTweet =
-  { user : User
+  { id : String
+  , user : User
   , created_at : String
   , text : String
   , retweet_count : Int
@@ -129,6 +130,7 @@ retweetDecoder =
 -- and thus prevent parsing recursion
 rawTweetDecoderFirstPart =
     decode RawTweet
+        |> required "id_str" string
         |> required "user" userDecoder
         |> required "created_at" string
         |> required "text" string
@@ -240,6 +242,7 @@ variantRecordDecoder =
 preprocessTweet : RawTweet -> Tweet
 preprocessTweet raw =
     Tweet
+        raw.id
         raw.user
         raw.created_at
         raw.text

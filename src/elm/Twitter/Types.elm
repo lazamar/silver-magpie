@@ -15,7 +15,8 @@ type alias User =
 
 
 type alias Tweet =
-  { user : User
+  { id : String
+  , user : User
   , created_at : String
   , text: String
   , retweet_count : Int
