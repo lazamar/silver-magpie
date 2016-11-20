@@ -124,12 +124,12 @@ tweetActions tweet =
             ( if tweet.retweeted then
                 [ class "Tweet-actions-retweet--retweeted"
                 , onClick <| DoRetweet (not tweet.retweeted) tweet.id
-                , alt "Undo retweet"
+                , attribute "data-title" "Undo retweet"
                 ]
             else
                 [ class "Tweet-actions-retweet"
                 , onClick <| DoRetweet (not tweet.retweeted) tweet.id
-                , alt "Retweet"
+                , attribute "data-title" "Retweet"
                 ]
             )
             [ i [ class "zmdi zmdi-repeat" ] []
