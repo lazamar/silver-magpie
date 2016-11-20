@@ -1,6 +1,6 @@
 module Routes.Timelines.Timeline.State exposing ( init, update, refreshTweets )
 
-import Routes.Timelines.Timeline.Rest exposing ( getTweets, favoriteTweet )
+import Routes.Timelines.Timeline.Rest exposing ( getTweets, favoriteTweet, doRetweet )
 import Routes.Timelines.Timeline.Types exposing (..)
 import Twitter.Types exposing ( Tweet, Retweet, Credentials )
 import Generic.Types exposing (never)
@@ -83,16 +83,23 @@ update msg model =
 
         Favorite shouldFavorite tweetId ->
             ( { model
-              | tweets = favoriteTweetInList shouldFavorite tweetId model.tweets
+              | tweets = registerFavorite shouldFavorite tweetId model.tweets
               }
             , favoriteTweet model.credentials shouldFavorite tweetId
             , Cmd.none
             )
 
+        DoRetweet tweetId ->
+            ( { model
+              | tweets = registerRetweet tweetId model.tweets
+              }
+            , doRetweet model.credentials tweetId
+            , Cmd.none
+            )
 
 
-favoriteTweetInList : Bool -> String -> List Tweet -> List Tweet
-favoriteTweetInList toFavorite tweetId tweetList =
+registerFavorite : Bool -> String -> List Tweet -> List Tweet
+registerFavorite toFavorite tweetId tweetList =
     let
         tweetUpdate tweet =
             if tweet.id == tweetId && xor tweet.favorited toFavorite then
@@ -102,21 +109,40 @@ favoriteTweetInList toFavorite tweetId tweetList =
                 }
             else
                 tweet
-
-        favoriteRelevantTweet tweet =
-            case tweet.retweeted_status of
-                Nothing ->
-                    tweetUpdate tweet
-
-                Just (Twitter.Types.Retweet rt) ->
-                    { tweet
-                    | retweeted_status =
-                        tweetUpdate rt
-                            |> Twitter.Types.Retweet
-                            |> Just
-                    }
     in
-        List.map favoriteRelevantTweet tweetList
+        List.map (applyToRelevantTweet tweetUpdate) tweetList
+
+
+registerRetweet : String -> List Tweet -> List Tweet
+registerRetweet tweetId tweetList =
+    let
+        tweetUpdate tweet =
+            if tweet.id == tweetId && not tweet.retweeted then
+                { tweet
+                | retweet_count = tweet.retweet_count + 1
+                , retweeted = True
+                }
+            else
+                tweet
+    in
+        List.map (applyToRelevantTweet tweetUpdate) tweetList
+
+
+
+-- Applies a function on a tweet or, if it has a retweet in its retweet
+applyToRelevantTweet : ( Tweet -> Tweet ) -> Tweet -> Tweet
+applyToRelevantTweet func tweet =
+    case tweet.retweeted_status of
+        Nothing ->
+            func tweet
+
+        Just (Twitter.Types.Retweet rt) ->
+            { tweet
+            | retweeted_status =
+                func rt
+                    |> Twitter.Types.Retweet
+                    |> Just
+            }
 
 
 

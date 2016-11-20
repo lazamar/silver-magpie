@@ -1,4 +1,4 @@
-module Routes.Timelines.Timeline.Rest exposing ( getTweets, favoriteTweet )
+module Routes.Timelines.Timeline.Rest exposing ( getTweets, favoriteTweet, doRetweet )
 
 import Routes.Timelines.Timeline.Types exposing (..)
 import Twitter.Decoders exposing ( tweetDecoder )
@@ -52,10 +52,20 @@ favoriteTweet credentials shouldFavorite tweetId =
     let
         httpMethod =
             if shouldFavorite then
-                (\cred id -> Generic.Http.post cred id Http.empty)
+                (\cred endpoint -> Generic.Http.post cred endpoint Http.empty)
             else
                 Generic.Http.delete
     in
         httpMethod credentials ( "/favorite?id=" ++ tweetId )
+            |> Http.fromJson string
+            |> Task.perform (\_ -> DoNothing) (\_ -> DoNothing)
+
+
+
+-- TODO: A service worker must make sure that this
+-- request is always successfully sent, even when offline.
+doRetweet : Credentials -> String -> Cmd Msg
+doRetweet credentials tweetId =
+    Generic.Http.post credentials ( "/retweet?id=" ++ tweetId ) Http.empty
         |> Http.fromJson string
         |> Task.perform (\_ -> DoNothing) (\_ -> DoNothing)

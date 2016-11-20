@@ -112,15 +112,26 @@ tweetActions tweet =
         , button
             [ class
                 <| if tweet.favorited then
-                    "Tweet-actions-favourite--favorited"
+                        "Tweet-actions-favourite--favorited"
                     else
-                    "Tweet-actions-favourite"
+                        "Tweet-actions-favourite"
             , onClick <| Favorite ( not tweet.favorited ) tweet.id
             ]
             [ i [ class "zmdi zmdi-favorite" ] []
             , text (toStringNotZero tweet.favorite_count)
             ]
-        , a [ class "Tweet-actions-retweet"]
+        , button
+            [ class
+                <| if tweet.favorited then
+                        "Tweet-actions-retweet--retweeted"
+                    else
+                        "Tweet-actions-retweet"
+            , onClick
+                <| if not tweet.retweeted then
+                        DoRetweet tweet.id
+                    else
+                        DoNothing
+            ]
             [ i [ class "zmdi zmdi-repeat" ] []
             , text (toStringNotZero tweet.retweet_count)
             ]
