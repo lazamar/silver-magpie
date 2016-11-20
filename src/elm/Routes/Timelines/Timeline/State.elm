@@ -103,13 +103,20 @@ favoriteTweetInList toFavorite tweetId tweetList =
             else
                 tweet
 
-        favoriteTweetWithId tweet =
-            { tweet
-            | retweeted_status = Maybe.map (\(Twitter.Types.Retweet rt) -> tweetUpdate rt |> Twitter.Types.Retweet) tweet.retweeted_status
-            }
-                |> tweetUpdate
+        favoriteRelevantTweet tweet =
+            case tweet.retweeted_status of
+                Nothing ->
+                    tweetUpdate tweet
+
+                Just (Twitter.Types.Retweet rt) ->
+                    { tweet
+                    | retweeted_status =
+                        tweetUpdate rt
+                            |> Twitter.Types.Retweet
+                            |> Just
+                    }
     in
-        List.map favoriteTweetWithId tweetList
+        List.map favoriteRelevantTweet tweetList
 
 
 
