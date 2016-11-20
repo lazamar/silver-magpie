@@ -3,6 +3,8 @@ module Generic.Utils exposing (..)
 import Generic.Types exposing (..)
 import Http
 import Task
+import Html exposing ( Attribute )
+import Html.Attributes exposing ( attribute )
 
 errorMessage : Http.Error -> String
 errorMessage error =
@@ -20,6 +22,13 @@ errorMessage error =
       "Server returned " ++ ( toString errCode ) ++ ". " ++ errDescription
 
 
+
 toCmd : msg -> Cmd msg
 toCmd message =
     Task.perform never identity (Task.succeed message )
+
+
+
+tooltip : String -> Attribute msg
+tooltip =
+    attribute "data-title"

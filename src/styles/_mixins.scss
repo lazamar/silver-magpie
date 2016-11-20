@@ -17,3 +17,29 @@
     background-color: $c-border;
   }
 }
+
+@mixin custom-tooltip() {
+  &[data-title]:after {
+    content: attr(data-title);
+    position: absolute;
+    left: 0;
+    top: 100%;
+    z-index: 20;
+    padding: 4px 8px;
+    background-color: $bg-lvl-1;
+    color: $txt-secondary;
+    font-size: 12px;
+    font-family: $font-family-sans-serif;
+    white-space: nowrap;
+
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s linear .1s,opacity .1s linear;
+  }
+
+  &[data-title]:hover:after {
+    visibility: visible;
+    opacity: 1;
+    transition-delay: 0s;
+  }
+}

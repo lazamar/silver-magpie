@@ -15,6 +15,7 @@ import Twitter.Types exposing
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing ( onClick )
+import Generic.Utils exposing ( tooltip )
 import Array
 import Regex
 import Json.Encode
@@ -110,13 +111,17 @@ tweetActions tweet =
     div [ class "Tweet-actions" ]
         [ a [ class "Tweet-actions-reply zmdi zmdi-mail-reply" ] []
         , button
-            [ class
-                <| if tweet.favorited then
-                        "Tweet-actions-favourite--favorited"
-                    else
-                        "Tweet-actions-favourite"
-            , onClick <| Favorite ( not tweet.favorited ) tweet.id
-            ]
+            ( if tweet.retweeted then
+                [ class "Tweet-actions-favourite--favorited"
+                , onClick <| Favorite ( not tweet.favorited ) tweet.id
+                , tooltip "Favorite"
+                ]
+            else
+                [ class "Tweet-actions-favourite"
+                , onClick <| Favorite ( not tweet.favorited ) tweet.id
+                , tooltip "Unfavorite"
+                ]
+            )
             [ i [ class "zmdi zmdi-favorite" ] []
             , text (toStringNotZero tweet.favorite_count)
             ]
@@ -124,12 +129,12 @@ tweetActions tweet =
             ( if tweet.retweeted then
                 [ class "Tweet-actions-retweet--retweeted"
                 , onClick <| DoRetweet (not tweet.retweeted) tweet.id
-                , attribute "data-title" "Undo retweet"
+                , tooltip "Undo retweet"
                 ]
             else
                 [ class "Tweet-actions-retweet"
                 , onClick <| DoRetweet (not tweet.retweeted) tweet.id
-                , attribute "data-title" "Retweet"
+                , tooltip "Retweet"
                 ]
             )
             [ i [ class "zmdi zmdi-repeat" ] []
