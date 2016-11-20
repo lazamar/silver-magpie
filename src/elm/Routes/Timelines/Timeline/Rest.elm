@@ -64,8 +64,15 @@ favoriteTweet credentials shouldFavorite tweetId =
 
 -- TODO: A service worker must make sure that this
 -- request is always successfully sent, even when offline.
-doRetweet : Credentials -> String -> Cmd Msg
-doRetweet credentials tweetId =
-    Generic.Http.post credentials ( "/retweet?id=" ++ tweetId ) Http.empty
-        |> Http.fromJson string
-        |> Task.perform (\_ -> DoNothing) (\_ -> DoNothing)
+doRetweet : Credentials -> Bool -> String -> Cmd Msg
+doRetweet credentials shouldRetweet tweetId =
+    let
+        httpMethod =
+            if shouldRetweet then
+                (\cred endpoint -> Generic.Http.post cred endpoint Http.empty)
+            else
+                Generic.Http.delete
+    in
+        httpMethod credentials ( "/retweet?id=" ++ tweetId )
+            |> Http.fromJson string
+            |> Task.perform (\_ -> DoNothing) (\_ -> DoNothing)

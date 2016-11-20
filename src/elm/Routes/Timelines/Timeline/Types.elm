@@ -32,7 +32,7 @@ type Msg
   | ChangeRoute Route
   | FetchTweets FetchType
   | Favorite Bool String
-  | DoRetweet String
+  | DoRetweet Bool String
 
 
 type Broadcast =

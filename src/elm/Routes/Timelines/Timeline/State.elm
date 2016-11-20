@@ -89,11 +89,11 @@ update msg model =
             , Cmd.none
             )
 
-        DoRetweet tweetId ->
+        DoRetweet shouldRetweet tweetId ->
             ( { model
-              | tweets = registerRetweet tweetId model.tweets
+              | tweets = registerRetweet shouldRetweet tweetId model.tweets
               }
-            , doRetweet model.credentials tweetId
+            , doRetweet model.credentials shouldRetweet tweetId
             , Cmd.none
             )
 
@@ -113,14 +113,15 @@ registerFavorite toFavorite tweetId tweetList =
         List.map (applyToRelevantTweet tweetUpdate) tweetList
 
 
-registerRetweet : String -> List Tweet -> List Tweet
-registerRetweet tweetId tweetList =
+
+registerRetweet : Bool -> String -> List Tweet -> List Tweet
+registerRetweet shouldRetweet tweetId tweetList =
     let
         tweetUpdate tweet =
-            if tweet.id == tweetId && not tweet.retweeted then
+            if tweet.id == tweetId && xor tweet.retweeted shouldRetweet then
                 { tweet
-                | retweet_count = tweet.retweet_count + 1
-                , retweeted = True
+                | retweet_count = tweet.retweet_count + if shouldRetweet then 1 else -1
+                , retweeted = shouldRetweet
                 }
             else
                 tweet

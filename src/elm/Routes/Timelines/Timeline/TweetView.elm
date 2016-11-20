@@ -121,17 +121,17 @@ tweetActions tweet =
             , text (toStringNotZero tweet.favorite_count)
             ]
         , button
-            [ class
-                <| if tweet.retweeted then
-                        "Tweet-actions-retweet--retweeted"
-                    else
-                        "Tweet-actions-retweet"
-            , onClick
-                <| if not tweet.retweeted then
-                        DoRetweet tweet.id
-                    else
-                        DoNothing
-            ]
+            ( if tweet.retweeted then
+                [ class "Tweet-actions-retweet--retweeted"
+                , onClick <| DoRetweet (not tweet.retweeted) tweet.id
+                , alt "Undo retweet"
+                ]
+            else
+                [ class "Tweet-actions-retweet"
+                , onClick <| DoRetweet (not tweet.retweeted) tweet.id
+                , alt "Retweet"
+                ]
+            )
             [ i [ class "zmdi zmdi-repeat" ] []
             , text (toStringNotZero tweet.retweet_count)
             ]
