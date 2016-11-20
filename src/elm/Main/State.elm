@@ -7,17 +7,6 @@ import Routes.Timelines.Types as TimelinesT
 import Routes.Timelines.State as TimelinesS
 
 
-translate : (a -> Model) -> (b -> Msg) -> (c -> Msg) -> ( a, Cmd b, Cmd c ) -> ( Model, Cmd Msg )
-translate modelTag localMsgTag broadcastMsgTag ( model, localMsg, broadcastMsg ) =
-    ( modelTag model
-    , Cmd.batch
-        [ Cmd.map localMsgTag localMsg
-        , Cmd.map broadcastMsgTag broadcastMsg
-        ]
-    )
-
-
-
 
 -- INITIALISATION
 
@@ -75,3 +64,14 @@ update msg model =
 
                 _ ->
                     ( model, Cmd.none )
+
+
+
+translate : (a -> Model) -> (b -> Msg) -> (c -> Msg) -> ( a, Cmd b, Cmd c ) -> ( Model, Cmd Msg )
+translate modelTag localMsgTag broadcastMsgTag ( model, localMsg, broadcastMsg ) =
+    ( modelTag model
+    , Cmd.batch
+        [ Cmd.map localMsgTag localMsg
+        , Cmd.map broadcastMsgTag broadcastMsg
+        ]
+    )
