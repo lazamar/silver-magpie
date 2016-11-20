@@ -49,10 +49,13 @@ getTweets credentials position route =
 -- request is always successfully sent, even when offline.
 favoriteTweet : Credentials -> Bool -> String -> Cmd Msg
 favoriteTweet credentials shouldFavorite tweetId =
-    [ ( "id", Json.Encode.string tweetId)
-    , ( "favorite", Json.Encode.bool shouldFavorite )
-    ]
-        |> Generic.Http.toJsonBody
-        |> Generic.Http.post credentials "/favourite"
+    let
+        httpMethod =
+            if shouldFavorite then
+                (\cred id -> Generic.Http.post cred id Http.empty)
+            else
+                Generic.Http.delete
+    in
+        httpMethod credentials ( "/favourite?id=" ++ tweetId )
         |> Http.fromJson string
         |> Task.perform (\_ -> DoNothing) (\_ -> DoNothing)
