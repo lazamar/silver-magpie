@@ -3,10 +3,13 @@ module Routes.Timelines.Timeline.State exposing ( init, update, refreshTweets )
 import Routes.Timelines.Timeline.Rest exposing ( getTweets, favoriteTweet, doRetweet )
 import Routes.Timelines.Timeline.Types exposing (..)
 import Twitter.Types exposing ( Tweet, Retweet, Credentials )
+import Twitter.Encoders
 import Generic.Types exposing (never)
 import Generic.Utils exposing (toCmd)
+import Generic.LocalStorage
 import Main.Types
 import RemoteData exposing (..)
+import Json.Encode
 import Task
 import Http
 import Process
@@ -58,7 +61,7 @@ update msg model =
                         | tweets = combineTweets tweetsPosition newTweets model.tweets
                         , newTweets = NotAsked
                         }
-                    , Cmd.none
+                    , persistTimeline newTweets
                     , Cmd.none
                     )
 
@@ -169,3 +172,15 @@ resetTweetFetch tweetsPosition time =
 refreshTweets : Model -> ( Model, Cmd Msg, Cmd Broadcast )
 refreshTweets =
     update ( FetchTweets Refresh )
+
+
+
+-- Saves timeline to local storage
+persistTimeline : List Tweet -> Cmd Msg
+persistTimeline tweetList =
+    tweetList
+    |> List.map Twitter.Encoders.encodeTweet
+    |> Json.Encode.list
+    |> Json.Encode.encode 2
+    |> Generic.LocalStorage.setItem "Timeline"
+    |> \_ -> Cmd.none
