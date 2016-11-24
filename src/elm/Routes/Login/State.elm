@@ -2,15 +2,15 @@ module Routes.Login.State exposing ( init, update, logout )
 
 import Routes.Login.Types exposing
     ( Model
-    , UserInfo
     , Msg (..)
     , Broadcast ( Authenticated )
     )
-import Routes.Login.Rest exposing ( fetchUserInfo )
+import Routes.Login.Rest exposing ( fetchCredentials )
 import Generic.LocalStorage
 import Generic.UniqueID
 import Generic.Utils exposing ( toCmd )
 import RemoteData exposing ( RemoteData )
+import Twitter.Types exposing ( Credentials )
 import Task
 
 
@@ -18,22 +18,13 @@ import Task
 initialModel : () -> Model
 initialModel _ =
     let
-        userInfo =
-            getUserInfo ()
+        credentials =
+            getSavedCredentials ()
                 |> Maybe.map RemoteData.Success
                 |> Maybe.withDefault RemoteData.NotAsked
-
-        loggedIn =
-            case userInfo of
-                RemoteData.Success _ ->
-                    True
-
-                _ ->
-                    False
     in
         { sessionID = getSessionID ()
-        , userInfo = userInfo
-        , loggedIn = loggedIn
+        , credentials = credentials
         }
 
 
@@ -44,7 +35,7 @@ init _ =
         model = initialModel ()
     in
         ( model
-        , toCmd <| UserCredentialsFetch model.userInfo
+        , toCmd <| UserCredentialsFetch model.credentials
         , Cmd.none
         )
 
@@ -55,34 +46,32 @@ update msg model =
     case msg of
         UserCredentialsFetch request ->
             case request of
-                RemoteData.Success userInfo ->
-                    ( { model | userInfo = request, loggedIn = True }
-                    , Cmd.none
-                    , Generic.Utils.toCmd ( Authenticated userInfo.app_access_token )
+                RemoteData.Success credentials ->
+                    ( { model | credentials = request }
+                    , saveCredentials credentials
+                    , Generic.Utils.toCmd ( Authenticated credentials )
                     )
 
                 RemoteData.NotAsked ->
-                    ( { model | userInfo = RemoteData.Loading , loggedIn = False }
-                    , fetchUserInfo model.sessionID
+                    ( { model | credentials = RemoteData.Loading }
+                    , fetchCredentials model.sessionID
                     , Cmd.none
                     )
 
                 _ ->
-                    ( { model | userInfo = request , loggedIn = False }
+                    ( { model | credentials = request }
                     , Cmd.none
                     , Cmd.none
                     )
 
 
 
--- Gets user info from local storage
-getUserInfo : () -> Maybe UserInfo
-getUserInfo nothing =
-    let
-        app_access_token = Generic.LocalStorage.getItem "app_access_token"
-        screenName = Generic.LocalStorage.getItem "screenName"
-    in
-        Maybe.map2 UserInfo app_access_token screenName
+-- Generates a random uinique session ID
+generateSessionID : String -> String
+generateSessionID seed =
+    Generic.UniqueID.generate seed
+        |> Generic.LocalStorage.setItem "sessionID"
+        |> Debug.log "Generated session id"
 
 
 
@@ -101,12 +90,16 @@ getSessionID _ =
 
 
 
--- Generates a random uinique session ID
-generateSessionID : String -> String
-generateSessionID seed =
-    Generic.UniqueID.generate seed
-        |> Generic.LocalStorage.setItem "sessionID"
-        |> Debug.log "Generated session id"
+saveCredentials : Credentials -> Cmd msg
+saveCredentials credentials =
+    Generic.LocalStorage.setItem "credentials" credentials
+        |> \_ -> Cmd.none
+
+
+
+getSavedCredentials : () -> Maybe Credentials
+getSavedCredentials _ =
+    Generic.LocalStorage.getItem "credentials"
 
 
 

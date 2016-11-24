@@ -1,29 +1,27 @@
-module Routes.Login.Rest exposing ( fetchUserInfo )
+module Routes.Login.Rest exposing ( fetchCredentials )
 
 
-import Routes.Login.Types exposing ( Msg ( UserCredentialsFetch ), UserInfo )
+import Routes.Login.Types exposing ( Msg ( UserCredentialsFetch ) )
 import Generic.Http
 import Twitter.Types exposing ( Credentials )
 
 import Http
-import Json.Decode exposing ( Decoder, string )
+import Json.Decode exposing ( Decoder, string, at )
 import Json.Decode.Pipeline exposing ( decode, required )
 import Task
 import RemoteData
 
 
 
-fetchUserInfo : Credentials -> Cmd Msg
-fetchUserInfo sessionID =
+fetchCredentials : Credentials -> Cmd Msg
+fetchCredentials sessionID =
     Generic.Http.get sessionID "/app-get-access"
-        |> Http.fromJson userInfoDecoder
+        |> Http.fromJson credentialsDecoder
         |> Task.perform RemoteData.Failure RemoteData.Success
         |> Cmd.map UserCredentialsFetch
 
 
 
-userInfoDecoder : Decoder UserInfo
-userInfoDecoder =
-    decode UserInfo
-        |> required "app_access_token" string
-        |> required "screen_name" string
+credentialsDecoder : Decoder Credentials
+credentialsDecoder =
+    at [ "app_access_token" ] string

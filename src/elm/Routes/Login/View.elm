@@ -65,7 +65,7 @@ root model =
 
 loginContent : Model -> Html Msg
 loginContent model =
-    case model.userInfo of
+    case model.credentials of
         RemoteData.Failure error ->
             case error of
                 Http.BadResponse 401 errDescription ->

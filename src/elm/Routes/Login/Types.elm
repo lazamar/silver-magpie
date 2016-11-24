@@ -1,6 +1,5 @@
 module Routes.Login.Types exposing
     ( Model
-    , UserInfo
     , Msg (..)
     , Broadcast (..)
     )
@@ -8,23 +7,17 @@ module Routes.Login.Types exposing
 import RemoteData exposing ( WebData )
 import Twitter.Types exposing ( Credentials )
 
+
+
 type alias Model =
     { sessionID : String
-    , userInfo : WebData UserInfo
-    , loggedIn : Bool -- This will tell the main script whether to render the login page or not
-    }
-
-
-
-type alias UserInfo =
-    { app_access_token : String
-    , screenName : String
+    , credentials : WebData Credentials
     }
 
 
 
 type Msg
-    = UserCredentialsFetch ( WebData UserInfo )
+    = UserCredentialsFetch ( WebData Credentials )
 
 
 
