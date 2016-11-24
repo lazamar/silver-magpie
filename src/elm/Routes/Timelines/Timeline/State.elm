@@ -3,7 +3,7 @@ module Routes.Timelines.Timeline.State exposing ( init, update, refreshTweets )
 import Routes.Timelines.Timeline.Rest exposing ( getTweets, favoriteTweet, doRetweet )
 import Routes.Timelines.Timeline.Types exposing (..)
 import Twitter.Types exposing ( Tweet, Retweet, Credentials )
-import Twitter.Encoders
+import Twitter.Serialisers
 import Generic.Types exposing (never)
 import Generic.Utils exposing (toCmd)
 import Generic.LocalStorage
@@ -179,7 +179,7 @@ refreshTweets =
 persistTimeline : List Tweet -> Cmd Msg
 persistTimeline tweetList =
     tweetList
-    |> List.map Twitter.Encoders.encodeTweet
+    |> List.map Twitter.Serialisers.serialiseTweet
     |> Json.Encode.list
     |> Json.Encode.encode 2
     |> Generic.LocalStorage.setItem "Timeline"
