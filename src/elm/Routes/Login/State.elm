@@ -14,7 +14,6 @@ import Twitter.Types exposing ( Credentials )
 import Task
 
 
-
 initialModel : () -> Model
 initialModel _ =
     let
