@@ -1,4 +1,9 @@
-module Twitter.Decoders.TweetDecoder exposing (tweetDecoder)
+module Twitter.Decoders.TweetDecoder exposing
+    ( tweetDecoder
+    , userMentionsDecoder
+    , urlDecoder
+    , hashtagDecoder
+    )
 
 import Twitter.Types exposing
     ( Tweet

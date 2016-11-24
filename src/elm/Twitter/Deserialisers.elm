@@ -1,9 +1,9 @@
 module Twitter.Deserialisers exposing (..)
 
 import Twitter.Types exposing (..)
-import Twitter.Decoders exposing (..)
-import Json.Decode exposing ( Decoder, string, int, bool, list, oneOf )
-import Json.Decode.Pipeline exposing ( decode, required, nullable )
+import Twitter.Decoders.TweetDecoder exposing (..)
+import Json.Decode exposing ( Decoder, string, int, bool, list, oneOf, at )
+import Json.Decode.Pipeline exposing ( decode, required, hardcoded )
 
 
 deserialiseTweet : Decoder Tweet
@@ -17,7 +17,7 @@ deserialiseRetweet : Decoder Retweet
 deserialiseRetweet =
     deserialiseFirstPartOfTweet
         |> hardcoded Nothing
-        |> Json.Decode.Map Retweet
+        |> Json.Decode.map Retweet
 
 
 
@@ -48,14 +48,14 @@ deserialiseTweetEntitiesRecord : Decoder TweetEntitiesRecord
 deserialiseTweetEntitiesRecord =
     decode TweetEntitiesRecord
         |> required "hashtags" ( list hashtagDecoder )
-        |> required "media" ( list MediaRecord )
+        |> required "media" ( list deserialiseMediaRecord )
         |> required "urls" ( list urlDecoder )
         |> required "user_mentions" ( list userMentionsDecoder )
 
 
 
 deserialiseMediaRecord : Decoder MediaRecord
-deserialiseMediaRecord
+deserialiseMediaRecord =
     oneOf
         [ at [ "MultiPhotoMedia" ] deserialiseMultiPhoto
             |> Json.Decode.map MultiPhotoMedia
@@ -67,7 +67,7 @@ deserialiseMediaRecord
 
 deserialiseMultiPhoto : Decoder MultiPhoto
 deserialiseMultiPhoto =
-    decoder MultiPhoto =
+    decode MultiPhoto
         |> required "url" string
         |> required "display_url" string
         |> required "media_url_list" ( list string )
@@ -83,7 +83,7 @@ deserialiseVideo =
         |> required "content_type" string
 
 
-deserialiseMaybe : Decoder ( Maybe a )
+deserialiseMaybe : Decoder a -> Decoder (Maybe a)
 deserialiseMaybe decoder =
     oneOf
         [ at ["Nothing"] ( decode Nothing )

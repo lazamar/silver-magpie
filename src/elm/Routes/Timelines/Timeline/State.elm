@@ -4,12 +4,14 @@ import Routes.Timelines.Timeline.Rest exposing ( getTweets, favoriteTweet, doRet
 import Routes.Timelines.Timeline.Types exposing (..)
 import Twitter.Types exposing ( Tweet, Retweet, Credentials )
 import Twitter.Serialisers
+import Twitter.Deserialisers
 import Generic.Types exposing (never)
 import Generic.Utils exposing (toCmd)
 import Generic.LocalStorage
 import Main.Types
 import RemoteData exposing (..)
 import Json.Encode
+import Json.Decode
 import Task
 import Http
 import Process
@@ -23,7 +25,7 @@ initialModel : Credentials -> Model
 initialModel credentials =
     { credentials = credentials
     , tab = HomeRoute
-    , tweets = []
+    , tweets = getPersistedTimeline ()
     , newTweets = Loading
     }
 
@@ -179,8 +181,26 @@ refreshTweets =
 persistTimeline : List Tweet -> Cmd Msg
 persistTimeline tweetList =
     tweetList
-    |> List.map Twitter.Serialisers.serialiseTweet
-    |> Json.Encode.list
-    |> Json.Encode.encode 2
-    |> Generic.LocalStorage.setItem "Timeline"
-    |> \_ -> Cmd.none
+        |> List.map Twitter.Serialisers.serialiseTweet
+        |> Json.Encode.list
+        |> Json.Encode.encode 2
+        |> Generic.LocalStorage.setItem "Timeline"
+        |> \_ -> Cmd.none
+
+
+
+getPersistedTimeline : () -> List Tweet
+getPersistedTimeline _ =
+    let
+        storageContent =
+            Generic.LocalStorage.getItem "Timeline"
+                |> Maybe.withDefault ""
+                |> Json.Decode.decodeString
+                    (Json.Decode.list Twitter.Deserialisers.deserialiseTweet )
+    in
+        case storageContent of
+            Ok tweets ->
+                tweets
+
+            Err _ ->
+                []
