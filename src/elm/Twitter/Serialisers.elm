@@ -3,6 +3,10 @@ module Twitter.Serialisers exposing ( serialiseTweet )
 import Twitter.Types exposing (..)
 import Json.Encode exposing (string, int, bool, list, object)
 
+--
+--      These functions transform and Elm representation of a tweet
+--      into a String.
+--
 
 serialiseTweet : Tweet -> Json.Encode.Value
 serialiseTweet tweet =
@@ -26,14 +30,12 @@ serialiseRetweet maybeRetweet =
     case maybeRetweet of
         Nothing ->
             object
-                [ ( "type", string "Nothing" )
-                , ( "content", string "" )
+                [ ( "Nothing", string "Nothing" )
                 ]
 
         Just ( Retweet retweet ) ->
             object
-                [ ( "type", string "Just" )
-                , ( "content", serialiseTweet retweet )
+                [ ( "Just", serialiseTweet retweet )
                 ]
 
 
@@ -89,14 +91,12 @@ serialiseMediaRecord mediaRecord =
     case mediaRecord of
         MultiPhotoMedia multiPhoto ->
             object
-                [ ( "type", string "MultiPhotoMedia" )
-                , ( "content", serialiseMultiPhoto multiPhoto )
+                [ ( "MultiPhotoMedia" , serialiseMultiPhoto multiPhoto )
                 ]
 
         VideoMedia video ->
             object
-                [ ( "type", string "VideoMedia" )
-                , ( "content", serialiseVideoMedia video )
+                [ ( "VideoMedia", serialiseVideoMedia video )
                 ]
 
 
