@@ -13,19 +13,24 @@ import Html.Attributes exposing (..)
 root : Model -> Html Msg
 root model =
     div [ class "Login" ]
-        [ h1
+        [ div
             [ class "Login-title"]
-            [ span
-                [ class "Login-title-silver" ]
-                [ text "Silver"]
-            , text "Magpie"
-            ]
-        , h1
-            [ class "Login-title"]
-            [ span
-                [ class "Login-title-silver" ]
-                [ text "Silver"]
-            , text "Magpie"
+            [ img
+                [ class "Login-title-letters"
+                , src "../images/silver.svg"
+                ] []
+            , img
+                [ class "Login-title-letters"
+                , src "../images/magpie.svg"
+                ] []
+            , img
+                [ class "Login-title-letters"
+                , src "../images/silver.svg"
+                ] []
+            , img
+                [ class "Login-title-letters"
+                , src "../images/magpie.svg"
+                ] []
             ]
         , div
             [ class "Login-content" ]
