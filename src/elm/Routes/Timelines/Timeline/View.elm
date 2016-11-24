@@ -50,6 +50,6 @@ loadingBar request =
 
 errorView : Http.Error -> Html Msg
 errorView error =
-    div [ class "Tweets-error animated fadeInDown" ]
+    div [ class "Tweets-error animated slideInDown" ]
         [ text ( errorMessage error)
         ]
