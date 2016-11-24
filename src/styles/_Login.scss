@@ -7,12 +7,12 @@
 }
 
 @-webkit-keyframes titleFadeInDown1 {
-  from { transform: translate3D(20px, 10px, 0); opacity: .5 }
+  from { transform: translate3D(10px, 10px, 0); opacity: .5 }
   to { opacity: 1 }
 }
 
 @-webkit-keyframes titleFadeInDown2 {
-  from { transform: translate3D(-20px, 10px, 0); opacity: .5 }
+  from { transform: translate3D(-10px, 10px, 0); opacity: .5 }
   to { opacity: 1 }
 }
 
@@ -20,6 +20,7 @@
   pointer-events: none;
   user-select: none;
   position: absolute;
+  width: 100%;
   width: 100%;
   line-height: 0.8em;
   margin-left: -.05em;
@@ -36,12 +37,10 @@
   animation-fill-mode: forwards;
 
   &:nth-of-type(odd) {
-    top: 0px;
     animation-name: titleFadeInDown1;
   }
 
   &:nth-of-type(even) {
-    top: 185px;
     animation-name: titleFadeInDown2;
   }
 }
@@ -72,7 +71,7 @@
   width: 120px;
   display: block;
   margin: 0 auto 50px;
-  animation: logoFadeInDown 2s ease-out forwards;
+  animation: logoFadeInDown 1s ease-out forwards;
 }
 
 .Login-signinBtn {
