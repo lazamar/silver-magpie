@@ -17,6 +17,7 @@ import Http
 import Generic.Utils exposing ( errorMessage )
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing ( onClick )
 import Routes.Timelines.Timeline.TweetView exposing ( tweetView )
 import RemoteData exposing (..)
 
@@ -26,9 +27,7 @@ root model =
   div [ class "Tweets"]
     [ loadingBar model.newTweets
     , div [] ( List.indexedMap tweetView model.tweets )
-    , button
-        [ class "btn btn-default Tweets-loadMore" ]
-        [ text "Load more" ]
+    , loadMoreBtnView model.newTweets
     ]
 
 
@@ -56,3 +55,27 @@ errorView error =
     div [ class "Tweets-error animated slideInDown" ]
         [ text ( errorMessage error)
         ]
+
+
+
+loadMoreBtnView : WebData ( List Tweet ) -> Html Msg
+loadMoreBtnView tweetData =
+    let
+        actionAttr =
+            case tweetData of
+                Success _ ->
+                    [ onClick ( FetchTweets BottomTweets ) ]
+
+                NotAsked ->
+                    [ onClick ( FetchTweets BottomTweets ) ]
+
+                _ ->
+                    [ disabled True ]
+
+        attr =
+            List.concat
+                [ actionAttr
+                , [ class "btn btn-default Tweets-loadMore" ]
+                ]
+    in
+    button attr [ text "Load more" ]

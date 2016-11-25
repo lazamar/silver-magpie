@@ -71,6 +71,10 @@ input, textarea {
     background-color: $bg-lvl-3;
     outline: none;
   }
+
+  &[disabled] {
+    border: 1px solid rgba(0, 0, 0, .26);
+  }
 }
 
 
