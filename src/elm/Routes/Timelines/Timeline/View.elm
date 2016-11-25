@@ -26,6 +26,9 @@ root model =
   div [ class "Tweets"]
     [ loadingBar model.newTweets
     , div [] ( List.indexedMap tweetView model.tweets )
+    , button
+        [ class "btn btn-default Tweets-loadMore" ]
+        [ text "Load more" ]
     ]
 
 

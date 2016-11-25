@@ -8,6 +8,8 @@
   - Link preview in timeline
   - Add mentions view
   - Allow reply to tweets
+  - Save Roboto font locally
+  - Logout when the server returns 401.
 
 ## FIX
   - too long word in tweetbar

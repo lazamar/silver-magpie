@@ -38,6 +38,12 @@ input, textarea {
   border-radius: 2px;
 }
 
+.btn {
+  border-radius: $border-radius;
+  transition: all .2s ease;
+  cursor: auto;
+}
+
 .btn-icon {
   font-size: 15px;
   line-height: 1em;
