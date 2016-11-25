@@ -5,6 +5,7 @@ import Routes.Timelines.TweetBar.Rest exposing ( sendTweet, fetchHandlerSuggesti
 import Routes.Timelines.TweetBar.Handler as TwHandler exposing ( Handler, HandlerMatch )
 import Twitter.Types exposing ( Credentials )
 import Generic.Utils exposing ( toCmd )
+import Generic.LocalStorage
 import Generic.Types exposing
     ( SubmissionData
         ( Success
@@ -34,7 +35,7 @@ initialModel : Credentials -> Model
 initialModel credentials =
     { credentials = credentials
     , submission = NotSent
-    , tweetText = ""
+    , tweetText = getPersistedTweetText ()
     , handlerSuggestions = emptySuggestions
     }
 
@@ -85,7 +86,10 @@ update msg model =
                         , userSelected = Nothing
                         }
                     }
-                , fetchCommand
+                , Cmd.batch
+                    [ fetchCommand
+                    , persistTweetText text
+                    ]
                 , Cmd.none
                 )
 
@@ -234,3 +238,17 @@ resetTweetText time =
     Process.sleep time
         `Task.andThen` Task.succeed
         |> Task.perform never (\_ -> TweetSend NotSent)
+
+
+
+persistTweetText : String -> Cmd Msg
+persistTweetText text =
+    Generic.LocalStorage.setItem "TweetText" text
+        |> \_ -> Cmd.none
+
+
+
+getPersistedTweetText : () -> String
+getPersistedTweetText _ =
+    Generic.LocalStorage.getItem "TweetText"
+        |> Maybe.withDefault ""
