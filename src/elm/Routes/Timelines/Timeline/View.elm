@@ -20,15 +20,16 @@ import Html.Attributes exposing (..)
 import Html.Events exposing ( onClick )
 import Routes.Timelines.Timeline.TweetView exposing ( tweetView )
 import RemoteData exposing (..)
+import List.Extra
 
 
 root : Model -> Html Msg
 root model =
-  div [ class "Tweets"]
-    [ loadingBar model.newTweets
-    , div [] ( List.indexedMap tweetView model.tweets )
-    , loadMoreBtnView model.newTweets
-    ]
+    div [ class "Tweets"]
+        [ loadingBar model.newTweets
+        , div [] ( List.indexedMap tweetView model.tweets )
+        , loadMoreBtnView model.newTweets model.tweets
+        ]
 
 
 
@@ -58,16 +59,21 @@ errorView error =
 
 
 
-loadMoreBtnView : WebData ( List Tweet ) -> Html Msg
-loadMoreBtnView tweetData =
+loadMoreBtnView : WebData ( List Tweet ) -> ( List Tweet ) -> Html Msg
+loadMoreBtnView newTweets currentTweets =
     let
-        actionAttr =
-            case tweetData of
-                Success _ ->
-                    [ onClick ( FetchTweets BottomTweets ) ]
+        fetchType =
+            case List.Extra.last currentTweets of
+                Nothing ->
+                    Refresh
 
+                Just lastTweet ->
+                    BottomTweets lastTweet.id
+
+        actionAttr =
+            case newTweets of
                 NotAsked ->
-                    [ onClick ( FetchTweets BottomTweets ) ]
+                    [ onClick ( FetchTweets fetchType ) ]
 
                 _ ->
                     [ disabled True ]

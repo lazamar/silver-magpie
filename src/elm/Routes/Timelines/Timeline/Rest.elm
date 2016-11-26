@@ -44,7 +44,7 @@ getTweets credentials fetchType route =
                     ""
 
                 BottomTweets tweetId ->
-                    tweetId
+                    (Debug.log "Tweet id" tweetId)
 
     in
         Generic.Http.get credentials ("/" ++ section ++ "?fromId=" ++ fromId)
