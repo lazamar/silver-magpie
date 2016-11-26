@@ -1,4 +1,4 @@
-module Routes.Timelines.TweetBar.State exposing ( init, update )
+module Routes.Timelines.TweetBar.State exposing ( init, update, submitTweet )
 
 import Routes.Timelines.TweetBar.Types exposing (..)
 import Routes.Timelines.TweetBar.Rest exposing ( sendTweet, fetchHandlerSuggestion )
@@ -243,3 +243,9 @@ getPersistedTweetText : () -> String
 getPersistedTweetText _ =
     Generic.LocalStorage.getItem "TweetText"
         |> Maybe.withDefault ""
+
+
+-- Public
+submitTweet : Model -> ( Model, Cmd Msg, Cmd Broadcast )
+submitTweet =
+    update SubmitTweet

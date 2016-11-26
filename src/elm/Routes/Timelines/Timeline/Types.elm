@@ -34,7 +34,9 @@ type Msg
   | Favorite Bool TweetId
   | DoRetweet Bool TweetId
   | MsgLogout
+  | MsgSubmitTweet
 
 
-type Broadcast =
-    Logout
+type Broadcast
+    = Logout
+    | SubmitTweet

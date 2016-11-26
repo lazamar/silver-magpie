@@ -112,7 +112,7 @@ actionBar =
             [ class "Timeline-actions-right" ]
             [ button
                 [ class "zmdi zmdi-mail-send Timeline-sendBtn btn btn-default btn-icon"
-                -- , onClick MsgSubmitTweet
+                , onClick MsgSubmitTweet
                 , tooltip "Send"
                 ] []
             , button

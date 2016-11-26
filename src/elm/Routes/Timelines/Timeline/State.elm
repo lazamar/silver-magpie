@@ -112,6 +112,12 @@ update msg model =
             , toCmd Logout
             )
 
+        MsgSubmitTweet ->
+            ( model
+            , Cmd.none
+            , toCmd SubmitTweet
+            )
+
 
 registerFavorite : Bool -> String -> List Tweet -> List Tweet
 registerFavorite toFavorite tweetId tweetList =
