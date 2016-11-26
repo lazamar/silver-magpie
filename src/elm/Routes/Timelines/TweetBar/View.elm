@@ -4,7 +4,7 @@ module Routes.Timelines.TweetBar.View exposing ( root )
 import Routes.Timelines.TweetBar.Types exposing (..)
 import Routes.Timelines.TweetBar.Handler as TwHandler
 import Twitter.Types exposing ( User )
-import Generic.Utils exposing ( errorMessage, tooltip )
+import Generic.Utils exposing ( errorMessage )
 import Generic.Animations
 import Generic.Types exposing
     ( SubmissionData
@@ -30,8 +30,7 @@ root model =
     case model.submission of
         NotSent ->
             div [ class "TweetBar"]
-                [ actionBar
-                , suggestions model.handlerSuggestions.users model.handlerSuggestions.userSelected
+                [ suggestions model.handlerSuggestions.users model.handlerSuggestions.userSelected
                 , inputBoxView model.tweetText ( RemoteData.toMaybe model.handlerSuggestions.users )
                 ]
 
@@ -113,41 +112,6 @@ suggestions users userSelected =
 
         _ ->
             text ""
-
-
-
-actionBar : Html Msg
-actionBar =
-    div [ class "TweetBar-actions" ]
-        [ div
-            [ class "TweetBar-actions-left" ]
-            [ button
-                [ class "btn btn-default TweetBar-actions-route--selected"]
-                [ text "Home" ]
-            , button
-                [ class "btn btn-default"]
-                [ text "Mentions" ]
-            ]
-        , div
-            [ class "TweetBar-actions-right" ]
-            [ button
-                [ class "zmdi zmdi-mail-send TweetBar-sendBtn btn btn-default btn-icon"
-                , onClick SubmitTweet
-                , tooltip "Send"
-                ] []
-            , button
-                [ class "zmdi zmdi-refresh-alt btn btn-default btn-icon"
-                , onClick MsgRefreshTweets
-                , tooltip "Refresh"
-                ] []
-            , button
-                [ class "zmdi zmdi-power btn btn-default btn-icon"
-                , onClick MsgLogout
-                , tooltip "Logout"
-                ] []
-            ]
-        ]
-
 
 
 

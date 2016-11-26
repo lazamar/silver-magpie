@@ -1,9 +1,15 @@
+.Timeline {
+  display: flex;
+  flex-flow: column nowrap;
+  height: 100%;
+  width: 100%;
+}
+
 .Tweets {
   position: relative;
   height: 100%;
   width: 100%;
   overflow-y: scroll;
-  background-color: $bg-lvl-1;
   @include custom-scrollbar();
 }
 
@@ -206,4 +212,33 @@
     from {left: 50%; width: 0;z-index:100;}
     33.3333% {left: 0; width: 100%;z-index: 10;}
     to {left: 0; width: 100%;}
+}
+
+.Timeline-actions {
+  display: block;
+  position: relative;
+  width: 100%;
+  background-color: $bg-lvl-1;
+  border: 1px solid $c-border;
+  border-width: 0;
+  border-top-width: 1px;
+  padding: $std-el-distance $side-padding;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+
+  @include clearfix();
+}
+
+.Timeline-actions-left {
+  float: left;
+}
+
+.Timeline-actions-right {
+  float: right;
+}
+
+.Timeline-actions-route--selected {
+  background-color: $bg-lvl-2;
+}
+
+.Timeline-sendBtn {
 }

@@ -1,43 +1,19 @@
 .TweetBar {
   flex-shrink: 0;
   background-color: $bg-lvl-1;
-  border: 1px solid $c-border;
-  border-width: 0;
-  border-top-width: 1px;
-  padding: 4px $side-padding 1em;
+  padding: $std-el-distance $side-padding 1em;
   width: 100%;
-  min-height: 150px;
   display: flex;
   flex-flow: column nowrap;
-  box-shadow: 0 0 10px $c-border;
-
   transition: all .3s ease-in-out;
 	position: relative;
-  box-shadow:
-    0 0 10px rgba(0, 0, 0, 0.13);
-    // 0 0 40px rgba(0, 0, 0, 0.05) inset;
-}
-
-.TweetBar-actions {
-  display: flex;
-  flex-flow: row nowrap;
-  width: 100%;
-  margin-bottom: 5px;
-  justify-content: space-between;
-}
-
-.TweetBar-actions-route--selected {
-  background-color: $bg-lvl-2;
-}
-
-.TweetBar-sendBtn {
 }
 
 .TweetBar-textBox {
   padding: .5em 7px;
   width: 100%;
   resize: none;
-  min-height: 8em;
+  min-height: 5.6em;
   background-color: white;
   border: 1px solid $c-border;
   border-radius: 2px;

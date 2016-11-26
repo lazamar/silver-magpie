@@ -14,7 +14,7 @@ import Twitter.Types exposing
     )
 
 import Http
-import Generic.Utils exposing ( errorMessage )
+import Generic.Utils exposing ( errorMessage, tooltip )
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing ( onClick )
@@ -25,10 +25,14 @@ import List.Extra
 
 root : Model -> Html Msg
 root model =
-    div [ class "Tweets"]
-        [ loadingBar model.newTweets
-        , div [] ( List.indexedMap tweetView model.tweets )
-        , loadMoreBtnView model.newTweets model.tweets
+    div [ class "Timeline"]
+        [ div
+            [ class "Tweets"]
+            [ loadingBar model.newTweets
+            , div [] ( List.indexedMap tweetView model.tweets )
+            , loadMoreBtnView model.newTweets model.tweets
+            ]
+        , actionBar
         ]
 
 
@@ -85,3 +89,37 @@ loadMoreBtnView newTweets currentTweets =
                 ]
     in
     button attr [ text "Load more" ]
+
+
+
+actionBar : Html Msg
+actionBar =
+    div [ class "Timeline-actions" ]
+        [ div
+            [ class "Timeline-actions-left" ]
+            [ button
+                [ class "btn btn-default Timeline-actions-route--selected"]
+                [ text "Home" ]
+            , button
+                [ class "btn btn-default"]
+                [ text "Mentions" ]
+            ]
+        , div
+            [ class "Timeline-actions-right" ]
+            [ button
+                [ class "zmdi zmdi-mail-send Timeline-sendBtn btn btn-default btn-icon"
+                -- , onClick SubmitTweet
+                , tooltip "Send"
+                ] []
+            , button
+                [ class "zmdi zmdi-refresh-alt btn btn-default btn-icon"
+                -- , onClick MsgRefreshTweets
+                , tooltip "Refresh"
+                ] []
+            , button
+                [ class "zmdi zmdi-power btn btn-default btn-icon"
+                -- , onClick MsgLogout
+                , tooltip "Logout"
+                ] []
+            ]
+        ]
