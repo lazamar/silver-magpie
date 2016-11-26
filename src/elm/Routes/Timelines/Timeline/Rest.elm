@@ -38,7 +38,7 @@ getTweets credentials fetchType route =
                 MentionsRoute ->
                     "mentions"
 
-        fromId =
+        maxId =
             case fetchType of
                 Refresh ->
                     ""
@@ -47,7 +47,7 @@ getTweets credentials fetchType route =
                     (Debug.log "Tweet id" tweetId)
 
     in
-        Generic.Http.get credentials ("/" ++ section ++ "?fromId=" ++ fromId)
+        Generic.Http.get credentials ("/" ++ section ++ "?maxId=" ++ maxId)
             |> Http.fromJson serverMsgDecoder
             |> Task.perform Failure Success
             |> Cmd.map (TweetFetch fetchType)
