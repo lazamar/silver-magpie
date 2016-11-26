@@ -32,7 +32,7 @@ root model =
             , div [] ( List.indexedMap tweetView model.tweets )
             , loadMoreBtnView model.newTweets model.tweets
             ]
-        , actionBar
+        , actionBar model.tab
         ]
 
 
@@ -92,18 +92,30 @@ loadMoreBtnView newTweets currentTweets =
 
 
 
-actionBar : Html Msg
-actionBar =
+actionBar : Route -> Html Msg
+actionBar route =
     div [ class "Timeline-actions" ]
         [ div
             [ class "Timeline-actions-left" ]
             [ button
-                [ class "btn btn-default Timeline-actions-route--selected"
+                [ class <| case route of
+                    HomeRoute ->
+                        "btn btn-default Timeline-actions-route--selected"
+
+                    _ ->
+                        "btn btn-default Timeline-actions-route"
+
                 , onClick ( ChangeRoute HomeRoute )
                 ]
                 [ text "Home" ]
             , button
-                [ class "btn btn-default"
+                [ class <| case route of
+                    MentionsRoute ->
+                        "btn btn-default Timeline-actions-route--selected"
+
+                    _ ->
+                        "btn btn-default Timeline-actions-route"
+
                 , onClick ( ChangeRoute MentionsRoute )
                 ]
                 [ text "Mentions" ]

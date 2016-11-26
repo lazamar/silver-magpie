@@ -226,6 +226,14 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 
   @include clearfix();
+
+  .btn {
+    margin-right: $std-el-distance;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
 }
 
 .Timeline-actions-left {

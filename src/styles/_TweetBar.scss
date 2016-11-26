@@ -1,7 +1,7 @@
 .TweetBar {
   flex-shrink: 0;
   background-color: $bg-lvl-1;
-  padding: $std-el-distance $side-padding 1em;
+  padding: 0 $side-padding 1em;
   width: 100%;
   display: flex;
   flex-flow: column nowrap;
