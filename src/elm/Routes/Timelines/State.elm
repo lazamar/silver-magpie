@@ -36,8 +36,8 @@ update : Msg -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
 update msg model =
     case msg of
     -- Broadcast
-        TimelineBroadcast subMsg ->
-            ( model, Cmd.none, Cmd.none )
+        TimelineBroadcast (TimelineT.Logout) ->
+            ( model, Cmd.none, toCmd Logout )
 
         TweetBarBroadcast subMsg ->
             case subMsg of

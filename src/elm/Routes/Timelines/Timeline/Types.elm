@@ -36,4 +36,4 @@ type Msg
 
 
 type Broadcast =
-    Never
+    Logout

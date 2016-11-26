@@ -68,11 +68,17 @@ update msg model =
                     , Cmd.none
                     )
 
-                Failure error ->
+                Failure ( Http.BadResponse 401 _ )->
                     ( { model | newTweets = request }
                     , Cmd.none
-                    , Cmd.none
+                    , toCmd Logout
                     -- , resetTweetFetch tweetsPosition 3000
+                    )
+
+                Failure _ ->
+                    ( { model | newTweets = request }
+                    , resetTweetFetch tweetsPosition 3000
+                    , Cmd.none
                     )
 
                 _ ->
