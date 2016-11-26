@@ -54,6 +54,7 @@ input, textarea {
   text-align: center;
   transition: background-color .2s linear;
   cursor: auto;
+  @include custom-tooltip();
 }
 
 

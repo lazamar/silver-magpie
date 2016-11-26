@@ -4,7 +4,7 @@ module Routes.Timelines.TweetBar.View exposing ( root )
 import Routes.Timelines.TweetBar.Types exposing (..)
 import Routes.Timelines.TweetBar.Handler as TwHandler
 import Twitter.Types exposing ( User )
-import Generic.Utils exposing ( errorMessage )
+import Generic.Utils exposing ( errorMessage, tooltip )
 import Generic.Animations
 import Generic.Types exposing
     ( SubmissionData
@@ -119,19 +119,35 @@ suggestions users userSelected =
 actionBar : Html Msg
 actionBar =
     div [ class "TweetBar-actions" ]
-        [ button
-            [ class "zmdi zmdi-mail-send TweetBar-sendBtn btn btn-default btn-icon"
-            , onClick SubmitTweet
-            ] []
-        , button
-            [ class "zmdi zmdi-refresh-alt btn btn-default btn-icon"
-            , onClick MsgRefreshTweets
-            ] []
-        , button
-            [ class "zmdi zmdi-power btn btn-default btn-icon"
-            , onClick MsgLogout
-            ] []
+        [ div
+            [ class "TweetBar-actions-left" ]
+            [ button
+                [ class "btn btn-default TweetBar-actions-route--selected"]
+                [ text "Home" ]
+            , button
+                [ class "btn btn-default"]
+                [ text "Mentions" ]
+            ]
+        , div
+            [ class "TweetBar-actions-right" ]
+            [ button
+                [ class "zmdi zmdi-mail-send TweetBar-sendBtn btn btn-default btn-icon"
+                , onClick SubmitTweet
+                , tooltip "Send"
+                ] []
+            , button
+                [ class "zmdi zmdi-refresh-alt btn btn-default btn-icon"
+                , onClick MsgRefreshTweets
+                , tooltip "Refresh"
+                ] []
+            , button
+                [ class "zmdi zmdi-power btn btn-default btn-icon"
+                , onClick MsgLogout
+                , tooltip "Logout"
+                ] []
+            ]
         ]
+
 
 
 

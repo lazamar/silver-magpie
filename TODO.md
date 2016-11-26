@@ -1,6 +1,5 @@
 ## TODO
   - Link shrinking in tweetbar
-  - Infinite scroll
   - Show user info when hovering handler in timeline
   - Show related tweet in timeline
   - Use service worker to make requests snappy and reliable
@@ -14,6 +13,10 @@
 ## FIX
   - too long word in tweetbar
   - too long text in tweetbar
+
+## TEMPORARILY DONE
+  - Infinite scroll // through a load-more button
+
 
 ## Done
   - Allow retweeting and favouriting
