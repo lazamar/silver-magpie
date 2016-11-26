@@ -1,4 +1,4 @@
-module Routes.Timelines.TweetBar.Rest exposing ( sendTweet, fetchHandlerSuggestion, sendLogoutMessasge )
+module Routes.Timelines.TweetBar.Rest exposing ( sendTweet, fetchHandlerSuggestion )
 
 import Generic.Types as SubmissionData
 import Generic.Http
@@ -58,11 +58,3 @@ fetchHandlerSuggestion credentials handler =
         |> Http.fromJson userListDecoder
         |> Task.perform RemoteData.Failure RemoteData.Success
         |> Cmd.map ( SuggestedHandlersFetch handler )
-
-
-
-sendLogoutMessasge : Credentials -> Cmd Msg
-sendLogoutMessasge credentials =
-    Generic.Http.delete credentials "/app-revoke-access"
-        |> Http.fromJson string
-        |> Task.perform ( \_ -> DoNothing ) ( \_ -> DoNothing )

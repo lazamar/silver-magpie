@@ -1,7 +1,7 @@
 module Routes.Timelines.TweetBar.State exposing ( init, update )
 
 import Routes.Timelines.TweetBar.Types exposing (..)
-import Routes.Timelines.TweetBar.Rest exposing ( sendTweet, fetchHandlerSuggestion, sendLogoutMessasge )
+import Routes.Timelines.TweetBar.Rest exposing ( sendTweet, fetchHandlerSuggestion )
 import Routes.Timelines.TweetBar.Handler as TwHandler exposing ( Handler, HandlerMatch )
 import Twitter.Types exposing ( Credentials )
 import Generic.Utils exposing ( toCmd )
@@ -220,15 +220,6 @@ update msg model =
 
                 _ ->
                     ( { model | submission = status }, Cmd.none, Cmd.none)
-
-        MsgRefreshTweets ->
-            ( model, Cmd.none, toCmd RefreshTweets)
-
-        MsgLogout ->
-            ( model
-            , sendLogoutMessasge model.credentials
-            , toCmd Logout
-            )
 
 
 

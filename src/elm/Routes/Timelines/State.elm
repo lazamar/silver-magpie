@@ -39,14 +39,9 @@ update msg model =
         TimelineBroadcast (TimelineT.Logout) ->
             ( model, Cmd.none, toCmd Logout )
 
-        TweetBarBroadcast subMsg ->
-            case subMsg of
-                TweetBarT.Logout ->
-                    ( model, Cmd.none, toCmd Logout )
-
-                TweetBarT.RefreshTweets ->
-                            TimelineS.refreshTweets model.timelineModel
-                                |> timelineUpdate model
+        TweetBarBroadcast ( TweetBarT.RefreshTweets ) ->
+            TimelineS.refreshTweets model.timelineModel
+                |> timelineUpdate model
     -- Msg
         TimelineMsg subMsg ->
             TimelineS.update subMsg model.timelineModel

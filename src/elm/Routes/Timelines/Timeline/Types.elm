@@ -33,6 +33,7 @@ type Msg
   | FetchTweets FetchType
   | Favorite Bool TweetId
   | DoRetweet Bool TweetId
+  | MsgLogout
 
 
 type Broadcast =

@@ -1,4 +1,4 @@
-module Routes.Timelines.Timeline.Rest exposing ( getTweets, favoriteTweet, doRetweet )
+module Routes.Timelines.Timeline.Rest exposing ( getTweets, favoriteTweet, doRetweet, sendLogoutMessasge )
 
 import Routes.Timelines.Timeline.Types exposing (..)
 import Twitter.Decoders exposing ( tweetDecoder )
@@ -85,3 +85,11 @@ doRetweet credentials shouldRetweet tweetId =
         httpMethod credentials ( "/retweet?id=" ++ tweetId )
             |> Http.fromJson string
             |> Task.perform (\_ -> DoNothing) (\_ -> DoNothing)
+
+
+
+sendLogoutMessasge : Credentials -> Cmd Msg
+sendLogoutMessasge credentials =
+    Generic.Http.delete credentials "/app-revoke-access"
+        |> Http.fromJson string
+        |> Task.perform ( \_ -> DoNothing ) ( \_ -> DoNothing )

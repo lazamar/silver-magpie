@@ -98,27 +98,31 @@ actionBar =
         [ div
             [ class "Timeline-actions-left" ]
             [ button
-                [ class "btn btn-default Timeline-actions-route--selected"]
+                [ class "btn btn-default Timeline-actions-route--selected"
+                , onClick ( ChangeRoute HomeRoute )
+                ]
                 [ text "Home" ]
             , button
-                [ class "btn btn-default"]
+                [ class "btn btn-default"
+                , onClick ( ChangeRoute MentionsRoute )
+                ]
                 [ text "Mentions" ]
             ]
         , div
             [ class "Timeline-actions-right" ]
             [ button
                 [ class "zmdi zmdi-mail-send Timeline-sendBtn btn btn-default btn-icon"
-                -- , onClick SubmitTweet
+                -- , onClick MsgSubmitTweet
                 , tooltip "Send"
                 ] []
             , button
                 [ class "zmdi zmdi-refresh-alt btn btn-default btn-icon"
-                -- , onClick MsgRefreshTweets
+                , onClick ( FetchTweets Refresh )
                 , tooltip "Refresh"
                 ] []
             , button
                 [ class "zmdi zmdi-power btn btn-default btn-icon"
-                -- , onClick MsgLogout
+                , onClick MsgLogout
                 , tooltip "Logout"
                 ] []
             ]

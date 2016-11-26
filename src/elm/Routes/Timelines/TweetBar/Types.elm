@@ -46,13 +46,10 @@ type Msg
     | LetterInput String
     | SubmitTweet
     | TweetSend (SubmissionData Http.Error TweetPostedResponse String)
-    | MsgRefreshTweets
-    | MsgLogout
     | SuggestedHandlersFetch Handler ( WebData ( List User ) )
     | SuggestedHandlersNavigation KeyboardNavigation
 
 
 
 type Broadcast
-    = Logout
-    | RefreshTweets
+    = RefreshTweets

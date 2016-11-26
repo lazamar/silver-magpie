@@ -87,11 +87,8 @@ update msg model =
                     , Cmd.none
                     )
 
-        ChangeRoute route ->
-            ( { model | tab = route }
-            , Cmd.none
-            , Cmd.none
-            )
+        ChangeRoute newRoute ->
+            update ( FetchTweets Refresh ) { model | tab = newRoute, tweets = [] }
 
         Favorite shouldFavorite tweetId ->
             ( { model
@@ -107,6 +104,12 @@ update msg model =
               }
             , doRetweet model.credentials shouldRetweet tweetId
             , Cmd.none
+            )
+
+        MsgLogout ->
+            ( model
+            , Cmd.none
+            , toCmd Logout
             )
 
 
