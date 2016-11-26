@@ -2,7 +2,7 @@ module Routes.Timelines.Timeline.Types exposing (..)
 
 import Http
 import RemoteData exposing (WebData)
-import Twitter.Types exposing ( Tweet, Credentials )
+import Twitter.Types exposing ( Tweet, Credentials, TweetId )
 
 
 type alias Model =
@@ -22,7 +22,7 @@ type Route
 
 type FetchType
     = Refresh
-    | BottomTweets
+    | BottomTweets TweetId
 
 
 
@@ -31,8 +31,8 @@ type Msg
   | TweetFetch FetchType ( WebData (List Tweet) )
   | ChangeRoute Route
   | FetchTweets FetchType
-  | Favorite Bool String
-  | DoRetweet Bool String
+  | Favorite Bool TweetId
+  | DoRetweet Bool TweetId
 
 
 type Broadcast =

@@ -28,7 +28,7 @@ serverMsgDecoder =
 
 
 getTweets : Credentials -> FetchType -> Route -> Cmd Msg
-getTweets credentials position route =
+getTweets credentials fetchType route =
     let
         section =
             case route of
@@ -38,11 +38,20 @@ getTweets credentials position route =
                 MentionsRoute ->
                     "mentions"
 
+        fromId =
+            case fetchType of
+                Refresh ->
+                    ""
+
+                BottomTweets tweetId ->
+                    tweetId
+
     in
-        Generic.Http.get credentials ("/" ++ section)
+        Generic.Http.get credentials ("/" ++ section ++ "?fromId=" ++ fromId)
             |> Http.fromJson serverMsgDecoder
             |> Task.perform Failure Success
-            |> Cmd.map (TweetFetch position)
+            |> Cmd.map (TweetFetch fetchType)
+
 
 
 -- TODO: A service worker must make sure that this

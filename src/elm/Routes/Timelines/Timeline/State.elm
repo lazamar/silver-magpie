@@ -10,6 +10,7 @@ import Generic.Utils exposing (toCmd)
 import Generic.LocalStorage
 import Main.Types
 import RemoteData exposing (..)
+import List.Extra
 import Json.Encode
 import Json.Decode
 import Task
@@ -60,7 +61,7 @@ update msg model =
             case request of
                 Success newTweets ->
                     ( { model
-                        | tweets = combineTweets tweetsPosition newTweets model.tweets
+                        | tweets = combineTweets tweetsPosition model.tweets newTweets
                         , newTweets = NotAsked
                         }
                     , persistTimeline newTweets
@@ -153,13 +154,27 @@ applyToRelevantTweet func tweet =
 
 
 combineTweets : FetchType -> (List Tweet) -> (List Tweet) -> (List Tweet)
-combineTweets tweetsPosition newTweets oldTweets =
+combineTweets tweetsPosition oldTweets newTweets =
       case tweetsPosition of
           Refresh ->
               newTweets
 
-          BottomTweets ->
-              List.concat [ oldTweets, newTweets ]
+          BottomTweets lastTweetIdAtFetchTime->
+              List.Extra.last oldTweets
+                |> Maybe.map
+                    (\lastTweetNow ->
+                        let
+                            tweetListChangedSinceFetch =
+                                lastTweetIdAtFetchTime /= lastTweetNow.id
+                        in
+                            if tweetListChangedSinceFetch then
+                                oldTweets
+                            else
+                                List.concat [ oldTweets, newTweets ]
+                    )
+                -- We set the default to newtweets because if oldTweets does not
+                -- have a last element, we are basically performing a refresh.
+                |> Maybe.withDefault newTweets
 
 
 

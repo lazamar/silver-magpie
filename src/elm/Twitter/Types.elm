@@ -1,7 +1,13 @@
 module Twitter.Types exposing (..)
 
 
+
 type alias Credentials
+    = String
+
+
+
+type alias TweetId
     = String
 
 
