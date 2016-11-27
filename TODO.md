@@ -12,14 +12,14 @@
   - Send error reports to the server
 
 ## FIX
-  - Reload when opening widget
-  - Reload conditionally when changing tabs
 
 ## TEMPORARILY DONE
+  - Reload conditionally when changing tabs // we are currently reloading all tabs on widget open
   - Infinite scroll // through a load-more button
 
 
 ## Done
+  - Reload when opening widget
   - Clear tweetbar after posting tweet
   - Allow retweeting and favouriting
   - too long text in tweetbar

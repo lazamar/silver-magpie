@@ -41,12 +41,10 @@ initialModel credentials =
 init : Credentials -> ( Model, Cmd Msg, Cmd Broadcast )
 init credentials =
     ( initialModel credentials
-    , Cmd.none
-    -- FIXME: Uncomment this
-    -- , Cmd.batch
-    --     [ toCmd ( FetchTweets HomeTab Refresh )
-    --     , toCmd ( FetchTweets MentionsTab Refresh )
-    --     ]
+    , Cmd.batch
+        [ toCmd ( FetchTweets HomeTab Refresh )
+        , toCmd ( FetchTweets MentionsTab Refresh )
+        ]
     , Cmd.none
     )
 
@@ -58,19 +56,19 @@ init credentials =
 
 update : Msg -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
 update msg model =
-    let
-        currentTab =
-            getModelTab model.tab model
-    in
     case msg of
         DoNothing ->
             ( model, Cmd.none, Cmd.none )
 
-        FetchTweets route fetchType ->
-            ( updateModelTab route model { currentTab | newTweets = Loading }
-            , getTweets model.credentials fetchType model.tab
-            , Cmd.none
-            )
+        FetchTweets tabName fetchType ->
+            let
+                tabBeingFetched =
+                    getModelTab tabName model
+            in
+                ( updateModelTab tabName model { tabBeingFetched | newTweets = Loading }
+                , getTweets model.credentials fetchType tabName
+                , Cmd.none
+                )
 
 
         TweetFetch route fetchType request ->
@@ -103,7 +101,6 @@ update msg model =
                         ( updateModelTab route model { routeTab | newTweets = request }
                         , resetTweetFetch route fetchType 3000
                         , Cmd.none
-                        -- , resetTweetFetch fetchType 3000
                         )
 
                     _ ->
@@ -113,26 +110,34 @@ update msg model =
                         )
 
         ChangeTab newRoute ->
-            -- FIXME: Conditionally reload this
+            -- TODO: Conditionally reload this
             update DoNothing { model | tab = newRoute }
 
         Favorite shouldFavorite tweetId ->
-            ( updateModelTab model.tab model
-                { currentTab
-                | tweets = registerFavorite shouldFavorite tweetId currentTab.tweets
-                }
-            , favoriteTweet model.credentials shouldFavorite tweetId
-            , Cmd.none
-            )
+            let
+                currentTab =
+                    getModelTab model.tab model
+            in
+                ( updateModelTab model.tab model
+                    { currentTab
+                    | tweets = registerFavorite shouldFavorite tweetId currentTab.tweets
+                    }
+                , favoriteTweet model.credentials shouldFavorite tweetId
+                , Cmd.none
+                )
 
         DoRetweet shouldRetweet tweetId ->
-            ( updateModelTab model.tab model
-                { currentTab
-                | tweets = registerRetweet shouldRetweet tweetId currentTab.tweets
-                }
-            , doRetweet model.credentials shouldRetweet tweetId
-            , Cmd.none
-            )
+            let
+                currentTab =
+                    getModelTab model.tab model
+            in
+                ( updateModelTab model.tab model
+                    { currentTab
+                    | tweets = registerRetweet shouldRetweet tweetId currentTab.tweets
+                    }
+                , doRetweet model.credentials shouldRetweet tweetId
+                , Cmd.none
+                )
 
         MsgLogout ->
             ( model
