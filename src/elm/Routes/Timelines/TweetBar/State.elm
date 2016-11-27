@@ -31,11 +31,11 @@ emptySuggestions =
 
 
 
-initialModel : Credentials -> Model
-initialModel credentials =
+emptyModel : Credentials -> Model
+emptyModel credentials =
     { credentials = credentials
     , submission = NotSent
-    , tweetText = getPersistedTweetText ()
+    , tweetText = ""
     , handlerSuggestions = emptySuggestions
     }
 
@@ -43,7 +43,13 @@ initialModel credentials =
 
 init : Credentials -> ( Model, Cmd Msg, Cmd Broadcast )
 init credentials =
-    ( initialModel credentials, Cmd.none, Cmd.none)
+    let
+        model =
+            emptyModel credentials
+                |> \m ->
+                    { m | tweetText = getPersistedTweetText () }
+    in
+        ( model, Cmd.none, Cmd.none)
 
 
 
@@ -207,8 +213,11 @@ update msg model =
         TweetSend status ->
             case status of
                 Success _ ->
-                    ( initialModel model.credentials
-                    , resetTweetText 1800
+                    ( emptyModel model.credentials
+                    , Cmd.batch
+                        [ resetTweetText 1800
+                        , persistTweetText ""
+                        ]
                     , toCmd RefreshTweets
                     )
 

@@ -12,7 +12,6 @@
   - Send error reports to the server
 
 ## FIX
-  - Clear tweetbar after posting tweet
   - Reload when opening widget
   - Reload conditionally when changing tabs
 
@@ -21,6 +20,7 @@
 
 
 ## Done
+  - Clear tweetbar after posting tweet
   - Allow retweeting and favouriting
   - too long text in tweetbar
   - Add mentions view
