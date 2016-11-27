@@ -1,3 +1,4 @@
+/* eslint-disable quote-props */
 // List all available tasks
 const organiser = require('gulp-organiser');
 organiser.registerAll('./tasks', {
@@ -6,7 +7,7 @@ organiser.registerAll('./tasks', {
     dest: 'dist/styles',
   },
   'copy-static': {
-    src: ['src/**/*', '!src/styles/**/*', '!**/*.elm'],
+    src: ['src/**/*', '!src/styles/**/*', '!**/*.elm', 'manifest.json'],
     dest: 'dist',
   },
   'build-elm': {
@@ -21,5 +22,12 @@ organiser.registerAll('./tasks', {
     reloadOn: ['build-elm', 'copy-static', 'sass'], // reload page when these tasks happen
     startPath: 'dist/pages/index.html',
     baseDir: './',
+  },
+  'create-zip': {
+    src: './dist',
+  },
+  'build': {
+    src: './',
+    tasks: ['copy-static', 'sass', 'build-elm', 'create-zip'],
   },
 });

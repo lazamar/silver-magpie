@@ -3,10 +3,10 @@
 
   "name": "Silver Magpie",
   "description": "Elm Twitter Client for Chrome",
-  "version": "1.0",
+  "version": "0.0.0.1",
   "browser_action": {
-    "default_icon": "dist/images/logo.png",
-    "default_popup": "dist/pages/index.html"
+    "default_icon": "images/logo.png",
+    "default_popup": "pages/index.html"
   },
   "permissions": [
     "activeTab",
