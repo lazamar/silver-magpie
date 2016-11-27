@@ -1,3 +1,5 @@
+$tweetbar-content-min-height: 5.6em;
+
 .TweetBar {
   flex-shrink: 0;
   background-color: $bg-lvl-1;
@@ -5,15 +7,15 @@
   width: 100%;
   display: flex;
   flex-flow: column nowrap;
-  transition: all .3s ease-in-out;
 	position: relative;
+  transition: all .3s ease-in-out;
 }
 
 .TweetBar-textBox {
   padding: .5em 7px;
   width: 100%;
   resize: none;
-  min-height: 5.6em;
+  min-height: $tweetbar-content-min-height;
   background-color: white;
   border: 1px solid $c-border;
   border-radius: 2px;
@@ -115,13 +117,14 @@
   width: 100%;
   display: flex;
   flex-flow: column nowrap;
-  padding: 2.5em;
+  padding: 1px;
+  min-height: $tweetbar-content-min-height;
 }
 
 .TweetBar-suggestions {
   position: absolute;
   left: 0;
-  bottom: 150px;
+  bottom: 100%;
   padding: 0;
   width: 100%;
   border-top: 5px solid #673AB7;
