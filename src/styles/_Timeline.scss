@@ -5,12 +5,27 @@
   width: 100%;
 }
 
+.Timeline-home,
+.Timeline-mentions {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  overflow-y: scroll;
+  transition: .3s cubic-bezier(.2,.54,0,.99);
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  @include custom-scrollbar();
+}
+
+.Timeline-mentions {
+  left: 100%;
+}
+
 .Tweets {
   position: relative;
   height: 100%;
   width: 100%;
-  overflow-y: scroll;
-  @include custom-scrollbar();
+  overflow: hidden;
 }
 
 .Tweets-error {

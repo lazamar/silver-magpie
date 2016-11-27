@@ -26,21 +26,33 @@ import List.Extra
 root : Model -> Html Msg
 root model =
     let
-        (tweets, newTweets) =
+        (newTweets, translation) =
             case model.tab of
                 HomeTab ->
-                    ( model.homeTab.tweets, model.homeTab.newTweets )
+                    ( model.homeTab.newTweets, "0%" )
 
                 MentionsTab ->
-                    ( model.mentionsTab.tweets, model.mentionsTab.newTweets )
+                    ( model.mentionsTab.newTweets, "-100%" )
 
     in
         div [ class "Timeline"]
             [ div
                 [ class "Tweets"]
                 [ loadingBar newTweets
-                , div [] ( List.indexedMap tweetView tweets )
-                , loadMoreBtn model.tab tweets newTweets
+                , div
+                    [ class "Timeline-home"
+                    , style [ ( "transform", "translateX(" ++ translation ++ ")" ) ]
+                    ]
+                    [  div [] ( List.indexedMap tweetView model.homeTab.tweets )
+                    , loadMoreBtn model.tab model.homeTab.tweets model.homeTab.newTweets
+                    ]
+                , div
+                    [ class "Timeline-mentions"
+                    , style [ ( "transform", "translateX(" ++ translation ++ ")" ) ]
+                    ]
+                    [  div [] ( List.indexedMap tweetView model.mentionsTab.tweets )
+                    , loadMoreBtn model.tab model.mentionsTab.tweets model.mentionsTab.newTweets
+                    ]
                 ]
             , actionBar model.tab
             ]
