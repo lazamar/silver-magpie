@@ -253,8 +253,8 @@ resetTweetFetch route fetchType time =
 
 -- Public
 refreshTweets : Model -> ( Model, Cmd Msg, Cmd Broadcast )
-refreshTweets =
-    update ( FetchTweets HomeTab Refresh )
+refreshTweets model =
+    update ( FetchTweets model.tab Refresh ) model
 
 
 
