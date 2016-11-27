@@ -59,68 +59,76 @@ init credentials =
 update : Msg -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
 update msg model =
     let
-        tab =
-            getSelectedTab model
+        currentTab =
+            getModelTab model.tab model
     in
     case msg of
         DoNothing ->
             ( model, Cmd.none, Cmd.none )
 
         FetchTweets route fetchType ->
-            ( updateModelTab model { tab | newTweets = Loading }
+            ( updateModelTab route model { currentTab | newTweets = Loading }
             , getTweets model.credentials fetchType model.tab
             , Cmd.none
             )
 
 
         TweetFetch route fetchType request ->
-            case request of
-                Success newTweets ->
-                    ( updateModelTab model
-                        { tab
-                        | tweets = combineTweets fetchType tab.tweets newTweets
-                        , newTweets = NotAsked
-                        }
-                    , persistTimeline route newTweets
-                    , Cmd.none
-                    )
+            let
+                routeTab = case route of
+                    HomeTab ->
+                        model.homeTab
 
-                Failure ( Http.BadResponse 401 _ )->
-                    ( updateModelTab model { tab | newTweets = request }
-                    , Cmd.none
-                    , toCmd Logout
-                    )
+                    MentionsTab ->
+                        model.mentionsTab
+            in
+                case request of
+                    Success newTweets ->
+                        ( updateModelTab route model
+                            { routeTab
+                            | tweets = combineTweets fetchType routeTab.tweets newTweets
+                            , newTweets = NotAsked
+                            }
+                        , persistTimeline route newTweets
+                        , Cmd.none
+                        )
 
-                Failure _ ->
-                    ( updateModelTab model { tab | newTweets = request }
-                    , resetTweetFetch route fetchType 3000
-                    , Cmd.none
-                    -- , resetTweetFetch fetchType 3000
-                    )
+                    Failure ( Http.BadResponse 401 _ )->
+                        ( updateModelTab route model { routeTab | newTweets = request }
+                        , Cmd.none
+                        , toCmd Logout
+                        )
 
-                _ ->
-                    ( updateModelTab model { tab | newTweets = request }
-                    , Cmd.none
-                    , Cmd.none
-                    )
+                    Failure _ ->
+                        ( updateModelTab route model { routeTab | newTweets = request }
+                        , resetTweetFetch route fetchType 3000
+                        , Cmd.none
+                        -- , resetTweetFetch fetchType 3000
+                        )
+
+                    _ ->
+                        ( updateModelTab route model { routeTab | newTweets = request }
+                        , Cmd.none
+                        , Cmd.none
+                        )
 
         ChangeTab newRoute ->
             -- FIXME: Conditionally reload this
             update DoNothing { model | tab = newRoute }
 
         Favorite shouldFavorite tweetId ->
-            ( updateModelTab model
-                { tab
-                | tweets = registerFavorite shouldFavorite tweetId tab.tweets
+            ( updateModelTab model.tab model
+                { currentTab
+                | tweets = registerFavorite shouldFavorite tweetId currentTab.tweets
                 }
             , favoriteTweet model.credentials shouldFavorite tweetId
             , Cmd.none
             )
 
         DoRetweet shouldRetweet tweetId ->
-            ( updateModelTab model
-                { tab
-                | tweets = registerRetweet shouldRetweet tweetId tab.tweets
+            ( updateModelTab model.tab model
+                { currentTab
+                | tweets = registerRetweet shouldRetweet tweetId currentTab.tweets
                 }
             , doRetweet model.credentials shouldRetweet tweetId
             , Cmd.none
@@ -140,9 +148,9 @@ update msg model =
 
 
 
-updateModelTab : Model -> Tab -> Model
-updateModelTab model tab =
-    case model.tab of
+updateModelTab : TabName -> Model -> Tab -> Model
+updateModelTab tabName model tab =
+    case tabName of
         HomeTab ->
             { model | homeTab = tab }
 
@@ -151,9 +159,9 @@ updateModelTab model tab =
 
 
 
-getSelectedTab : Model -> Tab
-getSelectedTab model =
-    case model.tab of
+getModelTab : TabName -> Model -> Tab
+getModelTab tabName model =
+    case tabName of
         HomeTab ->
             model.homeTab
 
