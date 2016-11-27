@@ -28,10 +28,10 @@ root model =
     let
         (tweets, newTweets) =
             case model.tab of
-                HomeRoute ->
+                HomeTab ->
                     ( model.homeTab.tweets, model.homeTab.newTweets )
 
-                MentionsRoute ->
+                MentionsTab ->
                     ( model.mentionsTab.tweets, model.mentionsTab.newTweets )
 
     in
@@ -73,7 +73,7 @@ errorView error =
 
 
 
-loadMoreBtn : Route -> ( List Tweet ) ->  WebData ( List Tweet ) -> Html Msg
+loadMoreBtn : TabName -> ( List Tweet ) ->  WebData ( List Tweet ) -> Html Msg
 loadMoreBtn route currentTweets newTweets =
     let
         fetchType =
@@ -102,31 +102,31 @@ loadMoreBtn route currentTweets newTweets =
 
 
 
-actionBar : Route -> Html Msg
+actionBar : TabName -> Html Msg
 actionBar route =
     div [ class "Timeline-actions" ]
         [ div
             [ class "Timeline-actions-left" ]
             [ button
                 [ class <| case route of
-                    HomeRoute ->
+                    HomeTab ->
                         "btn btn-default Timeline-actions-route--selected"
 
                     _ ->
                         "btn btn-default Timeline-actions-route"
 
-                , onClick ( ChangeRoute HomeRoute )
+                , onClick ( ChangeTab HomeTab )
                 ]
                 [ text "Home" ]
             , button
                 [ class <| case route of
-                    MentionsRoute ->
+                    MentionsTab ->
                         "btn btn-default Timeline-actions-route--selected"
 
                     _ ->
                         "btn btn-default Timeline-actions-route"
 
-                , onClick ( ChangeRoute MentionsRoute )
+                , onClick ( ChangeTab MentionsTab )
                 ]
                 [ text "Mentions" ]
             ]

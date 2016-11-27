@@ -7,7 +7,7 @@ import Twitter.Types exposing ( Tweet, Credentials, TweetId )
 
 type alias Model =
     { credentials : Credentials
-    , tab : Route
+    , tab : TabName
     , homeTab : Tab
     , mentionsTab : Tab
     }
@@ -19,9 +19,9 @@ type alias Tab =
 
 
 
-type Route
-    = HomeRoute
-    | MentionsRoute
+type TabName
+    = HomeTab
+    | MentionsTab
 
 
 
@@ -33,9 +33,9 @@ type FetchType
 
 type Msg
   = DoNothing
-  | TweetFetch Route FetchType ( WebData (List Tweet) )
-  | ChangeRoute Route
-  | FetchTweets Route FetchType
+  | TweetFetch TabName FetchType ( WebData (List Tweet) )
+  | ChangeTab TabName
+  | FetchTweets TabName FetchType
   | Favorite Bool TweetId
   | DoRetweet Bool TweetId
   | MsgLogout

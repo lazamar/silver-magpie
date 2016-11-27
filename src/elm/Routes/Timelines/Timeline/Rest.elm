@@ -27,15 +27,15 @@ serverMsgDecoder =
 
 
 
-getTweets : Credentials -> FetchType -> Route -> Cmd Msg
+getTweets : Credentials -> FetchType -> TabName -> Cmd Msg
 getTweets credentials fetchType route =
     let
         section =
             case route of
-                HomeRoute ->
+                HomeTab ->
                     "home"
 
-                MentionsRoute ->
+                MentionsTab ->
                     "mentions"
 
         maxId =

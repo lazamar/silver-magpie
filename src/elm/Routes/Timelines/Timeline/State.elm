@@ -25,13 +25,13 @@ import Process
 initialModel : Credentials -> Model
 initialModel credentials =
     { credentials = credentials
-    , tab = HomeRoute
+    , tab = HomeTab
     , homeTab =
-        { tweets = getPersistedTimeline HomeRoute
+        { tweets = getPersistedTimeline HomeTab
         , newTweets = NotAsked
         }
     , mentionsTab =
-        { tweets = getPersistedTimeline MentionsRoute
+        { tweets = getPersistedTimeline MentionsTab
         , newTweets = NotAsked
         }
     }
@@ -41,7 +41,7 @@ initialModel credentials =
 init : Credentials -> ( Model, Cmd Msg, Cmd Broadcast )
 init credentials =
     ( initialModel credentials
-    , toCmd ( FetchTweets HomeRoute Refresh )
+    , toCmd ( FetchTweets HomeTab Refresh )
     , Cmd.none
     )
 
@@ -99,7 +99,7 @@ update msg model =
                     , Cmd.none
                     )
 
-        ChangeRoute newRoute ->
+        ChangeTab newRoute ->
             update ( FetchTweets newRoute Refresh ) { model | tab = newRoute }
 
         Favorite shouldFavorite tweetId ->
@@ -137,10 +137,10 @@ update msg model =
 updateModelTab : Model -> Tab -> Model
 updateModelTab model tab =
     case model.tab of
-        HomeRoute ->
+        HomeTab ->
             { model | homeTab = tab }
 
-        MentionsRoute ->
+        MentionsTab ->
             { model | mentionsTab = tab }
 
 
@@ -148,10 +148,10 @@ updateModelTab model tab =
 getSelectedTab : Model -> Tab
 getSelectedTab model =
     case model.tab of
-        HomeRoute ->
+        HomeTab ->
             model.homeTab
 
-        MentionsRoute ->
+        MentionsTab ->
             model.mentionsTab
 
 
@@ -230,7 +230,7 @@ combineTweets fetchType oldTweets newTweets =
 
 
 
-resetTweetFetch : Route -> FetchType -> Float -> Cmd Msg
+resetTweetFetch : TabName -> FetchType -> Float -> Cmd Msg
 resetTweetFetch route fetchType time =
     Process.sleep time
         |> Task.perform never (\_ -> TweetFetch route fetchType NotAsked)
@@ -240,12 +240,12 @@ resetTweetFetch route fetchType time =
 -- Public
 refreshTweets : Model -> ( Model, Cmd Msg, Cmd Broadcast )
 refreshTweets =
-    update ( FetchTweets HomeRoute Refresh )
+    update ( FetchTweets HomeTab Refresh )
 
 
 
 -- Saves timeline to local storage
-persistTimeline : Route -> List Tweet -> Cmd Msg
+persistTimeline : TabName -> List Tweet -> Cmd Msg
 persistTimeline route tweetList =
     tweetList
         |> List.map Twitter.Serialisers.serialiseTweet
@@ -256,7 +256,7 @@ persistTimeline route tweetList =
 
 
 
-getPersistedTimeline : Route -> List Tweet
+getPersistedTimeline : TabName -> List Tweet
 getPersistedTimeline route =
     let
         storageContent =
