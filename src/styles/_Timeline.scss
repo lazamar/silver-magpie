@@ -81,6 +81,7 @@
   margin: .2em .5em 0 0;
   border-radius: $border-radius;
   border: 1px solid $c-border;
+  background-color: $bg-lvl-2;
   user-select: none;
   background-image: url('../images/profile-placeholder.gif');
 }
@@ -96,7 +97,9 @@
 }
 
 .Tweet-userName {
-  color: $link-color;
+  // color: $link-color;
+  color: $txt-primary;
+  font-weight: 500;
 }
 
 .Tweet-userHandler {
