@@ -47,10 +47,22 @@
   margin-bottom: .5em;
   border: 6px solid $c-border;
   border-width: 0 6px;
-  padding: .5em .5em .2em;
-  margin: 1em $side-padding;
+  padding: 1em;
+  margin: 2em $side-padding;
   // transition: all .3s ease-out;
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,.2),
+              0 1px 1px 0 rgba(0,0,0,.14),
+              0 2px 1px -1px rgba(0,0,0,.12);
+
 }
+
+// This is an experiment for later on.
+// .Tweet--paper {
+//   border: 0;
+//   margin: 1em 1em;
+//   padding: 1em;
+//   font-weight: 300;
+// }
 
 .Tweet-retweet-info {
   margin-bottom: .5em;
