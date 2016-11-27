@@ -50,7 +50,7 @@ getTweets credentials fetchType route =
         Generic.Http.get credentials ("/" ++ section ++ "?maxId=" ++ maxId)
             |> Http.fromJson serverMsgDecoder
             |> Task.perform Failure Success
-            |> Cmd.map (TweetFetch fetchType)
+            |> Cmd.map (TweetFetch route fetchType)
 
 
 

@@ -25,15 +25,25 @@ import List.Extra
 
 root : Model -> Html Msg
 root model =
-    div [ class "Timeline"]
-        [ div
-            [ class "Tweets"]
-            [ loadingBar model.newTweets
-            , div [] ( List.indexedMap tweetView model.tweets )
-            , loadMoreBtnView model.newTweets model.tweets
+    let
+        (tweets, newTweets) =
+            case model.tab of
+                HomeRoute ->
+                    ( model.homeTab.tweets, model.homeTab.newTweets )
+
+                MentionsRoute ->
+                    ( model.mentionsTab.tweets, model.mentionsTab.newTweets )
+
+    in
+        div [ class "Timeline"]
+            [ div
+                [ class "Tweets"]
+                [ loadingBar newTweets
+                , div [] ( List.indexedMap tweetView tweets )
+                , loadMoreBtn model.tab tweets newTweets
+                ]
+            , actionBar model.tab
             ]
-        , actionBar model.tab
-        ]
 
 
 
@@ -63,8 +73,8 @@ errorView error =
 
 
 
-loadMoreBtnView : WebData ( List Tweet ) -> ( List Tweet ) -> Html Msg
-loadMoreBtnView newTweets currentTweets =
+loadMoreBtn : Route -> ( List Tweet ) ->  WebData ( List Tweet ) -> Html Msg
+loadMoreBtn route currentTweets newTweets =
     let
         fetchType =
             case List.Extra.last currentTweets of
@@ -77,7 +87,7 @@ loadMoreBtnView newTweets currentTweets =
         actionAttr =
             case newTweets of
                 NotAsked ->
-                    [ onClick ( FetchTweets fetchType ) ]
+                    [ onClick ( FetchTweets route fetchType ) ]
 
                 _ ->
                     [ disabled True ]
@@ -129,7 +139,7 @@ actionBar route =
                 ] []
             , button
                 [ class "zmdi zmdi-refresh-alt btn btn-default btn-icon"
-                , onClick ( FetchTweets Refresh )
+                , onClick ( FetchTweets route Refresh )
                 , tooltip "Refresh"
                 ] []
             , button

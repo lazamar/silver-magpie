@@ -26,8 +26,14 @@ initialModel : Credentials -> Model
 initialModel credentials =
     { credentials = credentials
     , tab = HomeRoute
-    , tweets = getPersistedTimeline ()
-    , newTweets = Loading
+    , homeTab =
+        { tweets = getPersistedTimeline HomeRoute
+        , newTweets = NotAsked
+        }
+    , mentionsTab =
+        { tweets = getPersistedTimeline MentionsRoute
+        , newTweets = NotAsked
+        }
     }
 
 
@@ -35,7 +41,7 @@ initialModel credentials =
 init : Credentials -> ( Model, Cmd Msg, Cmd Broadcast )
 init credentials =
     ( initialModel credentials
-    , toCmd (FetchTweets Refresh)
+    , toCmd ( FetchTweets HomeRoute Refresh )
     , Cmd.none
     )
 
@@ -47,61 +53,69 @@ init credentials =
 
 update : Msg -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
 update msg model =
+    let
+        tab =
+            getSelectedTab model
+    in
     case msg of
         DoNothing ->
             ( model, Cmd.none, Cmd.none )
 
-        FetchTweets tweetsPosition ->
-            ( { model | newTweets = Loading }
-            , getTweets model.credentials tweetsPosition model.tab
+        FetchTweets route fetchType ->
+            ( updateModelTab model { tab | newTweets = Loading }
+            , getTweets model.credentials fetchType model.tab
             , Cmd.none
             )
 
-        TweetFetch tweetsPosition request ->
+
+        TweetFetch route fetchType request ->
             case request of
                 Success newTweets ->
-                    ( { model
-                        | tweets = combineTweets tweetsPosition model.tweets newTweets
+                    ( updateModelTab model
+                        { tab
+                        | tweets = combineTweets fetchType tab.tweets newTweets
                         , newTweets = NotAsked
                         }
-                    , persistTimeline newTweets
+                    , persistTimeline route newTweets
                     , Cmd.none
                     )
 
                 Failure ( Http.BadResponse 401 _ )->
-                    ( { model | newTweets = request }
+                    ( updateModelTab model { tab | newTweets = request }
                     , Cmd.none
                     , toCmd Logout
-                    -- , resetTweetFetch tweetsPosition 3000
                     )
 
                 Failure _ ->
-                    ( { model | newTweets = request }
-                    , resetTweetFetch tweetsPosition 3000
+                    ( updateModelTab model { tab | newTweets = request }
+                    , resetTweetFetch route fetchType 3000
                     , Cmd.none
+                    -- , resetTweetFetch fetchType 3000
                     )
 
                 _ ->
-                    ( { model | newTweets = request }
+                    ( updateModelTab model { tab | newTweets = request }
                     , Cmd.none
                     , Cmd.none
                     )
 
         ChangeRoute newRoute ->
-            update ( FetchTweets Refresh ) { model | tab = newRoute, tweets = [] }
+            update ( FetchTweets newRoute Refresh ) { model | tab = newRoute }
 
         Favorite shouldFavorite tweetId ->
-            ( { model
-              | tweets = registerFavorite shouldFavorite tweetId model.tweets
-              }
+            ( updateModelTab model
+                { tab
+                | tweets = registerFavorite shouldFavorite tweetId tab.tweets
+                }
             , favoriteTweet model.credentials shouldFavorite tweetId
             , Cmd.none
             )
 
         DoRetweet shouldRetweet tweetId ->
-            ( { model
-              | tweets = registerRetweet shouldRetweet tweetId model.tweets
-              }
+            ( updateModelTab model
+                { tab
+                | tweets = registerRetweet shouldRetweet tweetId tab.tweets
+                }
             , doRetweet model.credentials shouldRetweet tweetId
             , Cmd.none
             )
@@ -117,6 +131,29 @@ update msg model =
             , Cmd.none
             , toCmd SubmitTweet
             )
+
+
+
+updateModelTab : Model -> Tab -> Model
+updateModelTab model tab =
+    case model.tab of
+        HomeRoute ->
+            { model | homeTab = tab }
+
+        MentionsRoute ->
+            { model | mentionsTab = tab }
+
+
+
+getSelectedTab : Model -> Tab
+getSelectedTab model =
+    case model.tab of
+        HomeRoute ->
+            model.homeTab
+
+        MentionsRoute ->
+            model.mentionsTab
+
 
 
 registerFavorite : Bool -> String -> List Tweet -> List Tweet
@@ -169,8 +206,8 @@ applyToRelevantTweet func tweet =
 
 
 combineTweets : FetchType -> (List Tweet) -> (List Tweet) -> (List Tweet)
-combineTweets tweetsPosition oldTweets newTweets =
-      case tweetsPosition of
+combineTweets fetchType oldTweets newTweets =
+      case fetchType of
           Refresh ->
               newTweets
 
@@ -193,37 +230,37 @@ combineTweets tweetsPosition oldTweets newTweets =
 
 
 
-resetTweetFetch : FetchType -> Float -> Cmd Msg
-resetTweetFetch tweetsPosition time =
+resetTweetFetch : Route -> FetchType -> Float -> Cmd Msg
+resetTweetFetch route fetchType time =
     Process.sleep time
-        |> Task.perform never (\_ -> TweetFetch tweetsPosition NotAsked)
+        |> Task.perform never (\_ -> TweetFetch route fetchType NotAsked)
 
 
 
 -- Public
 refreshTweets : Model -> ( Model, Cmd Msg, Cmd Broadcast )
 refreshTweets =
-    update ( FetchTweets Refresh )
+    update ( FetchTweets HomeRoute Refresh )
 
 
 
 -- Saves timeline to local storage
-persistTimeline : List Tweet -> Cmd Msg
-persistTimeline tweetList =
+persistTimeline : Route -> List Tweet -> Cmd Msg
+persistTimeline route tweetList =
     tweetList
         |> List.map Twitter.Serialisers.serialiseTweet
         |> Json.Encode.list
         |> Json.Encode.encode 2
-        |> Generic.LocalStorage.setItem "Timeline"
+        |> Generic.LocalStorage.setItem ( "Timeline-" ++ ( toString route ) )
         |> \_ -> Cmd.none
 
 
 
-getPersistedTimeline : () -> List Tweet
-getPersistedTimeline _ =
+getPersistedTimeline : Route -> List Tweet
+getPersistedTimeline route =
     let
         storageContent =
-            Generic.LocalStorage.getItem "Timeline"
+            Generic.LocalStorage.getItem ( "Timeline-" ++ ( toString route ) )
                 |> Maybe.withDefault ""
                 |> Json.Decode.decodeString
                     (Json.Decode.list Twitter.Deserialisers.deserialiseTweet )
