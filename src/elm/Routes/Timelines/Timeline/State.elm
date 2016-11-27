@@ -41,7 +41,12 @@ initialModel credentials =
 init : Credentials -> ( Model, Cmd Msg, Cmd Broadcast )
 init credentials =
     ( initialModel credentials
-    , toCmd ( FetchTweets HomeTab Refresh )
+    , Cmd.none
+    -- FIXME: Uncomment this
+    -- , Cmd.batch
+    --     [ toCmd ( FetchTweets HomeTab Refresh )
+    --     , toCmd ( FetchTweets MentionsTab Refresh )
+    --     ]
     , Cmd.none
     )
 
@@ -100,7 +105,8 @@ update msg model =
                     )
 
         ChangeTab newRoute ->
-            update ( FetchTweets newRoute Refresh ) { model | tab = newRoute }
+            -- FIXME: Conditionally reload this
+            update DoNothing { model | tab = newRoute }
 
         Favorite shouldFavorite tweetId ->
             ( updateModelTab model
