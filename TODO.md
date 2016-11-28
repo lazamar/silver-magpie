@@ -5,16 +5,13 @@
   - Use service worker to make requests snappy and reliable
   - Link preview in tweetbar
   - Link preview in timeline
-  - Allow reply to tweets
   - Save Roboto font locally
-  - Show update notification
+  - Show new mentions notification
   - Send error reports to the server
   - DMs
   - Visual cues about what is possible
   - Add some link to my profile in the app
 
-  - Change github project website at https://github.com/lazamar/silver-magpie
-  - Add Silver Magpie to lazamar.github.io
 
 ## FIX
   - Clicking user suggestion not working
@@ -22,9 +19,12 @@
 ## TEMPORARILY DONE
   - Reload conditionally when changing tabs // we are currently reloading all tabs on widget open
   - Infinite scroll // through a load-more button
+  - Allow reply to tweets // Needs to show which tweet is being replied to
 
 
 ## Done
+  - Change github project website at https://github.com/lazamar/silver-magpie
+  - Add Silver Magpie to lazamar.github.io
   - Analytics at lazamar.co.uk/silver-magpie
   - Github ribbon at lazamar.co.uk/silver-magpie
   - Link chrome store at lazamar.co.uk/silver-magpie
