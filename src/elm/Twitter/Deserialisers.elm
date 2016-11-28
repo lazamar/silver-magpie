@@ -10,14 +10,29 @@ deserialiseTweet : Decoder Tweet
 deserialiseTweet =
     deserialiseFirstPartOfTweet
         |> required "retweeted_status" ( deserialiseMaybe deserialiseRetweet )
+        |> required "quoted_status" ( deserialiseMaybe deserialiseQuotedTweet )
 
 
 
 deserialiseRetweet : Decoder Retweet
 deserialiseRetweet =
+    deserialiseShallowTweet
+        |> Json.Decode.map Retweet
+
+
+
+deserialiseQuotedTweet : Decoder QuotedTweet
+deserialiseQuotedTweet =
+    deserialiseShallowTweet
+        |> Json.Decode.map QuotedTweet
+
+
+
+deserialiseShallowTweet : Decoder Tweet
+deserialiseShallowTweet =
     deserialiseFirstPartOfTweet
         |> hardcoded Nothing
-        |> Json.Decode.map Retweet
+        |> hardcoded Nothing
 
 
 

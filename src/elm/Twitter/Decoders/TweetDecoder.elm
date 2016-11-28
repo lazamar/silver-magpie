@@ -8,6 +8,7 @@ module Twitter.Decoders.TweetDecoder exposing
 import Twitter.Types exposing
     ( Tweet
     , Retweet (..)
+    , QuotedTweet (..)
     , User
     , TweetEntitiesRecord
     , UserMentionsRecord
@@ -41,6 +42,7 @@ type alias RawTweet =
   , entities : RawTweetEntitiesRecord
   , extended_entities : ExtendedEntitiesRecord
   , retweeted_status : Maybe Retweet
+  , quoted_status : Maybe QuotedTweet
   }
 
 
@@ -116,22 +118,39 @@ rawTweetDecoder : Decoder RawTweet
 rawTweetDecoder =
     rawTweetDecoderFirstPart
         |> optional "retweeted_status" ( nullable retweetDecoder ) Nothing
+        |> optional "quoted_status" ( nullable quotedTweetDecoder ) Nothing
 
 
 
 retweetDecoder : Decoder Retweet
 retweetDecoder =
-    rawTweetDecoderFirstPart
-        |> hardcoded Nothing -- retweeted_status
+    shallowRawTweetDecoder
         |> Json.Decode.map preprocessTweet
         |> Json.Decode.map Retweet
+
+
+
+quotedTweetDecoder : Decoder QuotedTweet
+quotedTweetDecoder =
+    shallowRawTweetDecoder
+        |> Json.Decode.map preprocessTweet
+        |> Json.Decode.map QuotedTweet
+
+
+
+-- Decodes a Tweet ignoring it's recursive part.
+shallowRawTweetDecoder : Decoder RawTweet
+shallowRawTweetDecoder =
+    rawTweetDecoderFirstPart
+        |> hardcoded Nothing -- retweeted_status
+        |> hardcoded Nothing -- quoted_status
 
 
 
 -- Elm has problems parsing recursive JSON values, so
 -- in this function we only parse the first part of
 -- RawTweet and leave the recursive part to be implemented
--- according to whether we are parsing the top tweet or the retweet
+-- according to whether we are parsing the top tweet or the retweet or quoted_status
 -- and thus prevent parsing recursion
 rawTweetDecoderFirstPart =
     decode RawTweet
@@ -145,6 +164,7 @@ rawTweetDecoderFirstPart =
         |> required "retweeted" bool
         |> required "entities" rawTweetEntitiesDecoder
         |> optional "extended_entities" extendedEntitiesDecoder ( ExtendedEntitiesRecord [] )
+
 
 
 rawTweetEntitiesDecoder : Decoder RawTweetEntitiesRecord
@@ -262,6 +282,7 @@ preprocessTweet raw =
             raw.entities.user_mentions
         )
         raw.retweeted_status
+        raw.quoted_status
 
 
 -- FIXME: It is currently ignoring the raw media

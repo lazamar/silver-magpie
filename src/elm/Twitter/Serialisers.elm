@@ -21,6 +21,7 @@ serialiseTweet tweet =
         , ( "retweeted", bool tweet.retweeted )
         , ( "entities", serialiseTweetEntitiesRecord tweet.entities )
         , ( "retweeted_status", serialiseRetweet tweet.retweeted_status )
+        , ( "quoted_status", serialiseQuotedTweet tweet.quoted_status )
         ]
 
 
@@ -36,6 +37,21 @@ serialiseRetweet maybeRetweet =
         Just ( Retweet retweet ) ->
             object
                 [ ( "Just", serialiseTweet retweet )
+                ]
+
+
+
+serialiseQuotedTweet : Maybe QuotedTweet -> Json.Encode.Value
+serialiseQuotedTweet maybeQuotedTweet =
+    case maybeQuotedTweet of
+        Nothing ->
+            object
+                [ ( "Nothing", string "Nothing" )
+                ]
+
+        Just ( QuotedTweet quotedTweet ) ->
+            object
+                [ ( "Just", serialiseTweet quotedTweet )
                 ]
 
 

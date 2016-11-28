@@ -31,7 +31,7 @@ organiser.registerAll('./tasks', {
     src: './dist',
   },
   'build': {
-    src: './',
+    src: './undefined',
     tasks: ['copy-static', 'sass', 'build-elm', 'create-zip'],
   },
 });

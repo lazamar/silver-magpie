@@ -31,11 +31,18 @@ type alias Tweet =
   , retweeted : Bool
   , entities: TweetEntitiesRecord -- TODO: inline this
   , retweeted_status : Maybe Retweet
+  , quoted_status : Maybe QuotedTweet
   }
+
 
 
 type Retweet =
     Retweet Tweet
+
+
+
+type QuotedTweet =
+    QuotedTweet Tweet
 
 
 
