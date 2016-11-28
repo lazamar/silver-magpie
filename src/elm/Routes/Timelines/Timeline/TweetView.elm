@@ -117,12 +117,12 @@ tweetActions tweet =
             ( if tweet.favorited then
                 [ class "Tweet-actions-favourite--favorited"
                 , onClick <| Favorite ( not tweet.favorited ) tweet.id
-                , tooltip "Favorite"
+                , tooltip "Unfavorite"
                 ]
             else
                 [ class "Tweet-actions-favourite"
                 , onClick <| Favorite ( not tweet.favorited ) tweet.id
-                , tooltip "Unfavorite"
+                , tooltip "Favorite"
                 ]
             )
             [ i [ class "zmdi zmdi-favorite" ] []
