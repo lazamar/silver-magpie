@@ -70,7 +70,9 @@ userSuggestion user selected =
                 "TweetBar-suggestions-option"
 
     in
-        div [ class optionClass ]
+        div [ class optionClass
+            , onClick ( SuggestedHandlerSelected user )
+            ]
             [ img
                 [ src user.profile_image_url_https
                 , class "TweetBar-suggestions-option-image"

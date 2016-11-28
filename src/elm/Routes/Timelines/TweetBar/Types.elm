@@ -48,6 +48,7 @@ type Msg
     | TweetSend (SubmissionData Http.Error TweetPostedResponse String)
     | SuggestedHandlersFetch Handler ( WebData ( List User ) )
     | SuggestedHandlersNavigation KeyboardNavigation
+    | SuggestedHandlerSelected User
 
 
 

@@ -3,7 +3,7 @@ module Routes.Timelines.TweetBar.State exposing ( init, update, submitTweet )
 import Routes.Timelines.TweetBar.Types exposing (..)
 import Routes.Timelines.TweetBar.Rest exposing ( sendTweet, fetchHandlerSuggestion )
 import Routes.Timelines.TweetBar.Handler as TwHandler exposing ( Handler, HandlerMatch )
-import Twitter.Types exposing ( Credentials )
+import Twitter.Types exposing ( Credentials, User )
 import Generic.Utils exposing ( toCmd )
 import Generic.LocalStorage
 import Generic.Types exposing
@@ -124,6 +124,12 @@ update msg model =
             else
                 ( model, Cmd.none, Cmd.none )
 
+        SuggestedHandlerSelected user ->
+            ( selectUserSuggestion model user
+            , Cmd.none
+            , Cmd.none
+            )
+
         SuggestedHandlersNavigation keyPressed ->
             let
                 handlerSuggestions =
@@ -159,7 +165,7 @@ update msg model =
                 case keyPressed of
                     EnterKey ->
                         let
-                            replacement =
+                            userSelected =
                                 Maybe.map2
                                     (\users selected ->
                                         users
@@ -169,20 +175,13 @@ update msg model =
                                     (RemoteData.toMaybe handlerSuggestions.users)
                                     handlerSuggestions.userSelected
                                 |> Maybe.withDefault Nothing
-                                |> Maybe.map (\user -> user.screen_name)
 
-                            newTweetText =
-                                Maybe.map2
-                                    (TwHandler.replaceMatch model.tweetText)
-                                    handlerSuggestions.handler
-                                    replacement
-                                |> Maybe.withDefault model.tweetText
-
+                            newModel =
+                                userSelected
+                                    |> Maybe.map (selectUserSuggestion model)
+                                    |> Maybe.withDefault model
                         in
-                            (   { model
-                                | tweetText = newTweetText
-                                , handlerSuggestions = emptySuggestions
-                                }
+                            ( newModel
                             , Cmd.none
                             , Cmd.none
                             )
@@ -230,6 +229,24 @@ update msg model =
                 _ ->
                     ( { model | submission = status }, Cmd.none, Cmd.none)
 
+
+
+selectUserSuggestion : Model -> User -> Model
+selectUserSuggestion model user =
+    case model.handlerSuggestions.handler of
+        Nothing ->
+            model
+
+        Just handlerMatch ->
+            TwHandler.replaceMatch
+            model.tweetText
+            handlerMatch
+            user.screen_name
+                |> \newTweetText ->
+                    { model
+                    | tweetText = newTweetText
+                    , handlerSuggestions = emptySuggestions
+                    }
 
 
 -- Delay a few seconds and then return the value to 0
