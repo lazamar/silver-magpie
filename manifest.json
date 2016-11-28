@@ -11,5 +11,6 @@
   "permissions": [
     "activeTab",
     "https://ajax.googleapis.com/"
-  ]
+  ],
+  "content_security_policy": "script-src 'self' https://www.google-analytics.com/analytics.js; blob: filesystem: chrome-extension-resource:"
 }
