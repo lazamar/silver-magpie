@@ -7,11 +7,21 @@
   - Link preview in timeline
   - Allow reply to tweets
   - Save Roboto font locally
-  - Set update notification
-  - Setup analytics
+  - Show update notification
   - Send error reports to the server
+  - DMs
+  - Visual cues about what is possible
+  - Add some link to my profile in the app
+
+  - Analytics at lazamar.co.uk/silver-magpie
+  - Github ribbon at lazamar.co.uk/silver-magpie
+  - Link chrome store at lazamar.co.uk/silver-magpie
+  - Make title Image link to root at lazamar.co.uk/silver-magpie
+  - Change github project website at https://github.com/lazamar/silver-magpie
+  - Add Silver Magpie to lazamar.github.io
 
 ## FIX
+  - Clicking user suggestion not working
 
 ## TEMPORARILY DONE
   - Reload conditionally when changing tabs // we are currently reloading all tabs on widget open
@@ -19,6 +29,7 @@
 
 
 ## Done
+  - Setup analytics
   - Reload when opening widget
   - Clear tweetbar after posting tweet
   - Allow retweeting and favouriting
