@@ -75,7 +75,21 @@ tweetContent tweet =
         , src tweet.user.profile_image_url_https
         ] []
     , div [ class "Tweet-content" ]
-        [ userInfo tweet.user
+        [ div
+           [ class "Tweet-userInfoContainer"]
+           [ a
+               [ class "Tweet-userName"
+               , href <| userProfileLink tweet.user
+               , target "_blank"
+               ]
+               [ text tweet.user.name ]
+           , a
+               [ class "Tweet-userHandler"
+               , href <| userProfileLink tweet.user
+               , target "_blank"
+               ]
+               [ text ( "@" ++ tweet.user.screen_name ) ]
+           ]
        , p
            [ class "Tweet-text"
            , property "innerHTML" <| Json.Encode.string ( tweetTextView tweet )
@@ -96,32 +110,8 @@ quotedContent mainTweet =
 
         Just ( QuotedTweet tweet ) ->
             div [ class "Tweet-quoted" ]
-                [ userInfo tweet.user
-                , p
-                    [ class "Tweet-text"
-                    , property "innerHTML" <| Json.Encode.string ( tweetTextView tweet )
-                    ] []
+                [ tweetContent tweet
                 ]
-
-
-
-userInfo : User -> Html Msg
-userInfo user =
-    div
-       [ class "Tweet-userInfoContainer"]
-       [ a
-           [ class "Tweet-userName"
-           , href <| userProfileLink user
-           , target "_blank"
-           ]
-           [ text user.name ]
-       , a
-           [ class "Tweet-userHandler"
-           , href <| userProfileLink user
-           , target "_blank"
-           ]
-           [ text ( "@" ++ user.screen_name ) ]
-       ]
 
 
 
