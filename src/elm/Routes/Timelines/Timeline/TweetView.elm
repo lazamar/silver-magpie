@@ -17,6 +17,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing ( onClick )
 import Generic.Utils exposing ( tooltip )
+import List.Extra
 import Array
 import Regex
 import Json.Encode
@@ -223,10 +224,11 @@ toStringNotZero num =
 
 
 tweetTextView : Tweet -> String
-tweetTextView { text, entities } =
+tweetTextView { text, entities, quoted_status } =
     text
      |> (flip <| List.foldl linkUrl )  entities.urls
      |> (flip <| List.foldl removeMediaUrl ) entities.media
+     |> removeQuotedTweetUrl quoted_status entities.urls
      |> (flip <| List.foldl linkHashtags ) entities.hashtags
      |> (flip <| List.foldl linkUserMentions ) entities.user_mentions
      |> Regex.replace Regex.All ( Regex.regex "\\n") (\_ -> "<br/>")
@@ -285,6 +287,23 @@ removeMediaUrl record tweetText =
 
         MultiPhotoMedia photo ->
             replace photo.url "" tweetText
+
+
+
+removeQuotedTweetUrl : Maybe QuotedTweet -> List UrlRecord -> String -> String
+removeQuotedTweetUrl maybeQuoted urls tweetText =
+    case maybeQuoted of
+        Nothing ->
+            tweetText
+
+        Just _ ->
+            let
+                lastUrl =
+                    List.Extra.last urls
+                        |> Maybe.map .display_url
+                        |> Maybe.withDefault ""
+            in
+                replace ( Debug.log "last url:" lastUrl) "" tweetText
 
 
 
