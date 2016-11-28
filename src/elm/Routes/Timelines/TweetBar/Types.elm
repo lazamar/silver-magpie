@@ -18,6 +18,7 @@ type alias Model =
   { credentials: Credentials
   , submission : SubmissionData Http.Error TweetPostedResponse String
   , tweetText : String
+  , inReplyTo : Maybe Tweet
   , handlerSuggestions :
       { handler : Maybe HandlerMatch
       , users : WebData ( List User )

@@ -38,6 +38,7 @@ emptyModel credentials =
     { credentials = credentials
     , submission = NotSent
     , tweetText = ""
+    , inReplyTo = Nothing
     , handlerSuggestions = emptySuggestions
     }
 
@@ -202,6 +203,7 @@ update msg model =
         SetReplyTweet tweet ->
             ( { model
               | tweetText = "@" ++ tweet.user.screen_name ++ " "
+              , inReplyTo = Just tweet
               , handlerSuggestions = emptySuggestions
               }
             ,  Dom.focus inputFieldId
@@ -213,7 +215,7 @@ update msg model =
             case model.submission of
                 NotSent ->
                     ( { model | submission = Sending model.tweetText }
-                    , sendTweet model.credentials model.tweetText
+                    , sendTweet model.credentials model.inReplyTo model.tweetText
                     , Cmd.none
                     )
 

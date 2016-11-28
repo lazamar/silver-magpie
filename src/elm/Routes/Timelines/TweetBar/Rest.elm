@@ -5,7 +5,7 @@ import Generic.Http
 import Generic.Utils
 import Routes.Timelines.TweetBar.Types exposing ( Msg ( TweetSend, SuggestedHandlersFetch, DoNothing ), TweetPostedResponse )
 import Twitter.Decoders exposing ( userDecoder )
-import Twitter.Types exposing ( User, Credentials )
+import Twitter.Types exposing ( Tweet, User, Credentials )
 
 
 import RemoteData exposing ( RemoteData )
@@ -32,17 +32,27 @@ userListDecoder =
 
 
 
-createSendBody : String -> Http.Body
-createSendBody tweetText =
-    [ ( "status", (Json.Encode.string tweetText) ) ]
-        |> Generic.Http.toJsonBody
+createSendBody : String -> Maybe Tweet -> Http.Body
+createSendBody tweetText replyTweet =
+    let
+        bodyFields =
+            case replyTweet of
+                Nothing ->
+                    [ ( "status", Json.Encode.string tweetText ) ]
+
+                Just tweetBeingReplied ->
+                    [ ( "status", Json.Encode.string tweetText )
+                    , ( "in_reply_to_status_id", Json.Encode.string tweetBeingReplied.id )
+                    ]
+    in
+        Generic.Http.toJsonBody bodyFields
 
 
 
 
-sendTweet : Credentials -> String -> Cmd Msg
-sendTweet credentials tweetText =
-    createSendBody tweetText
+sendTweet : Credentials -> Maybe Tweet -> String -> Cmd Msg
+sendTweet credentials replyTweet tweetText =
+    createSendBody tweetText replyTweet
         |> Generic.Http.post credentials "/status-update"
         |> Http.fromJson tweetPostedDecoder
         |> Task.perform SubmissionData.Failure SubmissionData.Success
