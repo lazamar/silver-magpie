@@ -225,7 +225,10 @@ update msg model =
         TweetSend status ->
             case status of
                 Success _ ->
-                    ( emptyModel model.credentials
+                    let
+                        emptiedModel = emptyModel model.credentials
+                    in
+                    ( { emptiedModel | submission = status }
                     , Cmd.batch
                         [ resetTweetText 1800
                         , persistTweetText ""
@@ -235,7 +238,7 @@ update msg model =
 
                 Failure _ ->
                     ( { model | submission = status }
-                    , resetTweetText 4000
+                    , resetTweetText 3000
                     , Cmd.none
                     )
 
@@ -265,10 +268,10 @@ selectUserSuggestion model user =
 -- Delay a few seconds and then return the value to 0
 resetTweetText : Float -> Cmd Msg
 resetTweetText time =
-    Process.sleep time
-        `Task.andThen` Task.succeed
-        |> Task.perform never (\_ -> TweetSend NotSent)
-
+    Task.perform
+        never
+        (\_ -> let t = Debug.log "NOw!" "now" in TweetSend NotSent)
+        ( Task.andThen (Process.sleep time) (Task.succeed) )
 
 
 persistTweetText : String -> Cmd Msg
