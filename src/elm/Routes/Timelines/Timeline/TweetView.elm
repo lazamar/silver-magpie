@@ -127,7 +127,7 @@ tweetActions tweet =
         [ button
             [ class "Tweet-actions-reply zmdi zmdi-mail-reply"
             , onClick ( MsgSetReplyTweet tweet )
-            , tooltip "Reply - coming soon :)"
+            , tooltip "Reply"
             ] []
         , button
             ( if tweet.favorited then
