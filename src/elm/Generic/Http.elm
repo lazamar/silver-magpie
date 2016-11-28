@@ -12,7 +12,7 @@ type alias Endpoint
 
 serverURL =
     "https://lazamar.co.uk/silver-magpie"
-
+    -- "http://localhost:8080"
 
 
 get : Credentials -> Endpoint -> Task Http.RawError Http.Response

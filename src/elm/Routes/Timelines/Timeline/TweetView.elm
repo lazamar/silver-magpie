@@ -294,7 +294,7 @@ removeQuotedTweetUrl maybeQuoted urls tweetText =
                         |> Maybe.map .display_url
                         |> Maybe.withDefault ""
             in
-                replace ( Debug.log "last url:" lastUrl) "" tweetText
+                replace lastUrl "" tweetText
 
 
 
