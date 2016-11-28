@@ -3,7 +3,7 @@
 
   "name": "Silver Magpie",
   "description": "The cleanest Twitter client for Chrome",
-  "version": "0.0.0.2",
+  "version": "0.0.0.3",
   "browser_action": {
     "default_icon": "images/logo.png",
     "default_popup": "pages/index.html"

@@ -13,10 +13,6 @@
   - Visual cues about what is possible
   - Add some link to my profile in the app
 
-  - Analytics at lazamar.co.uk/silver-magpie
-  - Github ribbon at lazamar.co.uk/silver-magpie
-  - Link chrome store at lazamar.co.uk/silver-magpie
-  - Make title Image link to root at lazamar.co.uk/silver-magpie
   - Change github project website at https://github.com/lazamar/silver-magpie
   - Add Silver Magpie to lazamar.github.io
 
@@ -29,6 +25,10 @@
 
 
 ## Done
+  - Analytics at lazamar.co.uk/silver-magpie
+  - Github ribbon at lazamar.co.uk/silver-magpie
+  - Link chrome store at lazamar.co.uk/silver-magpie
+  - Make title Image link to root at lazamar.co.uk/silver-magpie
   - Setup analytics
   - Reload when opening widget
   - Clear tweetbar after posting tweet
