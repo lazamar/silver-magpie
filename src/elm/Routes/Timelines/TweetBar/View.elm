@@ -1,4 +1,4 @@
-module Routes.Timelines.TweetBar.View exposing ( root )
+module Routes.Timelines.TweetBar.View exposing ( root, inputFieldId )
 
 
 import Routes.Timelines.TweetBar.Types exposing (..)
@@ -117,6 +117,11 @@ suggestions users userSelected =
 
 
 
+inputFieldId =
+    "TweetBar-textBox-input"
+
+
+
 inputBoxView : String -> Maybe ( List User ) -> Html Msg
 inputBoxView tweetText suggestions =
     let
@@ -137,6 +142,7 @@ inputBoxView tweetText suggestions =
                 [ colouredTweetView tweetText
                 , textarea
                     [ class "TweetBar-textBox-input"
+                    , id inputFieldId
                     , placeholder "Write your tweet here ..."
                     , autofocus True
                     , keyListener

@@ -45,6 +45,10 @@ update msg model =
                     TweetBarS.submitTweet model.tweetBarModel
                         |> tweetBarUpdate model
 
+                TimelineT.SetReplyTweet tweet ->
+                    TweetBarS.setReplyTweet model.tweetBarModel tweet
+                        |> tweetBarUpdate model
+
         TweetBarBroadcast ( TweetBarT.RefreshTweets ) ->
             TimelineS.refreshTweets model.timelineModel
                 |> timelineUpdate model

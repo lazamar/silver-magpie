@@ -40,8 +40,10 @@ type Msg
   | DoRetweet Bool TweetId
   | MsgLogout
   | MsgSubmitTweet
+  | MsgSetReplyTweet Tweet
 
 
 type Broadcast
     = Logout
     | SubmitTweet
+    | SetReplyTweet Tweet

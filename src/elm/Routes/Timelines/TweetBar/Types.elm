@@ -8,7 +8,7 @@ module Routes.Timelines.TweetBar.Types exposing
 
 import Routes.Timelines.TweetBar.Handler exposing ( Handler, HandlerMatch )
 import Generic.Types exposing ( SubmissionData )
-import Twitter.Types exposing ( User, Credentials )
+import Twitter.Types exposing ( Tweet, User, Credentials )
 import RemoteData exposing ( WebData )
 import Http
 
@@ -49,6 +49,7 @@ type Msg
     | SuggestedHandlersFetch Handler ( WebData ( List User ) )
     | SuggestedHandlersNavigation KeyboardNavigation
     | SuggestedHandlerSelected User
+    | SetReplyTweet Tweet
 
 
 

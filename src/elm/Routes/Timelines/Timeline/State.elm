@@ -151,6 +151,12 @@ update msg model =
             , toCmd SubmitTweet
             )
 
+        MsgSetReplyTweet tweet ->
+            ( model
+            , Cmd.none
+            , toCmd ( SetReplyTweet tweet )
+            )
+
 
 
 updateModelTab : TabName -> Model -> Tab -> Model

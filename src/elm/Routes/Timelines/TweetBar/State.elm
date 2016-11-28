@@ -1,9 +1,10 @@
-module Routes.Timelines.TweetBar.State exposing ( init, update, submitTweet )
+module Routes.Timelines.TweetBar.State exposing ( init, update, submitTweet, setReplyTweet )
 
 import Routes.Timelines.TweetBar.Types exposing (..)
 import Routes.Timelines.TweetBar.Rest exposing ( sendTweet, fetchHandlerSuggestion )
 import Routes.Timelines.TweetBar.Handler as TwHandler exposing ( Handler, HandlerMatch )
-import Twitter.Types exposing ( Credentials, User )
+import Routes.Timelines.TweetBar.View exposing ( inputFieldId )
+import Twitter.Types exposing ( Credentials, User, Tweet )
 import Generic.Utils exposing ( toCmd )
 import Generic.LocalStorage
 import Generic.Types exposing
@@ -16,6 +17,7 @@ import Generic.Types exposing
     , never
     )
 import RemoteData exposing ( RemoteData )
+import Dom
 import Task
 import Process
 import Regex
@@ -197,6 +199,15 @@ update msg model =
                         , Cmd.none
                         , Cmd.none
                         )
+        SetReplyTweet tweet ->
+            ( { model
+              | tweetText = "@" ++ tweet.user.screen_name ++ " "
+              , handlerSuggestions = emptySuggestions
+              }
+            ,  Dom.focus inputFieldId
+                |> Task.perform (\_ -> DoNothing) (\_ -> DoNothing)
+            , Cmd.none
+            )
 
         SubmitTweet ->
             case model.submission of
@@ -275,3 +286,8 @@ getPersistedTweetText _ =
 submitTweet : Model -> ( Model, Cmd Msg, Cmd Broadcast )
 submitTweet =
     update SubmitTweet
+
+-- Public
+setReplyTweet : Model -> Tweet -> ( Model, Cmd Msg, Cmd Broadcast )
+setReplyTweet model tweet =
+    update ( SetReplyTweet tweet ) model
