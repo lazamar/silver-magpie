@@ -4,6 +4,7 @@ import Routes.Timelines.Timeline.Types exposing (..)
 import Twitter.Types exposing
     ( Tweet
     , Retweet (..)
+    , QuotedTweet (..)
     , User
     , UrlRecord
     , UserMentionsRecord
@@ -26,7 +27,7 @@ tweetView : Int -> Tweet -> Html Msg
 tweetView index mainTweet =
     let
         tweet =
-            getRetweet mainTweet
+            getMainContent mainTweet
     in
         div
             [ class "Tweet"
@@ -34,13 +35,14 @@ tweetView index mainTweet =
             ]
             [ retweetInfo mainTweet
             , tweetContent tweet
+            , quotedContent tweet
             , tweetActions tweet
             ]
 
 
 
-getRetweet : Tweet -> Tweet
-getRetweet tweet =
+getMainContent : Tweet -> Tweet
+getMainContent tweet =
     tweet
         |> .retweeted_status
         |> Maybe.map (\(Retweet retweet) -> retweet)
@@ -72,31 +74,53 @@ tweetContent tweet =
         , src tweet.user.profile_image_url_https
         ] []
     , div [ class "Tweet-content" ]
-        [ div
-           [ class "Tweet-userInfoContainer"]
-           [ a
-               [ class "Tweet-userName"
-               , href <| userProfileLink tweet.user
-               , target "_blank"
-               ]
-               [ text tweet.user.name ]
-           , a
-               [ class "Tweet-userHandler"
-               , href <| userProfileLink tweet.user
-               , target "_blank"
-               ]
-               [ text ( "@" ++ tweet.user.screen_name ) ]
-           ]
+        [ userInfo tweet.user
        , p
            [ class "Tweet-text"
            , property "innerHTML" <| Json.Encode.string ( tweetTextView tweet )
-           ]
-           []
+           ] []
        , div
            [ class "Tweet-media" ]
            [ mediaView tweet ]
        ]
    ]
+
+
+
+quotedContent : Tweet -> Html Msg
+quotedContent mainTweet =
+    case mainTweet.quoted_status of
+        Nothing ->
+            text ""
+
+        Just ( QuotedTweet tweet ) ->
+            div [ class "Tweet-quoted" ]
+                [ userInfo tweet.user
+                , p
+                    [ class "Tweet-text"
+                    , property "innerHTML" <| Json.Encode.string ( tweetTextView tweet )
+                    ] []
+                ]
+
+
+
+userInfo : User -> Html Msg
+userInfo user =
+    div
+       [ class "Tweet-userInfoContainer"]
+       [ a
+           [ class "Tweet-userName"
+           , href <| userProfileLink user
+           , target "_blank"
+           ]
+           [ text user.name ]
+       , a
+           [ class "Tweet-userHandler"
+           , href <| userProfileLink user
+           , target "_blank"
+           ]
+           [ text ( "@" ++ user.screen_name ) ]
+       ]
 
 
 
