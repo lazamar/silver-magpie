@@ -29,6 +29,7 @@ type alias Tweet =
   , favorite_count : Int
   , favorited : Bool
   , retweeted : Bool
+  , in_reply_to_status_id: Maybe String
   , entities: TweetEntitiesRecord -- TODO: inline this
   , retweeted_status : Maybe Retweet
   , quoted_status : Maybe QuotedTweet

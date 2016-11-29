@@ -39,6 +39,7 @@ type alias RawTweet =
   , favorite_count : Int
   , favorited : Bool
   , retweeted : Bool
+  , in_reply_to_status_id: Maybe String
   , entities : RawTweetEntitiesRecord
   , extended_entities : ExtendedEntitiesRecord
   , retweeted_status : Maybe Retweet
@@ -162,6 +163,7 @@ rawTweetDecoderFirstPart =
         |> required "favorite_count" int
         |> required "favorited" bool
         |> required "retweeted" bool
+        |> optional "in_reply_to_status_id_str" ( nullable string ) Nothing
         |> required "entities" rawTweetEntitiesDecoder
         |> optional "extended_entities" extendedEntitiesDecoder ( ExtendedEntitiesRecord [] )
 
@@ -275,6 +277,7 @@ preprocessTweet raw =
         raw.favorite_count
         raw.favorited
         raw.retweeted
+        raw.in_reply_to_status_id
         ( TweetEntitiesRecord
             raw.entities.hashtags
             ( mergeMediaLists raw.extended_entities.media raw.entities.media )

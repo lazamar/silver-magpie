@@ -19,40 +19,23 @@ serialiseTweet tweet =
         , ( "favorite_count", int tweet.favorite_count )
         , ( "favorited", bool tweet.favorited )
         , ( "retweeted", bool tweet.retweeted )
+        , ( "in_reply_to_status_id", serialiseMaybe string tweet.in_reply_to_status_id )
         , ( "entities", serialiseTweetEntitiesRecord tweet.entities )
-        , ( "retweeted_status", serialiseRetweet tweet.retweeted_status )
-        , ( "quoted_status", serialiseQuotedTweet tweet.quoted_status )
+        , ( "retweeted_status", serialiseMaybe serialiseRetweet tweet.retweeted_status )
+        , ( "quoted_status", serialiseMaybe serialiseQuotedTweet tweet.quoted_status )
         ]
 
 
 
-serialiseRetweet : Maybe Retweet -> Json.Encode.Value
-serialiseRetweet maybeRetweet =
-    case maybeRetweet of
-        Nothing ->
-            object
-                [ ( "Nothing", string "Nothing" )
-                ]
-
-        Just ( Retweet retweet ) ->
-            object
-                [ ( "Just", serialiseTweet retweet )
-                ]
+serialiseRetweet : Retweet -> Json.Encode.Value
+serialiseRetweet (Retweet retweet) =
+    serialiseTweet retweet
 
 
 
-serialiseQuotedTweet : Maybe QuotedTweet -> Json.Encode.Value
-serialiseQuotedTweet maybeQuotedTweet =
-    case maybeQuotedTweet of
-        Nothing ->
-            object
-                [ ( "Nothing", string "Nothing" )
-                ]
-
-        Just ( QuotedTweet quotedTweet ) ->
-            object
-                [ ( "Just", serialiseTweet quotedTweet )
-                ]
+serialiseQuotedTweet : QuotedTweet -> Json.Encode.Value
+serialiseQuotedTweet (QuotedTweet quotedTweet) =
+    serialiseTweet quotedTweet
 
 
 
@@ -135,3 +118,18 @@ serialiseVideoMedia { url, display_url, media_url, content_type } =
         , ( "media_url", string media_url )
         , ( "content_type", string content_type )
         ]
+
+
+
+serialiseMaybe : (a -> Json.Encode.Value) -> Maybe a  -> Json.Encode.Value
+serialiseMaybe subSerialiser value =
+    case value of
+        Nothing ->
+            object
+                [ ( "Nothing", string "Nothing" )
+                ]
+
+        Just subValue ->
+            object
+                [ ( "Just", subSerialiser subValue )
+                ]

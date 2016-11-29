@@ -46,6 +46,7 @@ deserialiseFirstPartOfTweet =
         |> required "favorite_count" int
         |> required "favorited" bool
         |> required "retweeted" bool
+        |> required "in_reply_to_status_id" ( deserialiseMaybe string )
         |> required "entities" deserialiseTweetEntitiesRecord
 
 
