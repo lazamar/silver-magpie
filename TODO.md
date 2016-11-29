@@ -11,10 +11,14 @@
   - DMs
   - Visual cues about what is possible
   - Add some link to my profile in the app
+  - Push notifications when interaction happens
+  - Update project README
+  - Check TODO comments
 
 
 ## FIX
-  - Clicking user suggestion not working
+  - User link in retweet status not working
+  - Links gaining underline when focused.
 
 ## TEMPORARILY DONE
   - Reload conditionally when changing tabs // we are currently reloading all tabs on widget open
@@ -23,6 +27,7 @@
 
 
 ## Done
+  - Clicking user suggestion not working
   - Change github project website at https://github.com/lazamar/silver-magpie
   - Add Silver Magpie to lazamar.github.io
   - Analytics at lazamar.co.uk/silver-magpie
