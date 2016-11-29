@@ -61,7 +61,9 @@ retweetInfo topTweet =
             div [ class "Tweet-retweet-info" ]
                 [ i [ class "zmdi zmdi-repeat Tweet-retweet-info-icons" ] []
                 , text "retweeted by "
-                , a [ href <| userProfileLink topTweet.user ]
+                , a [ href <| userProfileLink topTweet.user
+                    , target "blank"
+                    ]
                     [ text ("@" ++ topTweet.user.screen_name )]
                 ]
 
