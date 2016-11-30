@@ -61,10 +61,45 @@ root model =
 
 tweetListView : List Tweet -> List (Html Msg)
 tweetListView tweets =
-    List.map
-    (\t -> ( t, replyIsPresent tweets t ) )
     tweets
+        |> rearrangeConversations
+        |> List.map (\t -> ( t, replyIsPresent tweets t ) )
         |> List.indexedMap tweetView
+
+
+
+-- Put tweets being replied to above replies.
+rearrangeConversations : List Tweet -> List Tweet
+rearrangeConversations tweets =
+    -- folding newest to oldest
+    List.foldl reorganise [] tweets
+        |> List.reverse
+
+
+
+reorganise : Tweet -> List Tweet -> List Tweet
+reorganise tweet tweets =
+    let
+        replyIndex =
+            List.Extra.findIndex
+            (\t -> t
+                |> .in_reply_to_status_id
+                |> Maybe.map ((==) tweet.id )
+                |> Maybe.withDefault False
+            )
+            tweets
+    in
+    case replyIndex of
+        Nothing ->
+            -- accumulating oldest to newest
+            tweet :: tweets
+
+        Just index ->
+            List.concat
+                [ List.take (index + 1) tweets
+                , [ tweet ]
+                , List.drop (index + 1) tweets
+                ]
 
 
 
@@ -97,6 +132,8 @@ loadingBar request =
 
             otherwise ->
                 div [] []
+
+
 
 errorView : Http.Error -> Html Msg
 errorView error =
