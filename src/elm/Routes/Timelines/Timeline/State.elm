@@ -84,7 +84,9 @@ update msg model =
                     Success newTweets ->
                         ( updateModelTab route model
                             { routeTab
-                            | tweets = combineTweets fetchType routeTab.tweets newTweets
+                            | tweets =
+                                combineTweets fetchType routeTab.tweets newTweets
+                                    |> rearrangeConversations
                             , newTweets = NotAsked
                             }
                         , persistTimeline route newTweets
@@ -296,3 +298,37 @@ getPersistedTimeline route =
 
             Err _ ->
                 []
+
+
+-- Put replies below tweets being replied to.
+rearrangeConversations : List Tweet -> List Tweet
+rearrangeConversations tweets =
+    -- folding newest to oldest
+    List.foldl reorganise [] tweets
+        |> List.reverse
+
+
+
+reorganise : Tweet -> List Tweet -> List Tweet
+reorganise tweet tweets =
+    let
+        replyIndex =
+            List.Extra.findIndex
+            (\t -> t
+                |> .in_reply_to_status_id
+                |> Maybe.map ((==) tweet.id )
+                |> Maybe.withDefault False
+            )
+            tweets
+    in
+    case replyIndex of
+        Nothing ->
+            -- accumulating oldest to newest
+            tweet :: tweets
+
+        Just index ->
+            List.concat
+                [ List.take (index + 1) tweets
+                , [ tweet ]
+                , List.drop (index + 1) tweets
+                ]
