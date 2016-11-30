@@ -24,14 +24,20 @@ import Json.Encode
 import Maybe
 
 
-tweetView : Int -> Tweet -> Html Msg
-tweetView index mainTweet =
+tweetView : Int -> ( Tweet, Bool ) -> Html Msg
+tweetView index ( mainTweet, hasReply ) =
     let
         tweet =
             getMainContent mainTweet
+
+        tweetClass =
+            if hasReply then
+                "Tweet--hasReply"
+            else
+                "Tweet"
     in
         div
-            [ class "Tweet"
+            [ class tweetClass
             , style [ ("borderColor", ( getColor index ) )]
             ]
             [ retweetInfo mainTweet

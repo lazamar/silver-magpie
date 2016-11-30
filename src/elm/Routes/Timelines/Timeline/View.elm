@@ -43,19 +43,40 @@ root model =
                     [ class "Timeline-home"
                     , style [ ( "transform", "translateX(" ++ translation ++ ")" ) ]
                     ]
-                    [  div [] ( List.indexedMap tweetView model.homeTab.tweets )
+                    [  div [] ( tweetListView model.homeTab.tweets )
                     , loadMoreBtn model.tab model.homeTab.tweets model.homeTab.newTweets
                     ]
                 , div
                     [ class "Timeline-mentions"
                     , style [ ( "transform", "translateX(" ++ translation ++ ")" ) ]
                     ]
-                    [  div [] ( List.indexedMap tweetView model.mentionsTab.tweets )
+                    [  div [] ( tweetListView model.mentionsTab.tweets )
                     , loadMoreBtn model.tab model.mentionsTab.tweets model.mentionsTab.newTweets
                     ]
                 ]
             , actionBar model.tab
             ]
+
+
+
+tweetListView : List Tweet -> List (Html Msg)
+tweetListView tweets =
+    List.map
+    (\t -> ( t, replyIsPresent tweets t ) )
+    tweets
+        |> List.indexedMap tweetView
+
+
+
+replyIsPresent : List Tweet -> Tweet -> Bool
+replyIsPresent tweets tweet =
+    List.any
+    (\t -> t
+        |> .in_reply_to_status_id
+        |> Maybe.map ((==) tweet.id)
+        |> Maybe.withDefault False
+    )
+    tweets
 
 
 
