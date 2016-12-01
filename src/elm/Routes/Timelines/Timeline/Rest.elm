@@ -104,9 +104,18 @@ sendLogoutMessasge credentials =
         |> Task.perform ( \_ -> DoNothing ) ( \_ -> DoNothing )
 
 
-getTweetsById : Credentials -> List String -> Cmd Msg
-getTweetsById cred ids =
+
+getTweetsById : Credentials -> List String -> Cmd (RemoteData Http.Error (List Tweet))
+getTweetsById credentials ids =
+    if List.length ids == 0 then
+        Cmd.none
+    else
         let
             ignore = Debug.log "Ids with response:" ids
         in
-            Cmd.none
+        List.intersperse "," ids
+            |> List.foldl (++) ""
+            |> (++) "/tweets-by-id?ids="
+            |> Generic.Http.get credentials
+            |> Http.fromJson serverMsgDecoder
+            |> Task.perform Failure Success

@@ -95,9 +95,10 @@ update msg model =
                             combinedTweets =
                                 combineTweets fetchType routeTab.tweets relevantTweets
 
-                            fetchReplies =
+                            fetchRepliesWithIterationCount it =
                                 List.filterMap .in_reply_to_status_id relevantTweets
                                     |> getTweetsById model.credentials
+                                    |> Cmd.map (TweetFetch route ( RespondedTweets (it + 1) ) )
 
                             cmd =
                                 case fetchType of
@@ -105,13 +106,16 @@ update msg model =
                                         if iteration < 4 then
                                             Cmd.batch
                                                 [  persistTimeline route combinedTweets
-                                                , fetchReplies
+                                                , fetchRepliesWithIterationCount iteration
                                                 ]
                                         else
                                             persistTimeline route combinedTweets
 
                                     _ ->
-                                        persistTimeline route combinedTweets
+                                        Cmd.batch
+                                            [  persistTimeline route combinedTweets
+                                            , fetchRepliesWithIterationCount 1
+                                            ]
 
                         in
                             ( updateModelTab route model
