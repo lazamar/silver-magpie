@@ -1,6 +1,6 @@
 module Routes.Timelines.Timeline.State exposing ( init, update, refreshTweets )
 
-import Routes.Timelines.Timeline.Rest exposing ( getTweets, favoriteTweet, doRetweet )
+import Routes.Timelines.Timeline.Rest exposing ( getTweets, favoriteTweet, doRetweet, getTweetsById )
 import Routes.Timelines.Timeline.Types exposing (..)
 import Twitter.Types exposing ( Tweet, Retweet, Credentials )
 import Twitter.Serialisers
@@ -79,18 +79,49 @@ update msg model =
 
                     MentionsTab ->
                         model.mentionsTab
+
             in
                 case request of
                     Success newTweets ->
-                        ( updateModelTab route model
-                            { routeTab
-                            | tweets =
-                                combineTweets fetchType routeTab.tweets newTweets
-                            , newTweets = NotAsked
-                            }
-                        , persistTimeline route newTweets
-                        , Cmd.none
-                        )
+                        let
+                            relevantTweets =
+                                case fetchType of
+                                    RespondedTweets _ ->
+                                        relevantReplies routeTab.tweets newTweets
+
+                                    _ ->
+                                        newTweets
+
+                            combinedTweets =
+                                combineTweets fetchType routeTab.tweets relevantTweets
+
+                            fetchReplies =
+                                List.filterMap .in_reply_to_status_id relevantTweets
+                                    |> getTweetsById model.credentials
+
+                            cmd =
+                                case fetchType of
+                                    RespondedTweets iteration ->
+                                        if iteration < 4 then
+                                            Cmd.batch
+                                                [  persistTimeline route combinedTweets
+                                                , fetchReplies
+                                                ]
+                                        else
+                                            persistTimeline route combinedTweets
+
+                                    _ ->
+                                        persistTimeline route combinedTweets
+
+                        in
+                            ( updateModelTab route model
+                                { routeTab
+                                | tweets = combinedTweets
+                                , newTweets = NotAsked
+                                }
+                            , cmd
+                            , Cmd.none
+                            )
 
                     Failure ( Http.BadResponse 401 _ )->
                         ( updateModelTab route model { routeTab | newTweets = request }
@@ -233,26 +264,44 @@ applyToRelevantTweet func tweet =
 
 combineTweets : FetchType -> (List Tweet) -> (List Tweet) -> (List Tweet)
 combineTweets fetchType oldTweets newTweets =
-      case fetchType of
-          Refresh ->
-              newTweets
+    case fetchType of
+        Refresh ->
+            newTweets
 
-          BottomTweets lastTweetIdAtFetchTime->
-              List.Extra.last oldTweets
-                |> Maybe.map
-                    (\lastTweetNow ->
-                        let
-                            tweetListChangedSinceFetch =
-                                lastTweetIdAtFetchTime /= lastTweetNow.id
-                        in
-                            if tweetListChangedSinceFetch then
-                                oldTweets
-                            else
-                                List.concat [ oldTweets, newTweets ]
-                    )
-                -- We set the default to newtweets because if oldTweets does not
-                -- have a last element, we are basically performing a refresh.
-                |> Maybe.withDefault newTweets
+        BottomTweets lastTweetIdAtFetchTime ->
+            List.Extra.last oldTweets
+              |> Maybe.map
+                  (\lastTweetNow ->
+                      let
+                          tweetListChangedSinceFetch =
+                              lastTweetIdAtFetchTime /= lastTweetNow.id
+                      in
+                          if tweetListChangedSinceFetch then
+                              oldTweets
+                          else
+                              List.concat [ oldTweets, newTweets ]
+                  )
+              -- We set the default to newtweets because if oldTweets does not
+              -- have a last element, we are basically performing a refresh.
+              |> Maybe.withDefault newTweets
+
+        RespondedTweets _ ->
+            oldTweets ++ newTweets
+                |> List.sortBy .id
+
+
+
+-- All responses whose id is in a in_reply_to_status field of
+-- existing tweets are still relevant
+relevantReplies : List Tweet -> List Tweet -> List Tweet
+relevantReplies oldTweets replyTweets =
+    let
+        oldTweetsRepliedToIds =
+            List.filterMap .in_reply_to_status_id oldTweets
+    in
+        List.filter
+            (\t -> List.member t.id oldTweetsRepliedToIds)
+            replyTweets
 
 
 

@@ -1,4 +1,10 @@
-module Routes.Timelines.Timeline.Rest exposing ( getTweets, favoriteTweet, doRetweet, sendLogoutMessasge )
+module Routes.Timelines.Timeline.Rest exposing
+    ( getTweets
+    , favoriteTweet
+    , doRetweet
+    , sendLogoutMessasge
+    , getTweetsById
+    )
 
 import Routes.Timelines.Timeline.Types exposing (..)
 import Twitter.Decoders exposing ( tweetDecoder )
@@ -44,7 +50,10 @@ getTweets credentials fetchType route =
                     ""
 
                 BottomTweets tweetId ->
-                    (Debug.log "Tweet id" tweetId)
+                    tweetId
+
+                RespondedTweets _ ->
+                    ""
 
     in
         Generic.Http.get credentials ("/" ++ section ++ "?maxId=" ++ maxId)
@@ -93,3 +102,11 @@ sendLogoutMessasge credentials =
     Generic.Http.delete credentials "/app-revoke-access"
         |> Http.fromJson string
         |> Task.perform ( \_ -> DoNothing ) ( \_ -> DoNothing )
+
+
+getTweetsById : Credentials -> List String -> Cmd Msg
+getTweetsById cred ids =
+        let
+            ignore = Debug.log "Ids with response:" ids
+        in
+            Cmd.none

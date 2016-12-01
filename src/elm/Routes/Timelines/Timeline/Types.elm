@@ -25,9 +25,14 @@ type TabName
 
 
 
+type alias ResponseRound
+    = Int
+
+
 type FetchType
     = Refresh
     | BottomTweets TweetId
+    | RespondedTweets ResponseRound
 
 
 
