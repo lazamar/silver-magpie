@@ -14,6 +14,9 @@
   - Push notifications when interaction happens
   - Update project README
   - Check TODO comments
+  - Allow detatching
+  - Show logged user photo
+  - Keyboard command to open the app
 
 
 ## FIX
