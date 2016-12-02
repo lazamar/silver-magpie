@@ -41,6 +41,8 @@ type Msg
   | MsgLogout
   | MsgSubmitTweet
   | MsgSetReplyTweet Tweet
+  | Detach
+
 
 
 type Broadcast
