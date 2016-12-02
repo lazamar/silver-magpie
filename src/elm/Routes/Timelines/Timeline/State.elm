@@ -96,9 +96,10 @@ update msg model =
                                 combineTweets fetchType routeTab.tweets relevantTweets
 
                             fetchRepliesWithIterationCount it =
-                                List.filterMap .in_reply_to_status_id relevantTweets
+                                missingTweetsRepliedTo combinedTweets
                                     |> getTweetsById model.credentials
-                                    |> Cmd.map (TweetFetch route ( RespondedTweets (it + 1) ) )
+                                    |> Cmd.map (TweetFetch route ( RespondedTweets it ) )
+
 
                             cmd =
                                 case fetchType of
@@ -106,7 +107,7 @@ update msg model =
                                         if iteration < 4 then
                                             Cmd.batch
                                                 [  persistTimeline route combinedTweets
-                                                , fetchRepliesWithIterationCount iteration
+                                                , fetchRepliesWithIterationCount (iteration + 1)
                                                 ]
                                         else
                                             persistTimeline route combinedTweets
@@ -271,6 +272,7 @@ combineTweets fetchType oldTweets newTweets =
     case fetchType of
         Refresh ->
             newTweets
+                |> List.Extra.uniqueBy .id
 
         BottomTweets lastTweetIdAtFetchTime ->
             List.Extra.last oldTweets
@@ -288,10 +290,12 @@ combineTweets fetchType oldTweets newTweets =
               -- We set the default to newtweets because if oldTweets does not
               -- have a last element, we are basically performing a refresh.
               |> Maybe.withDefault newTweets
+              |> List.Extra.uniqueBy .id
 
         RespondedTweets _ ->
             oldTweets ++ newTweets
                 |> List.sortBy .id
+                |> List.Extra.uniqueBy .id
 
 
 
@@ -303,9 +307,28 @@ relevantReplies oldTweets replyTweets =
         oldTweetsRepliedToIds =
             List.filterMap .in_reply_to_status_id oldTweets
     in
+        -- Make sure some tweet is replying to it
         List.filter
             (\t -> List.member t.id oldTweetsRepliedToIds)
             replyTweets
+
+
+
+-- Ids that are present in a .in_reply_to_status_id of some tweet,
+-- but is not present in our Tweet list
+missingTweetsRepliedTo : List Tweet -> List String
+missingTweetsRepliedTo tweets =
+    let
+        allIds =
+            List.map .id tweets
+
+        notInAllIds =
+            (flip List.member) allIds
+                >> not
+
+    in
+        List.filterMap .in_reply_to_status_id tweets
+            |> List.filter notInAllIds
 
 
 
