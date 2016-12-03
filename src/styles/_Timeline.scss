@@ -90,6 +90,7 @@
 .Tweet-userImage {
   width: 48px;
   height: 48px;
+  flex-shrink: 0;
   margin: .2em .5em 0 0;
   border-radius: $border-radius;
   border: 1px solid $c-border;
