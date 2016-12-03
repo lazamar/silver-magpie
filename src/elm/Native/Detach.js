@@ -8,6 +8,7 @@ const _user$project$Native_Detach = { // eslint-disable-line no-underscore-dangl
       url: window.location.pathname,
       width,
       height,
+      type: "popup",
     });
     window.close();
   },
