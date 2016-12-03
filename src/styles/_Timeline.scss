@@ -256,7 +256,7 @@
 }
 
 .Timeline-actions {
-  display: block;
+  display: flex;
   position: relative;
   width: 100%;
   background-color: $bg-lvl-1;
@@ -270,6 +270,7 @@
 
   .btn {
     margin-right: $std-el-distance;
+    text-transform: uppercase;
 
     &:last-child {
       margin-right: 0;
@@ -277,17 +278,10 @@
   }
 }
 
-.Timeline-actions-left {
-  float: left;
-}
-
-.Timeline-actions-right {
-  float: right;
-}
-
 .Timeline-actions-route--selected {
   background-color: $bg-lvl-2;
 }
 
 .Timeline-sendBtn {
+  margin-left: auto;
 }

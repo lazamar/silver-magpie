@@ -117,52 +117,46 @@ loadMoreBtn route currentTweets newTweets =
 actionBar : TabName -> Html Msg
 actionBar route =
     div [ class "Timeline-actions" ]
-        [ div
-            [ class "Timeline-actions-left" ]
-            [ button
-                [ class <| case route of
-                    HomeTab ->
-                        "btn btn-default Timeline-actions-route--selected"
+        [ button
+            [ class <| case route of
+                HomeTab ->
+                    "btn btn-default Timeline-actions-route--selected"
 
-                    _ ->
-                        "btn btn-default Timeline-actions-route"
+                _ ->
+                    "btn btn-default Timeline-actions-route"
 
-                , onClick ( ChangeTab HomeTab )
-                ]
-                [ text "Home" ]
-            , button
-                [ class <| case route of
-                    MentionsTab ->
-                        "btn btn-default Timeline-actions-route--selected"
-
-                    _ ->
-                        "btn btn-default Timeline-actions-route"
-
-                , onClick ( ChangeTab MentionsTab )
-                ]
-                [ text "Mentions" ]
+            , onClick ( ChangeTab HomeTab )
             ]
-        , div
-            [ class "Timeline-actions-right" ]
-            [ button
-                [ class "zmdi zmdi-mail-send Timeline-sendBtn btn btn-default btn-icon"
-                , onClick MsgSubmitTweet
-                , tooltip "Send"
-                ] []
-            , button
-                [ class "zmdi zmdi-collection-item btn btn-default btn-icon"
-                , onClick Detach
-                , tooltip "Detach window"
-                ] []
-            , button
-                [ class "zmdi zmdi-refresh-alt btn btn-default btn-icon"
-                , onClick ( FetchTweets route Refresh )
-                , tooltip "Refresh"
-                ] []
-            , button
-                [ class "zmdi zmdi-power btn btn-default btn-icon"
-                , onClick MsgLogout
-                , tooltip "Logout"
-                ] []
+            [ text "Home" ]
+        , button
+            [ class <| case route of
+                MentionsTab ->
+                    "btn btn-default Timeline-actions-route--selected"
+
+                _ ->
+                    "btn btn-default Timeline-actions-route"
+
+            , onClick ( ChangeTab MentionsTab )
             ]
+            [ text "Mentions" ]
+        , button
+            [ class "zmdi zmdi-mail-send Timeline-sendBtn btn btn-default btn-icon"
+            , onClick MsgSubmitTweet
+            , tooltip "Send"
+            ] []
+        , button
+            [ class "zmdi zmdi-collection-item btn btn-default btn-icon"
+            , onClick Detach
+            , tooltip "Detach window"
+            ] []
+        , button
+            [ class "zmdi zmdi-refresh-alt btn btn-default btn-icon"
+            , onClick ( FetchTweets route Refresh )
+            , tooltip "Refresh"
+            ] []
+        , button
+            [ class "zmdi zmdi-power btn btn-default btn-icon"
+            , onClick MsgLogout
+            , tooltip "Logout"
+            ] []
         ]
