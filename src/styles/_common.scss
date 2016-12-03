@@ -83,6 +83,10 @@ input, textarea {
   }
 }
 
+.zmdi-power:before {
+  transform: translateY(-4px);
+  display: inline-block;
+}
 
 // ======================== LOADING ANIMATION ========================
 

@@ -145,18 +145,8 @@ actionBar route =
             , tooltip "Send"
             ] []
         , button
-            [ class "zmdi zmdi-collection-item btn btn-default btn-icon"
-            , onClick Detach
-            , tooltip "Detach window"
-            ] []
-        , button
             [ class "zmdi zmdi-refresh-alt btn btn-default btn-icon"
             , onClick ( FetchTweets route Refresh )
             , tooltip "Refresh"
-            ] []
-        , button
-            [ class "zmdi zmdi-power btn btn-default btn-icon"
-            , onClick MsgLogout
-            , tooltip "Logout"
             ] []
         ]

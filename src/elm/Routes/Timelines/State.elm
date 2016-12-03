@@ -8,6 +8,7 @@ import Routes.Timelines.TweetBar.State as TweetBarS
 
 import Twitter.Types exposing ( Credentials )
 import Generic.Utils exposing ( toCmd )
+import Generic.Detach
 
 
 
@@ -60,6 +61,16 @@ update msg model =
         TweetBarMsg subMsg ->
             TweetBarS.update subMsg model.tweetBarModel
                 |> tweetBarUpdate model
+
+    -- Own messages
+        MsgLogout ->
+            ( model, Cmd.none, toCmd Logout )
+
+        Detach ->
+            ( model
+            , Generic.Detach.detach 400 600
+            , Cmd.none
+            )
 
 
 

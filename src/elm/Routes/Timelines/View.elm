@@ -3,8 +3,10 @@ module Routes.Timelines.View exposing ( root )
 import Routes.Timelines.Types exposing (..)
 import Routes.Timelines.TweetBar.View
 import Routes.Timelines.Timeline.View
-import Html exposing ( Html, div )
+import Generic.Utils exposing ( tooltip )
+import Html exposing ( Html, div, button )
 import Html.Attributes exposing ( class )
+import Html.Events exposing ( onClick )
 import Html.App
 
 
@@ -17,4 +19,21 @@ root model =
 
         , Routes.Timelines.TweetBar.View.root model.tweetBarModel
             |> Html.App.map TweetBarMsg
+        , footer
+        ]
+
+
+footer : Html Msg
+footer =
+    div [ class "Timelines-footer" ]
+        [ button
+            [ class "zmdi zmdi-collection-item btn btn-default btn-icon"
+            , tooltip "Detach window"
+            , onClick Detach
+            ] []
+        , button
+            [ class "zmdi zmdi-power btn btn-default btn-icon"
+            , tooltip "Logout"
+            , onClick MsgLogout
+            ] []
         ]

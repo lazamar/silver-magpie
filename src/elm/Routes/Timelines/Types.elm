@@ -10,7 +10,8 @@ type Msg
     | TimelineBroadcast TimelineT.Broadcast
     | TweetBarMsg TweetBarT.Msg
     | TweetBarBroadcast TweetBarT.Broadcast
-
+    | Detach
+    | MsgLogout
 
 
 type Broadcast

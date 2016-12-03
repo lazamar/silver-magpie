@@ -38,10 +38,8 @@ type Msg
   | FetchTweets TabName FetchType
   | Favorite Bool TweetId
   | DoRetweet Bool TweetId
-  | MsgLogout
   | MsgSubmitTweet
   | MsgSetReplyTweet Tweet
-  | Detach
 
 
 

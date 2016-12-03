@@ -7,7 +7,6 @@ import Twitter.Serialisers
 import Twitter.Deserialisers
 import Generic.Types exposing (never)
 import Generic.Utils exposing (toCmd)
-import Generic.Detach
 import Generic.LocalStorage
 import Main.Types
 import RemoteData exposing (..)
@@ -139,17 +138,6 @@ update msg model =
                 , doRetweet model.credentials shouldRetweet tweetId
                 , Cmd.none
                 )
-        Detach ->
-            ( model
-            , Generic.Detach.detach 400 600
-            , Cmd.none
-            )
-
-        MsgLogout ->
-            ( model
-            , Cmd.none
-            , toCmd Logout
-            )
 
         MsgSubmitTweet ->
             ( model
