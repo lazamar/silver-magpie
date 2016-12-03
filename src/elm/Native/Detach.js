@@ -8,8 +8,11 @@ const _user$project$Native_Detach = { // eslint-disable-line no-underscore-dangl
       url: window.location.pathname,
       width,
       height,
-      type: "popup",
-    });
+      type: 'popup',
+    }, function() {
+      document.body.classList.add('is-detached');
+    }
+  );
     window.close();
   },
 };

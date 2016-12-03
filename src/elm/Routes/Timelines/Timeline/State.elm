@@ -141,7 +141,7 @@ update msg model =
                 )
         Detach ->
             ( model
-            , Generic.Detach.detach 450 600
+            , Generic.Detach.detach 400 600
             , Cmd.none
             )
 

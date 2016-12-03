@@ -1,10 +1,19 @@
-#app {
-  width: $windowWidth;
-  height: $windowHeight;
+html {
+  min-height: $windowHeight;
+  height: 100%;
   overflow: hidden;
+  position: relative;
 }
 
-.Main {
+body {
+  background-color: $bg-lvl-1;
+  min-width: $windowWidth;
+  height: 100%;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
   display: flex;
   flex-flow: column nowrap;
   height: 100%;
@@ -24,12 +33,6 @@
   box-sizing: border-box;
 }
 
-body {
-  background-color: $bg-lvl-1;
-  width: $windowWidth;
-  height: $windowHeight;
-  position: relative;
-}
 
 a:hover {
   text-decoration: none;
