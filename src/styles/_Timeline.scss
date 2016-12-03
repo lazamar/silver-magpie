@@ -99,13 +99,14 @@
 }
 
 .Tweet-content {
-  max-width: 285px;
+  overflow: hidden;
 }
 
 .Tweet-userInfoContainer {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .Tweet-userName {
@@ -158,6 +159,8 @@
   color: $txt-disabled;
   font-family: monospace;
   font-size: .9em;
+  box-sizing: content-box;
+  min-height: 2.5em;
 
   i {
     margin-right: .2em;

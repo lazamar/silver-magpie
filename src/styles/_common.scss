@@ -20,13 +20,6 @@ body {
   width: 100%;
 }
 
-.Timelines {
-  display: flex;
-  flex-flow: column nowrap;
-  height: 100%;
-  width: 100%;
-}
-
 // ---------
 
 * {
@@ -46,15 +39,13 @@ input, textarea {
   border-radius: $border-radius;
   transition: all .2s ease;
   cursor: auto;
+  text-transform: uppercase;
 }
 
 .btn-icon {
   font-size: 15px;
-  line-height: 1em;
-  width: 1.8em;
-  height: 1.8em;
   border-radius: 2px;
-  padding: .3em 0;
+  padding: 6px 12px;
   text-align: center;
   transition: background-color .2s linear;
   cursor: auto;
@@ -81,11 +72,6 @@ input, textarea {
     border: 1px solid rgba(0, 0, 0, .26) !important;
     background-color:  $bg-lvl-1;
   }
-}
-
-.zmdi-power:before {
-  transform: translateY(-4px);
-  display: inline-block;
 }
 
 // ======================== LOADING ANIMATION ========================

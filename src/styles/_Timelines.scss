@@ -1,0 +1,14 @@
+.Timelines {
+  display: flex;
+  flex-flow: column nowrap;
+  height: 100%;
+  width: 100%;
+}
+
+.Timelines-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: $std-el-distance $side-padding;
+  box-sizing: content-box;
+  min-height: 2.5em;
+}
