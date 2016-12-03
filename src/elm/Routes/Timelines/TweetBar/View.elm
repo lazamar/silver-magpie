@@ -1,20 +1,20 @@
-module Routes.Timelines.TweetBar.View exposing ( root, inputFieldId )
-
+module Routes.Timelines.TweetBar.View exposing (root, inputFieldId)
 
 import Routes.Timelines.TweetBar.Types exposing (..)
 import Routes.Timelines.TweetBar.Handler as TwHandler
-import Twitter.Types exposing ( User )
-import Generic.Utils exposing ( errorMessage )
+import Twitter.Types exposing (User)
+import Generic.Utils exposing (errorMessage)
 import Generic.Animations
-import Generic.Types exposing
-    ( SubmissionData
-        ( NotSent
-        , Sending
-        , Success
-        , Failure
+import Generic.Types
+    exposing
+        ( SubmissionData
+            ( NotSent
+            , Sending
+            , Success
+            , Failure
+            )
         )
-    )
-import RemoteData exposing ( RemoteData, WebData )
+import RemoteData exposing (RemoteData, WebData)
 import Json.Encode
 import Json.Decode
 import Json.Decode.Pipeline
@@ -29,35 +29,34 @@ root : Model -> Html Msg
 root model =
     case model.submission of
         NotSent ->
-            div [ class "TweetBar"]
+            div [ class "TweetBar" ]
                 [ suggestions model.handlerSuggestions.users model.handlerSuggestions.userSelected
-                , inputBoxView model.tweetText ( RemoteData.toMaybe model.handlerSuggestions.users )
+                , inputBoxView model.tweetText (RemoteData.toMaybe model.handlerSuggestions.users)
                 ]
 
         Sending _ ->
-            div [ class "TweetBar"]
+            div [ class "TweetBar" ]
                 [ div
                     [ class "TweetBar-loading" ]
                     [ Generic.Animations.twistingCircle ]
                 ]
 
         Success _ ->
-            div [ class "TweetBar"]
+            div [ class "TweetBar" ]
                 [ div
                     [ class "TweetBar-loading" ]
                     [ Generic.Animations.tick ]
                 ]
 
         Failure error ->
-            div [ class "TweetBar"]
+            div [ class "TweetBar" ]
                 [ div
                     [ class "TweetBar-loading" ]
                     [ p [ class "loading-error" ]
-                        [ text ( errorMessage error ) ]
+                        [ text (errorMessage error) ]
                     , Generic.Animations.cross
                     ]
                 ]
-
 
 
 userSuggestion : User -> Bool -> Html Msg
@@ -68,61 +67,59 @@ userSuggestion user selected =
                 "TweetBar-suggestions-option--selected"
             else
                 "TweetBar-suggestions-option"
-
     in
-        div [ class optionClass
-            , onClick ( SuggestedHandlerSelected user )
+        div
+            [ class optionClass
+            , onClick (SuggestedHandlerSelected user)
             ]
             [ img
                 [ src user.profile_image_url_https
                 , class "TweetBar-suggestions-option-image"
-                ] []
+                ]
+                []
             , span
                 [ class "TweetBar-suggestions-option-screenName" ]
-                [ text ( "@" ++ user.screen_name ) ]
+                [ text ("@" ++ user.screen_name) ]
             , span
                 [ class "TweetBar-suggestions-option-name" ]
                 [ text user.name ]
             ]
 
 
-
-suggestions : WebData ( List User ) -> Maybe Int -> Html Msg
+suggestions : WebData (List User) -> Maybe Int -> Html Msg
 suggestions users userSelected =
     case users of
         RemoteData.Success users ->
             let
                 isSelected =
-                    (\n -> case userSelected of
-                        Nothing ->
-                            False
+                    (\n ->
+                        case userSelected of
+                            Nothing ->
+                                False
 
-                        Just num ->
-                            num == n
+                            Just num ->
+                                num == n
                     )
-
             in
-                div [ class "TweetBar-suggestions"]
-                    ( List.indexedMap
-                        (\index user -> userSuggestion user <| isSelected index )
+                div [ class "TweetBar-suggestions" ]
+                    (List.indexedMap
+                        (\index user -> userSuggestion user <| isSelected index)
                         users
                     )
 
         RemoteData.Loading ->
-            div [ class "TweetBar-suggestions--loading"]
+            div [ class "TweetBar-suggestions--loading" ]
                 [ Generic.Animations.twistingCircle ]
 
         _ ->
             text ""
 
 
-
 inputFieldId =
     "TweetBar-textBox-input"
 
 
-
-inputBoxView : String -> Maybe ( List User ) -> Html Msg
+inputBoxView : String -> Maybe (List User) -> Html Msg
 inputBoxView tweetText suggestions =
     let
         keyListener =
@@ -135,10 +132,10 @@ inputBoxView tweetText suggestions =
     in
         div [ class "TweetBar-textBox" ]
             [ span
-                  [ class "TweetBar-textBox-charCount" ]
-                  [ remainingCharacters tweetText ]
+                [ class "TweetBar-textBox-charCount" ]
+                [ remainingCharacters tweetText ]
             , div
-                [ class "TweetBar-textBox-inputContainer"]
+                [ class "TweetBar-textBox-inputContainer" ]
                 [ colouredTweetView tweetText
                 , textarea
                     [ class "TweetBar-textBox-input"
@@ -148,16 +145,15 @@ inputBoxView tweetText suggestions =
                     , keyListener
                     , onInput LetterInput
                     , value tweetText
-                    ] []
+                    ]
+                    []
                 ]
             ]
-
 
 
 hashtagRegex : Regex.Regex
 hashtagRegex =
     Regex.regex "(^|\\s)#[\\w]+"
-
 
 
 colouredTweetView : String -> Html Msg
@@ -172,19 +168,20 @@ colouredTweetView tweetText =
                 |> highlightMatches urlRegex
                 |> highlightMatches hashtagRegex
                 |> replaceLineBreaks
-                |> (flip (++) ) "&zwnj;" -- invisible character to allow line-breaks at the end of sentences
+                |> (flip (++)) "&zwnj;"
+
+        -- invisible character to allow line-breaks at the end of sentences
     in
         div
             [ class "TweetBar-textBox-display"
             , property "innerHTML" <| Json.Encode.string styledText
-            ] []
-
+            ]
+            []
 
 
 urlRegex : Regex.Regex
 urlRegex =
     Regex.regex "(https?:\\/\\/(?:www\\.|(?!www))[^\\s\\.]+\\.[^\\s]{2,}|www\\.[^\\s]+\\.[^\\s]{2,})"
-
 
 
 highlightMatches : Regex.Regex -> String -> String
@@ -196,7 +193,6 @@ highlightMatches reg txt =
         txt
 
 
-
 arrowNavigation : (KeyboardNavigation -> msg) -> Attribute msg
 arrowNavigation msg =
     let
@@ -206,40 +202,36 @@ arrowNavigation msg =
         navigationDecoder =
             Json.Decode.customDecoder keyCode
                 (\code ->
-                        case code of
-                            13 ->
-                                Ok EnterKey
+                    case code of
+                        13 ->
+                            Ok EnterKey
 
-                            38 ->
-                                Ok ArrowUp
+                        38 ->
+                            Ok ArrowUp
 
-                            40 ->
-                                Ok ArrowDown
+                        40 ->
+                            Ok ArrowDown
 
-                            27 ->
-                                Ok EscKey
+                        27 ->
+                            Ok EscKey
 
-                            _ ->
-                                Err "Not handling that key"
+                        _ ->
+                            Err "Not handling that key"
                 )
-            |> Json.Decode.map msg
-
+                |> Json.Decode.map msg
     in
         onWithOptions "keydown" options navigationDecoder
 
 
-
 onKeyDown : (KeyDownEvent -> msg) -> Attribute msg
 onKeyDown tagger =
-  on "keydown" (Json.Decode.map tagger keyEventDecoder)
-
+    on "keydown" (Json.Decode.map tagger keyEventDecoder)
 
 
 type alias KeyDownEvent =
     { keyCode : Int
     , ctrlKey : Bool
     }
-
 
 
 keyEventDecoder : Json.Decode.Decoder KeyDownEvent
@@ -249,20 +241,20 @@ keyEventDecoder =
         |> Json.Decode.Pipeline.required "ctrlKey" Json.Decode.bool
 
 
-
 submitOnCtrlEnter : KeyDownEvent -> Msg
-submitOnCtrlEnter  { keyCode, ctrlKey } =
+submitOnCtrlEnter { keyCode, ctrlKey } =
     if keyCode == 13 && ctrlKey then
         SubmitTweet
     else
         DoNothing
 
 
-
 remainingCharacters : String -> Html Msg
 remainingCharacters tweetText =
     let
-        remaining = 140 - ( String.length tweetText )
+        remaining =
+            140 - (String.length tweetText)
+
         remainingText =
             remaining
                 |> toString
@@ -270,12 +262,9 @@ remainingCharacters tweetText =
     in
         if remaining >= 50 then
             span [ class "enough" ] [ remainingText ]
-
         else if remaining > 10 then
             span [ class "quite-a-few" ] [ remainingText ]
-
         else if remaining >= 0 then
             span [ class "few-left" ] [ remainingText ]
-
         else
             span [ class "too-much" ] [ remainingText ]

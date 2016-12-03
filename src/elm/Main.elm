@@ -1,12 +1,11 @@
 module Main exposing (..)
 
-import Main.State exposing ( init, subscriptions, update )
-import Main.View exposing ( view )
+import Main.State exposing (init, subscriptions, update)
+import Main.View exposing (view)
 import Html.App
 
 
 -- APP
-
 
 
 main : Program Never

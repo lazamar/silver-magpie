@@ -1,22 +1,23 @@
-module Routes.Timelines.TweetBar.State exposing ( init, update, submitTweet, setReplyTweet )
+module Routes.Timelines.TweetBar.State exposing (init, update, submitTweet, setReplyTweet)
 
 import Routes.Timelines.TweetBar.Types exposing (..)
-import Routes.Timelines.TweetBar.Rest exposing ( sendTweet, fetchHandlerSuggestion )
-import Routes.Timelines.TweetBar.Handler as TwHandler exposing ( Handler, HandlerMatch )
-import Routes.Timelines.TweetBar.View exposing ( inputFieldId )
-import Twitter.Types exposing ( Credentials, User, Tweet )
-import Generic.Utils exposing ( toCmd )
+import Routes.Timelines.TweetBar.Rest exposing (sendTweet, fetchHandlerSuggestion)
+import Routes.Timelines.TweetBar.Handler as TwHandler exposing (Handler, HandlerMatch)
+import Routes.Timelines.TweetBar.View exposing (inputFieldId)
+import Twitter.Types exposing (Credentials, User, Tweet)
+import Generic.Utils exposing (toCmd)
 import Generic.LocalStorage
-import Generic.Types exposing
-    ( SubmissionData
-        ( Success
-        , Failure
-        , Sending
-        , NotSent
+import Generic.Types
+    exposing
+        ( SubmissionData
+            ( Success
+            , Failure
+            , Sending
+            , NotSent
+            )
+        , never
         )
-    , never
-    )
-import RemoteData exposing ( RemoteData )
+import RemoteData exposing (RemoteData)
 import Dom
 import Task
 import Process
@@ -24,13 +25,11 @@ import Regex
 import String
 
 
-
 emptySuggestions =
     { handler = Nothing
     , users = RemoteData.NotAsked
     , userSelected = Nothing
     }
-
 
 
 emptyModel : Credentials -> Model
@@ -43,7 +42,6 @@ emptyModel credentials =
     }
 
 
-
 init : Credentials -> ( Model, Cmd Msg, Cmd Broadcast )
 init credentials =
     let
@@ -52,8 +50,7 @@ init credentials =
                 |> \m ->
                     { m | tweetText = getPersistedTweetText () }
     in
-        ( model, Cmd.none, Cmd.none)
-
+        ( model, Cmd.none, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
@@ -85,16 +82,15 @@ update msg model =
 
                         Just handler ->
                             RemoteData.Loading
-
             in
-                (   { model
+                ( { model
                     | tweetText = text
                     , handlerSuggestions =
                         { handler = handlerMatch
                         , users = usersStatus
                         , userSelected = Nothing
                         }
-                    }
+                  }
                 , Cmd.batch
                     [ fetchCommand
                     , persistTweetText text
@@ -109,23 +105,21 @@ update msg model =
 
                 currentHandlerText =
                     handlerSuggestions.handler `Maybe.andThen` TwHandler.matchedName
-
             in
                 -- If the users that arrived are for the handlers we are waiting for
                 if Just handler == currentHandlerText then
-                    (   { model
+                    ( { model
                         | handlerSuggestions =
                             { handlerSuggestions
-                            | users = fetchStatus
-                            , userSelected = Just 0
+                                | users = fetchStatus
+                                , userSelected = Just 0
                             }
-                        }
+                      }
                     , Cmd.none
                     , Cmd.none
                     )
-
-            else
-                ( model, Cmd.none, Cmd.none )
+                else
+                    ( model, Cmd.none, Cmd.none )
 
         SuggestedHandlerSelected user ->
             ( selectUserSuggestion model user
@@ -163,7 +157,6 @@ update msg model =
 
                 newHandlerSuggestions =
                     { handlerSuggestions | userSelected = newUserSelected }
-
             in
                 case keyPressed of
                     EnterKey ->
@@ -177,7 +170,7 @@ update msg model =
                                     )
                                     (RemoteData.toMaybe handlerSuggestions.users)
                                     handlerSuggestions.userSelected
-                                |> Maybe.withDefault Nothing
+                                    |> Maybe.withDefault Nothing
 
                             newModel =
                                 userSelected
@@ -200,13 +193,14 @@ update msg model =
                         , Cmd.none
                         , Cmd.none
                         )
+
         SetReplyTweet tweet ->
             ( { model
-              | tweetText = "@" ++ tweet.user.screen_name ++ " "
-              , inReplyTo = Just tweet
-              , handlerSuggestions = emptySuggestions
+                | tweetText = "@" ++ tweet.user.screen_name ++ " "
+                , inReplyTo = Just tweet
+                , handlerSuggestions = emptySuggestions
               }
-            ,  Dom.focus inputFieldId
+            , Dom.focus inputFieldId
                 |> Task.perform (\_ -> DoNothing) (\_ -> DoNothing)
             , Cmd.none
             )
@@ -226,15 +220,16 @@ update msg model =
             case status of
                 Success _ ->
                     let
-                        emptiedModel = emptyModel model.credentials
+                        emptiedModel =
+                            emptyModel model.credentials
                     in
-                    ( { emptiedModel | submission = status }
-                    , Cmd.batch
-                        [ resetTweetText 1800
-                        , persistTweetText ""
-                        ]
-                    , toCmd RefreshTweets
-                    )
+                        ( { emptiedModel | submission = status }
+                        , Cmd.batch
+                            [ resetTweetText 1800
+                            , persistTweetText ""
+                            ]
+                        , toCmd RefreshTweets
+                        )
 
                 Failure _ ->
                     ( { model | submission = status }
@@ -243,8 +238,7 @@ update msg model =
                     )
 
                 _ ->
-                    ( { model | submission = status }, Cmd.none, Cmd.none)
-
+                    ( { model | submission = status }, Cmd.none, Cmd.none )
 
 
 selectUserSuggestion : Model -> User -> Model
@@ -255,23 +249,32 @@ selectUserSuggestion model user =
 
         Just handlerMatch ->
             TwHandler.replaceMatch
-            model.tweetText
-            handlerMatch
-            user.screen_name
+                model.tweetText
+                handlerMatch
+                user.screen_name
                 |> \newTweetText ->
                     { model
-                    | tweetText = newTweetText
-                    , handlerSuggestions = emptySuggestions
+                        | tweetText = newTweetText
+                        , handlerSuggestions = emptySuggestions
                     }
 
 
+
 -- Delay a few seconds and then return the value to 0
+
+
 resetTweetText : Float -> Cmd Msg
 resetTweetText time =
     Task.perform
         never
-        (\_ -> let t = Debug.log "NOw!" "now" in TweetSend NotSent)
-        ( Task.andThen (Process.sleep time) (Task.succeed) )
+        (\_ ->
+            let
+                t =
+                    Debug.log "NOw!" "now"
+            in
+                TweetSend NotSent
+        )
+        (Task.andThen (Process.sleep time) (Task.succeed))
 
 
 persistTweetText : String -> Cmd Msg
@@ -280,19 +283,25 @@ persistTweetText text =
         |> \_ -> Cmd.none
 
 
-
 getPersistedTweetText : () -> String
 getPersistedTweetText _ =
     Generic.LocalStorage.getItem "TweetText"
         |> Maybe.withDefault ""
 
 
+
 -- Public
+
+
 submitTweet : Model -> ( Model, Cmd Msg, Cmd Broadcast )
 submitTweet =
     update SubmitTweet
 
+
+
 -- Public
+
+
 setReplyTweet : Model -> Tweet -> ( Model, Cmd Msg, Cmd Broadcast )
 setReplyTweet model tweet =
-    update ( SetReplyTweet tweet ) model
+    update (SetReplyTweet tweet) model

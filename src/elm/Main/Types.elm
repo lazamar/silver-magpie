@@ -5,11 +5,10 @@ import Routes.Login.Types as LoginT
 
 
 type Msg
-  = TimelinesMsg TimelinesT.Msg
-  | TimelinesBroadcast TimelinesT.Broadcast
-  | LoginMsg LoginT.Msg
-  | LoginBroadcast LoginT.Broadcast
-
+    = TimelinesMsg TimelinesT.Msg
+    | TimelinesBroadcast TimelinesT.Broadcast
+    | LoginMsg LoginT.Msg
+    | LoginBroadcast LoginT.Broadcast
 
 
 type Model

@@ -2,16 +2,15 @@ module Twitter.Deserialisers exposing (..)
 
 import Twitter.Types exposing (..)
 import Twitter.Decoders.TweetDecoder exposing (..)
-import Json.Decode exposing ( Decoder, string, int, bool, list, oneOf, at )
-import Json.Decode.Pipeline exposing ( decode, required, hardcoded )
+import Json.Decode exposing (Decoder, string, int, bool, list, oneOf, at)
+import Json.Decode.Pipeline exposing (decode, required, hardcoded)
 
 
 deserialiseTweet : Decoder Tweet
 deserialiseTweet =
     deserialiseFirstPartOfTweet
-        |> required "retweeted_status" ( deserialiseMaybe deserialiseRetweet )
-        |> required "quoted_status" ( deserialiseMaybe deserialiseQuotedTweet )
-
+        |> required "retweeted_status" (deserialiseMaybe deserialiseRetweet)
+        |> required "quoted_status" (deserialiseMaybe deserialiseQuotedTweet)
 
 
 deserialiseRetweet : Decoder Retweet
@@ -20,12 +19,10 @@ deserialiseRetweet =
         |> Json.Decode.map Retweet
 
 
-
 deserialiseQuotedTweet : Decoder QuotedTweet
 deserialiseQuotedTweet =
     deserialiseShallowTweet
         |> Json.Decode.map QuotedTweet
-
 
 
 deserialiseShallowTweet : Decoder Tweet
@@ -33,7 +30,6 @@ deserialiseShallowTweet =
     deserialiseFirstPartOfTweet
         |> hardcoded Nothing
         |> hardcoded Nothing
-
 
 
 deserialiseFirstPartOfTweet =
@@ -46,9 +42,8 @@ deserialiseFirstPartOfTweet =
         |> required "favorite_count" int
         |> required "favorited" bool
         |> required "retweeted" bool
-        |> required "in_reply_to_status_id" ( deserialiseMaybe string )
+        |> required "in_reply_to_status_id" (deserialiseMaybe string)
         |> required "entities" deserialiseTweetEntitiesRecord
-
 
 
 deserialiseUser : Decoder User
@@ -59,15 +54,13 @@ deserialiseUser =
         |> required "profile_image_url_https" string
 
 
-
 deserialiseTweetEntitiesRecord : Decoder TweetEntitiesRecord
 deserialiseTweetEntitiesRecord =
     decode TweetEntitiesRecord
-        |> required "hashtags" ( list hashtagDecoder )
-        |> required "media" ( list deserialiseMediaRecord )
-        |> required "urls" ( list urlDecoder )
-        |> required "user_mentions" ( list userMentionsDecoder )
-
+        |> required "hashtags" (list hashtagDecoder)
+        |> required "media" (list deserialiseMediaRecord)
+        |> required "urls" (list urlDecoder)
+        |> required "user_mentions" (list userMentionsDecoder)
 
 
 deserialiseMediaRecord : Decoder MediaRecord
@@ -80,14 +73,12 @@ deserialiseMediaRecord =
         ]
 
 
-
 deserialiseMultiPhoto : Decoder MultiPhoto
 deserialiseMultiPhoto =
     decode MultiPhoto
         |> required "url" string
         |> required "display_url" string
-        |> required "media_url_list" ( list string )
-
+        |> required "media_url_list" (list string)
 
 
 deserialiseVideo : Decoder Video
@@ -102,6 +93,6 @@ deserialiseVideo =
 deserialiseMaybe : Decoder a -> Decoder (Maybe a)
 deserialiseMaybe decoder =
     oneOf
-        [ at ["Nothing"] ( decode Nothing )
-        , at ["Just"] decoder |> Json.Decode.map Just
+        [ at [ "Nothing" ] (decode Nothing)
+        , at [ "Just" ] decoder |> Json.Decode.map Just
         ]

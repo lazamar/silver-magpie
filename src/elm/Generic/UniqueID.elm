@@ -1,4 +1,4 @@
-module Generic.UniqueID exposing ( generate )
+module Generic.UniqueID exposing (generate)
 
 import Native.UniqueID
 

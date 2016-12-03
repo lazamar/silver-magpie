@@ -1,12 +1,14 @@
-module Twitter.Serialisers exposing ( serialiseTweet )
+module Twitter.Serialisers exposing (serialiseTweet)
 
 import Twitter.Types exposing (..)
 import Json.Encode exposing (string, int, bool, list, object)
+
 
 --
 --      These functions transform and Elm representation of a tweet
 --      into a String.
 --
+
 
 serialiseTweet : Tweet -> Json.Encode.Value
 serialiseTweet tweet =
@@ -26,17 +28,14 @@ serialiseTweet tweet =
         ]
 
 
-
 serialiseRetweet : Retweet -> Json.Encode.Value
 serialiseRetweet (Retweet retweet) =
     serialiseTweet retweet
 
 
-
 serialiseQuotedTweet : QuotedTweet -> Json.Encode.Value
 serialiseQuotedTweet (QuotedTweet quotedTweet) =
     serialiseTweet quotedTweet
-
 
 
 serialiseUser : User -> Json.Encode.Value
@@ -48,16 +47,14 @@ serialiseUser { name, screen_name, profile_image_url_https } =
         ]
 
 
-
 serialiseTweetEntitiesRecord : TweetEntitiesRecord -> Json.Encode.Value
 serialiseTweetEntitiesRecord { hashtags, media, urls, user_mentions } =
     object
         [ ( "hashtags", list <| List.map serialiseHashtagRecord hashtags )
-        , ( "media", list <| List.map serialiseMediaRecord media  )
+        , ( "media", list <| List.map serialiseMediaRecord media )
         , ( "urls", list <| List.map serialiseUrlRecord urls )
         , ( "user_mentions", list <| List.map serialiseUserMentionsRecord user_mentions )
         ]
-
 
 
 serialiseHashtagRecord : HashtagRecord -> Json.Encode.Value
@@ -65,7 +62,6 @@ serialiseHashtagRecord { text } =
     object
         [ ( "text", string text )
         ]
-
 
 
 serialiseUrlRecord : UrlRecord -> Json.Encode.Value
@@ -76,7 +72,6 @@ serialiseUrlRecord { display_url, url } =
         ]
 
 
-
 serialiseUserMentionsRecord : UserMentionsRecord -> Json.Encode.Value
 serialiseUserMentionsRecord { screen_name } =
     object
@@ -84,20 +79,18 @@ serialiseUserMentionsRecord { screen_name } =
         ]
 
 
-
 serialiseMediaRecord : MediaRecord -> Json.Encode.Value
 serialiseMediaRecord mediaRecord =
     case mediaRecord of
         MultiPhotoMedia multiPhoto ->
             object
-                [ ( "MultiPhotoMedia" , serialiseMultiPhoto multiPhoto )
+                [ ( "MultiPhotoMedia", serialiseMultiPhoto multiPhoto )
                 ]
 
         VideoMedia video ->
             object
                 [ ( "VideoMedia", serialiseVideoMedia video )
                 ]
-
 
 
 serialiseMultiPhoto : MultiPhoto -> Json.Encode.Value
@@ -107,7 +100,6 @@ serialiseMultiPhoto { url, display_url, media_url_list } =
         , ( "display_url", string display_url )
         , ( "media_url_list", list <| List.map string media_url_list )
         ]
-
 
 
 serialiseVideoMedia : Video -> Json.Encode.Value
@@ -120,8 +112,7 @@ serialiseVideoMedia { url, display_url, media_url, content_type } =
         ]
 
 
-
-serialiseMaybe : (a -> Json.Encode.Value) -> Maybe a  -> Json.Encode.Value
+serialiseMaybe : (a -> Json.Encode.Value) -> Maybe a -> Json.Encode.Value
 serialiseMaybe subSerialiser value =
     case value of
         Nothing ->

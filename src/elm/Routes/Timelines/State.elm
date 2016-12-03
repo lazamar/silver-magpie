@@ -1,26 +1,24 @@
-module Routes.Timelines.State exposing ( init, update )
+module Routes.Timelines.State exposing (init, update)
 
 import Routes.Timelines.Types exposing (..)
 import Routes.Timelines.Timeline.Types as TimelineT
 import Routes.Timelines.Timeline.State as TimelineS
 import Routes.Timelines.TweetBar.Types as TweetBarT
 import Routes.Timelines.TweetBar.State as TweetBarS
-
-import Twitter.Types exposing ( Credentials )
-import Generic.Utils exposing ( toCmd )
+import Twitter.Types exposing (Credentials)
+import Generic.Utils exposing (toCmd)
 import Generic.Detach
-
 
 
 init : Credentials -> ( Model, Cmd Msg, Cmd Broadcast )
 init credentials =
     let
-        ( timelineModel, timelineMsg, timelineBroadcast  ) =
+        ( timelineModel, timelineMsg, timelineBroadcast ) =
             TimelineS.init credentials
 
         ( tweetBarModel, tweetBarMsg, tweetBarBroadcast ) =
             TweetBarS.init credentials
-  in
+    in
         ( Model timelineModel tweetBarModel
         , Cmd.batch
             [ Cmd.map TimelineMsg timelineMsg
@@ -32,11 +30,10 @@ init credentials =
         )
 
 
-
 update : Msg -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
 update msg model =
     case msg of
-    -- Broadcast
+        -- Broadcast
         TimelineBroadcast subMsg ->
             case subMsg of
                 TimelineT.Logout ->
@@ -50,10 +47,11 @@ update msg model =
                     TweetBarS.setReplyTweet model.tweetBarModel tweet
                         |> tweetBarUpdate model
 
-        TweetBarBroadcast ( TweetBarT.RefreshTweets ) ->
+        TweetBarBroadcast (TweetBarT.RefreshTweets) ->
             TimelineS.refreshTweets model.timelineModel
                 |> timelineUpdate model
-    -- Msg
+
+        -- Msg
         TimelineMsg subMsg ->
             TimelineS.update subMsg model.timelineModel
                 |> timelineUpdate model
@@ -62,7 +60,7 @@ update msg model =
             TweetBarS.update subMsg model.tweetBarModel
                 |> tweetBarUpdate model
 
-    -- Own messages
+        -- Own messages
         MsgLogout ->
             ( model, Cmd.none, toCmd Logout )
 
@@ -73,8 +71,8 @@ update msg model =
             )
 
 
-
-timelineUpdate : Model
+timelineUpdate :
+    Model
     -> ( TimelineT.Model, Cmd TimelineT.Msg, Cmd TimelineT.Broadcast )
     -> ( Model, Cmd Msg, Cmd Broadcast )
 timelineUpdate model ( timelineModel, timelineMsg, timelineBroadcast ) =
@@ -87,8 +85,8 @@ timelineUpdate model ( timelineModel, timelineMsg, timelineBroadcast ) =
     )
 
 
-
-tweetBarUpdate : Model
+tweetBarUpdate :
+    Model
     -> ( TweetBarT.Model, Cmd TweetBarT.Msg, Cmd TweetBarT.Broadcast )
     -> ( Model, Cmd Msg, Cmd Broadcast )
 tweetBarUpdate model ( tweetBarModel, tweetBarMsg, tweetBarBroadcast ) =

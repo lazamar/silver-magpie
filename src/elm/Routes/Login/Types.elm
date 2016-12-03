@@ -1,12 +1,12 @@
-module Routes.Login.Types exposing
-    ( Model
-    , Msg (..)
-    , Broadcast (..)
-    )
+module Routes.Login.Types
+    exposing
+        ( Model
+        , Msg(..)
+        , Broadcast(..)
+        )
 
-import RemoteData exposing ( WebData )
-import Twitter.Types exposing ( Credentials )
-
+import RemoteData exposing (WebData)
+import Twitter.Types exposing (Credentials)
 
 
 type alias Model =
@@ -15,10 +15,8 @@ type alias Model =
     }
 
 
-
 type Msg
-    = UserCredentialsFetch ( WebData Credentials )
-
+    = UserCredentialsFetch (WebData Credentials)
 
 
 type Broadcast

@@ -2,7 +2,7 @@ module Routes.Timelines.Timeline.Types exposing (..)
 
 import Http
 import RemoteData exposing (WebData)
-import Twitter.Types exposing ( Tweet, Credentials, TweetId )
+import Twitter.Types exposing (Tweet, Credentials, TweetId)
 
 
 type alias Model =
@@ -12,11 +12,11 @@ type alias Model =
     , mentionsTab : Tab
     }
 
+
 type alias Tab =
     { tweets : List Tweet
-    , newTweets : WebData ( List Tweet )
+    , newTweets : WebData (List Tweet)
     }
-
 
 
 type TabName
@@ -24,23 +24,20 @@ type TabName
     | MentionsTab
 
 
-
 type FetchType
     = Refresh
     | BottomTweets TweetId
 
 
-
 type Msg
-  = DoNothing
-  | TweetFetch TabName FetchType ( WebData (List Tweet) )
-  | ChangeTab TabName
-  | FetchTweets TabName FetchType
-  | Favorite Bool TweetId
-  | DoRetweet Bool TweetId
-  | MsgSubmitTweet
-  | MsgSetReplyTweet Tweet
-
+    = DoNothing
+    | TweetFetch TabName FetchType (WebData (List Tweet))
+    | ChangeTab TabName
+    | FetchTweets TabName FetchType
+    | Favorite Bool TweetId
+    | DoRetweet Bool TweetId
+    | MsgSubmitTweet
+    | MsgSetReplyTweet Tweet
 
 
 type Broadcast

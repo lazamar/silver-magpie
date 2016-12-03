@@ -7,9 +7,7 @@ import Routes.Timelines.Types as TimelinesT
 import Routes.Timelines.State as TimelinesS
 
 
-
 -- INITIALISATION
-
 
 
 init : () -> ( Model, Cmd Msg )
@@ -19,9 +17,7 @@ init _ =
 
 
 
-
 -- SUBSCIPTIONS
-
 
 
 subscriptions : Model -> Sub Msg
@@ -33,20 +29,19 @@ subscriptions model =
 -- UPDATE
 
 
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-    -- Broadcast
-        LoginBroadcast ( LoginT.Authenticated appToken ) ->
+        -- Broadcast
+        LoginBroadcast (LoginT.Authenticated appToken) ->
             TimelinesS.init appToken
                 |> translate TimelinesRoute TimelinesMsg TimelinesBroadcast
 
-        TimelinesBroadcast TimelinesT.Logout ->
+        TimelinesBroadcast (TimelinesT.Logout) ->
             LoginS.logout ()
                 |> \_ -> init ()
 
-    -- Msg
+        -- Msg
         LoginMsg subMsg ->
             case model of
                 LoginRoute subModel ->
@@ -64,7 +59,6 @@ update msg model =
 
                 _ ->
                     ( model, Cmd.none )
-
 
 
 translate : (a -> Model) -> (b -> Msg) -> (c -> Msg) -> ( a, Cmd b, Cmd c ) -> ( Model, Cmd Msg )

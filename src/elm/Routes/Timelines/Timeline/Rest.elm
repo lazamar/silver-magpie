@@ -1,30 +1,27 @@
-module Routes.Timelines.Timeline.Rest exposing ( getTweets, favoriteTweet, doRetweet, sendLogoutMessasge )
+module Routes.Timelines.Timeline.Rest exposing (getTweets, favoriteTweet, doRetweet, sendLogoutMessasge)
 
 import Routes.Timelines.Timeline.Types exposing (..)
-import Twitter.Decoders exposing ( tweetDecoder )
-import Twitter.Types exposing ( Tweet, Credentials )
+import Twitter.Decoders exposing (tweetDecoder)
+import Twitter.Types exposing (Tweet, Credentials)
 import Generic.Http
-
 import Http
 import Json.Encode
-import Json.Decode exposing ( Decoder, string, int, bool, list, dict, at )
-import Json.Decode.Pipeline exposing ( decode, required, optional )
-import RemoteData exposing ( RemoteData ( Success, Failure ))
+import Json.Decode exposing (Decoder, string, int, bool, list, dict, at)
+import Json.Decode.Pipeline exposing (decode, required, optional)
+import RemoteData exposing (RemoteData(Success, Failure))
 import Task
 
 
 -- DECODERS
 
 
-
-serverMsgDecoder : Decoder ( List Tweet )
+serverMsgDecoder : Decoder (List Tweet)
 serverMsgDecoder =
-  Json.Decode.at ["tweets"] ( list tweetDecoder )
+    Json.Decode.at [ "tweets" ] (list tweetDecoder)
 
 
 
 -- DATA FETCHING
-
 
 
 getTweets : Credentials -> FetchType -> TabName -> Cmd Msg
@@ -45,7 +42,6 @@ getTweets credentials fetchType route =
 
                 BottomTweets tweetId ->
                     (Debug.log "Tweet id" tweetId)
-
     in
         Generic.Http.get credentials ("/" ++ section ++ "?maxId=" ++ maxId)
             |> Http.fromJson serverMsgDecoder
@@ -56,6 +52,8 @@ getTweets credentials fetchType route =
 
 -- TODO: A service worker must make sure that this
 -- request is always successfully sent, even when offline.
+
+
 favoriteTweet : Credentials -> Bool -> String -> Cmd Msg
 favoriteTweet credentials shouldFavorite tweetId =
     let
@@ -65,7 +63,7 @@ favoriteTweet credentials shouldFavorite tweetId =
             else
                 Generic.Http.delete
     in
-        httpMethod credentials ( "/favorite?id=" ++ tweetId )
+        httpMethod credentials ("/favorite?id=" ++ tweetId)
             |> Http.fromJson string
             |> Task.perform (\_ -> DoNothing) (\_ -> DoNothing)
 
@@ -73,6 +71,8 @@ favoriteTweet credentials shouldFavorite tweetId =
 
 -- TODO: A service worker must make sure that this
 -- request is always successfully sent, even when offline.
+
+
 doRetweet : Credentials -> Bool -> String -> Cmd Msg
 doRetweet credentials shouldRetweet tweetId =
     let
@@ -82,14 +82,13 @@ doRetweet credentials shouldRetweet tweetId =
             else
                 Generic.Http.delete
     in
-        httpMethod credentials ( "/retweet?id=" ++ tweetId )
+        httpMethod credentials ("/retweet?id=" ++ tweetId)
             |> Http.fromJson string
             |> Task.perform (\_ -> DoNothing) (\_ -> DoNothing)
-
 
 
 sendLogoutMessasge : Credentials -> Cmd Msg
 sendLogoutMessasge credentials =
     Generic.Http.delete credentials "/app-revoke-access"
         |> Http.fromJson string
-        |> Task.perform ( \_ -> DoNothing ) ( \_ -> DoNothing )
+        |> Task.perform (\_ -> DoNothing) (\_ -> DoNothing)

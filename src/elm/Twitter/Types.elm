@@ -1,50 +1,45 @@
 module Twitter.Types exposing (..)
 
 
-
-type alias Credentials
-    = String
-
+type alias Credentials =
+    String
 
 
-type alias TweetId
-    = String
-
+type alias TweetId =
+    String
 
 
 type alias User =
-  { name : String
-  , screen_name : String
-  , profile_image_url_https : String
-  }
-
+    { name : String
+    , screen_name : String
+    , profile_image_url_https : String
+    }
 
 
 type alias Tweet =
-  { id : String
-  , user : User
-  , created_at : String
-  , text: String
-  , retweet_count : Int
-  , favorite_count : Int
-  , favorited : Bool
-  , retweeted : Bool
-  , in_reply_to_status_id: Maybe String
-  , entities: TweetEntitiesRecord -- TODO: inline this
-  , retweeted_status : Maybe Retweet
-  , quoted_status : Maybe QuotedTweet
-  }
+    { id : String
+    , user : User
+    , created_at : String
+    , text : String
+    , retweet_count : Int
+    , favorite_count : Int
+    , favorited : Bool
+    , retweeted : Bool
+    , in_reply_to_status_id : Maybe String
+    , entities :
+        TweetEntitiesRecord
+        -- TODO: inline this
+    , retweeted_status : Maybe Retweet
+    , quoted_status : Maybe QuotedTweet
+    }
 
 
-
-type Retweet =
-    Retweet Tweet
-
+type Retweet
+    = Retweet Tweet
 
 
-type QuotedTweet =
-    QuotedTweet Tweet
-
+type QuotedTweet
+    = QuotedTweet Tweet
 
 
 type alias TweetEntitiesRecord =
@@ -55,11 +50,9 @@ type alias TweetEntitiesRecord =
     }
 
 
-
 type alias UserMentionsRecord =
     { screen_name : String
     }
-
 
 
 type MediaRecord
@@ -67,28 +60,36 @@ type MediaRecord
     | VideoMedia Video
 
 
-
 type alias MultiPhoto =
-    { url : String -- what is in the tweet
-    , display_url : String -- what should be shown in the tweet
-    , media_url_list : List String -- the actuall addresses of the contents
+    { url :
+        String
+        -- what is in the tweet
+    , display_url :
+        String
+        -- what should be shown in the tweet
+    , media_url_list :
+        List String
+        -- the actuall addresses of the contents
     }
-
 
 
 type alias Video =
-    { url: String -- what is in the tweet
-    , display_url:  String -- what should be shown in the tweet
-    , media_url : String -- the actuall addresses of the contents
+    { url :
+        String
+        -- what is in the tweet
+    , display_url :
+        String
+        -- what should be shown in the tweet
+    , media_url :
+        String
+        -- the actuall addresses of the contents
     , content_type : String
     }
-
 
 
 type alias HashtagRecord =
     { text : String
     }
-
 
 
 type alias UrlRecord =

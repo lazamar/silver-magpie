@@ -4,7 +4,6 @@ import Routes.Timelines.Timeline.Types as TimelineT
 import Routes.Timelines.TweetBar.Types as TweetBarT
 
 
-
 type Msg
     = TimelineMsg TimelineT.Msg
     | TimelineBroadcast TimelineT.Broadcast
@@ -16,7 +15,6 @@ type Msg
 
 type Broadcast
     = Logout
-
 
 
 type alias Model =

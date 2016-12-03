@@ -1,16 +1,13 @@
-module Routes.Login.Rest exposing ( fetchCredentials )
+module Routes.Login.Rest exposing (fetchCredentials)
 
-
-import Routes.Login.Types exposing ( Msg ( UserCredentialsFetch ) )
+import Routes.Login.Types exposing (Msg(UserCredentialsFetch))
 import Generic.Http
-import Twitter.Types exposing ( Credentials )
-
+import Twitter.Types exposing (Credentials)
 import Http
-import Json.Decode exposing ( Decoder, string, at )
-import Json.Decode.Pipeline exposing ( decode, required )
+import Json.Decode exposing (Decoder, string, at)
+import Json.Decode.Pipeline exposing (decode, required)
 import Task
 import RemoteData
-
 
 
 fetchCredentials : Credentials -> Cmd Msg
@@ -19,7 +16,6 @@ fetchCredentials sessionID =
         |> Http.fromJson credentialsDecoder
         |> Task.perform RemoteData.Failure RemoteData.Success
         |> Cmd.map UserCredentialsFetch
-
 
 
 credentialsDecoder : Decoder Credentials
