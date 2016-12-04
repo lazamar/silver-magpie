@@ -12,8 +12,8 @@ type alias Endpoint =
 
 
 serverURL =
-    -- "http://localhost:8080"
-    "https://lazamar.co.uk/silver-magpie"
+    -- "https://lazamar.co.uk/silver-magpie"
+    "http://localhost:8080"
 
 
 get : Credentials -> Decoder a -> Endpoint -> Task Http.Error a
@@ -52,8 +52,7 @@ makeRequest method body credentials decoder endpoint =
 
 headers : Credentials -> List Http.Header
 headers appToken =
-    [ Http.header "Content-Type" "application/json"
-    , Http.header "X-App-Token" appToken
+    [ Http.header "X-App-Token" appToken
     ]
 
 
