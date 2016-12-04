@@ -14,3 +14,9 @@ Logo by [Jozef Krajcovic](http://jozefkrajcovic.sk/)
 
 The idea is to make the application fully controllable only using the keyboard. Going through the timeline, tweeting, retweeting, changing accounts, everything seemless, fast and without the need for a mouse.
 This will allow for a brand new and fun way to interact with Twitter.
+
+## Changelog
+
+### v0.0.0.5
+- Open extension with `Ctrl+Shift+1` for max-speed retweeting
+- Detach app window for always-connected tweeting
