@@ -1,21 +1,30 @@
 {
   "manifest_version": 2,
-
   "name": "Silver Magpie",
   "description": "The cleanest Twitter client for Chrome",
   "version": "0.0.0.4",
   "browser_action": {
     "default_icon": {
-      "16": "images/favicon-16x16.png",
-      "32": "images/favicon-32x32.png",
-      "96": "images/favicon-96x96.png",
-      "128": "images/logo_128x128.png"
-      },
-    "default_popup": "pages/index.html"
+     "36": "images\/icon-sizes\/android-icon-36x36.png",
+     "48": "images\/icon-sizes\/android-icon-48x48.png",
+     "72": "images\/icon-sizes\/android-icon-72x72.png",
+     "96": "images\/icon-sizes\/android-icon-96x96.png",
+     "144": "images\/icon-sizes\/android-icon-144x144.png",
+     "192": "images\/icon-sizes\/android-icon-192x192.png"
+   },
+    "default_popup": "pages\/index.html"
   },
   "permissions": [
     "activeTab",
     "https://ajax.googleapis.com/"
   ],
+  "icons": {
+   "36": "images\/icon-sizes\/android-icon-36x36.png",
+   "48": "images\/icon-sizes\/android-icon-48x48.png",
+   "72": "images\/icon-sizes\/android-icon-72x72.png",
+   "96": "images\/icon-sizes\/android-icon-96x96.png",
+   "144": "images\/icon-sizes\/android-icon-144x144.png",
+   "192": "images\/icon-sizes\/android-icon-192x192.png"
+ },
   "content_security_policy": "script-src 'self' https://www.google-analytics.com/analytics.js; blob: filesystem: chrome-extension-resource:"
 }
