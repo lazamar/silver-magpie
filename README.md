@@ -1,8 +1,12 @@
-# The cleanest Twitter client for Chrome
+# Silver Magpie ![banner](assets/icon-sizes/ms-icon-70x70.png)
+
+>The cleanest Twitter client for Chrome
 
 Silver Magpie is a beautiful Chrome extension written entirely in [Elm](elm-lang.org).
 
-![Demo](./src/images/usage-demo.gif)
+[Add it to Google Chrome](https://chrome.google.com/webstore/detail/silver-magpie/fodacnnlggakjhanpmjacokgpngeeabi)
+
+![Screenshot](assets/screenshot-resized-1.png)
 
 Logo by [Jozef Krajcovic](http://jozefkrajcovic.sk/)
 
