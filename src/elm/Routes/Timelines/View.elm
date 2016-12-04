@@ -7,16 +7,16 @@ import Generic.Utils exposing (tooltip)
 import Html exposing (Html, div, button)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
-import Html.App
+import Html
 
 
 root : Model -> Html Msg
 root model =
     div [ class "Timelines" ]
         [ Routes.Timelines.Timeline.View.root model.timelineModel
-            |> Html.App.map TimelineMsg
+            |> Html.map TimelineMsg
         , Routes.Timelines.TweetBar.View.root model.tweetBarModel
-            |> Html.App.map TweetBarMsg
+            |> Html.map TweetBarMsg
         , footer
         ]
 

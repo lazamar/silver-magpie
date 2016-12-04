@@ -73,14 +73,18 @@ loginContent model =
     case model.credentials of
         RemoteData.Failure error ->
             case error of
-                Http.BadResponse 401 errDescription ->
-                    a
-                        [ href <| Generic.Http.sameDomain <| "/sign-in/?app_session_id=" ++ model.sessionID
-                        , target "blank"
-                        , class "Login-signinBtn"
-                        ]
-                        [ text "Sign in with Twitter "
-                        ]
+                Http.BadStatus { status } ->
+                    if status.code == 401 then
+                        a
+                            [ href <| Generic.Http.sameDomain <| "/sign-in/?app_session_id=" ++ model.sessionID
+                            , target "blank"
+                            , class "Login-signinBtn"
+                            ]
+                            [ text "Sign in with Twitter "
+                            ]
+                    else
+                        p [ class "Loading-content-info" ]
+                            [ text "There was an error loading your credentials. Please retry." ]
 
                 -- TODO: Handle other HTTP errors properly
                 _ ->

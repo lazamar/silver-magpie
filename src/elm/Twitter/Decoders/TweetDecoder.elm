@@ -21,8 +21,8 @@ import Twitter.Types
         , UrlRecord
         )
 import Twitter.Decoders.UserDecoder exposing (userDecoder)
-import Json.Decode exposing (Decoder, string, int, bool, list, dict, at, andThen, fail, (:=))
-import Json.Decode.Pipeline exposing (decode, required, optional, requiredAt, hardcoded, nullable)
+import Json.Decode exposing (Decoder, string, int, bool, list, dict, at, andThen, fail, field, nullable)
+import Json.Decode.Pipeline exposing (decode, required, optional, requiredAt, hardcoded)
 import List.Extra
 
 
@@ -218,20 +218,21 @@ extendedEntitiesDecoder =
 
 extendedMediaDecoder : Decoder ExtendedMedia
 extendedMediaDecoder =
-    ("type" := string)
-        `andThen`
-            \mtype ->
+    (field "type" string)
+        |> andThen
+            (\mtype ->
                 if mtype == "video" || mtype == "animated_gif" then
                     extendedVideoRecordDecoder
-                        `andThen` \x -> decode (ExtendedVideoMedia x)
+                        |> andThen (\x -> decode (ExtendedVideoMedia x))
                 else if mtype == "photo" then
                     extendedPhotoRecordDecoder
-                        `andThen` \x -> decode (ExtendedPhotoMedia x)
+                        |> andThen (\x -> decode (ExtendedPhotoMedia x))
                     -- TODO: Multi-photo parse
                 else
                     -- FIXME: This mustbe an appropriate
                     -- parser for an undefined option
                     fail (mtype ++ " is not a recognised type.")
+            )
 
 
 extendedPhotoRecordDecoder : Decoder ExtendedPhoto
@@ -375,12 +376,17 @@ toExtendedVideo extendedMedia =
 extendedVideoToVideo : ExtendedVideo -> Video
 extendedVideoToVideo extendedVideo =
     let
+        mp4Variant =
+            List.Extra.find (\v -> v.content_type == "video/mp4") extendedVideo.variants
+
         videoVariant =
-            Maybe.oneOf
-                [ List.Extra.find (\v -> v.content_type == "video/mp4") extendedVideo.variants
-                , List.head extendedVideo.variants
-                ]
-                |> Maybe.withDefault (VariantRecord "nothingHere" "nothingHere")
+            case mp4Variant of
+                Nothing ->
+                    List.head extendedVideo.variants
+                        |> Maybe.withDefault (VariantRecord "nothingHere" "nothingHere")
+
+                Just variant ->
+                    variant
     in
         Video
             extendedVideo.url

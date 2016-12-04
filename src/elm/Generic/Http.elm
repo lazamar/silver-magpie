@@ -4,6 +4,7 @@ import Twitter.Types exposing (Credentials)
 import Http
 import Task exposing (Task)
 import Json.Encode
+import Json.Decode exposing (Decoder)
 
 
 type alias Endpoint =
@@ -11,45 +12,48 @@ type alias Endpoint =
 
 
 serverURL =
+    -- "http://localhost:8080"
     "https://lazamar.co.uk/silver-magpie"
 
 
-
--- "http://localhost:8080"
-
-
-get : Credentials -> Endpoint -> Task Http.RawError Http.Response
-get =
-    makeRequest "GET" Http.empty
+get : Credentials -> Decoder a -> Endpoint -> Task Http.Error a
+get credentials decoder endpoint =
+    makeRequest "GET" Http.emptyBody credentials decoder endpoint
+        |> Http.toTask
 
 
-delete : Credentials -> Endpoint -> Task Http.RawError Http.Response
-delete =
-    makeRequest "DELETE" Http.empty
+delete : Credentials -> Decoder a -> Endpoint -> Task Http.Error a
+delete credentials decoder endpoint =
+    makeRequest "DELETE" Http.emptyBody credentials decoder endpoint
+        |> Http.toTask
 
 
-post : Credentials -> Endpoint -> Http.Body -> Task Http.RawError Http.Response
-post credentials endpoint body =
-    makeRequest "POST" body credentials endpoint
+post : Credentials -> Decoder a -> Endpoint -> Http.Body -> Task Http.Error a
+post credentials decoder endpoint body =
+    makeRequest "POST" body credentials decoder endpoint
+        |> Http.toTask
 
 
-makeRequest : String -> Http.Body -> Credentials -> Endpoint -> Task Http.RawError Http.Response
-makeRequest method body appToken endpoint =
+makeRequest : String -> Http.Body -> Credentials -> Decoder a -> Endpoint -> Http.Request a
+makeRequest method body credentials decoder endpoint =
     let
-        request =
-            { verb = method
-            , headers = headers appToken
+        options =
+            { method = method
+            , headers = headers credentials
             , url = sameDomain endpoint
             , body = body
+            , expect = Http.expectJson decoder
+            , timeout = Nothing
+            , withCredentials = False
             }
     in
-        Http.send Http.defaultSettings request
+        Http.request options
 
 
-headers : Credentials -> List ( String, String )
+headers : Credentials -> List Http.Header
 headers appToken =
-    [ ( "Content-Type", "application/json" )
-    , ( "X-App-Token", appToken )
+    [ Http.header "Content-Type" "application/json"
+    , Http.header "X-App-Token" appToken
     ]
 
 
@@ -62,5 +66,4 @@ toJsonBody : List ( String, Json.Encode.Value ) -> Http.Body
 toJsonBody tupleList =
     tupleList
         |> Json.Encode.object
-        |> Json.Encode.encode 2
-        |> Http.string
+        |> Http.jsonBody

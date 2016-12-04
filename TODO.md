@@ -17,6 +17,7 @@
   - Allow detatching
   - Show logged user photo
   - Keyboard command to open the app
+  - Use keyed nodes in timeline
 
 
 ## FIX

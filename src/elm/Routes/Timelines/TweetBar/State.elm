@@ -15,7 +15,6 @@ import Generic.Types
             , Sending
             , NotSent
             )
-        , never
         )
 import RemoteData exposing (RemoteData)
 import Dom
@@ -65,7 +64,7 @@ update msg model =
                     TwHandler.findChanged model.tweetText text
 
                 handlerText =
-                    handlerMatch `Maybe.andThen` TwHandler.matchedName
+                    handlerMatch |> Maybe.andThen TwHandler.matchedName
 
                 fetchCommand =
                     case handlerText of
@@ -104,7 +103,8 @@ update msg model =
                     model.handlerSuggestions
 
                 currentHandlerText =
-                    handlerSuggestions.handler `Maybe.andThen` TwHandler.matchedName
+                    handlerSuggestions.handler
+                        |> Maybe.andThen TwHandler.matchedName
             in
                 -- If the users that arrived are for the handlers we are waiting for
                 if Just handler == currentHandlerText then
@@ -201,7 +201,7 @@ update msg model =
                 , handlerSuggestions = emptySuggestions
               }
             , Dom.focus inputFieldId
-                |> Task.perform (\_ -> DoNothing) (\_ -> DoNothing)
+                |> Task.attempt (\_ -> DoNothing)
             , Cmd.none
             )
 
@@ -265,16 +265,7 @@ selectUserSuggestion model user =
 
 resetTweetText : Float -> Cmd Msg
 resetTweetText time =
-    Task.perform
-        never
-        (\_ ->
-            let
-                t =
-                    Debug.log "NOw!" "now"
-            in
-                TweetSend NotSent
-        )
-        (Task.andThen (Process.sleep time) (Task.succeed))
+    Task.attempt (\_ -> TweetSend NotSent) (Process.sleep time)
 
 
 persistTweetText : String -> Cmd Msg

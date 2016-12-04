@@ -6,3 +6,4 @@
     - Hashtag
     - Username
     - urls
+    - no Debug.log

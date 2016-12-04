@@ -4,6 +4,7 @@ import Routes.Timelines.Timeline.Types exposing (..)
 import Twitter.Decoders exposing (tweetDecoder)
 import Twitter.Types exposing (Tweet, Credentials)
 import Generic.Http
+import Generic.Utils exposing (mapResult)
 import Http
 import Json.Encode
 import Json.Decode exposing (Decoder, string, int, bool, list, dict, at)
@@ -43,9 +44,8 @@ getTweets credentials fetchType route =
                 BottomTweets tweetId ->
                     (Debug.log "Tweet id" tweetId)
     in
-        Generic.Http.get credentials ("/" ++ section ++ "?maxId=" ++ maxId)
-            |> Http.fromJson serverMsgDecoder
-            |> Task.perform Failure Success
+        Generic.Http.get credentials serverMsgDecoder ("/" ++ section ++ "?maxId=" ++ maxId)
+            |> Task.attempt (mapResult Failure Success)
             |> Cmd.map (TweetFetch route fetchType)
 
 
@@ -57,15 +57,16 @@ getTweets credentials fetchType route =
 favoriteTweet : Credentials -> Bool -> String -> Cmd Msg
 favoriteTweet credentials shouldFavorite tweetId =
     let
-        httpMethod =
+        endpoint =
+            "/favorite?id=" ++ tweetId
+
+        request =
             if shouldFavorite then
-                (\cred endpoint -> Generic.Http.post cred endpoint Http.empty)
+                Generic.Http.post credentials string endpoint Http.emptyBody
             else
-                Generic.Http.delete
+                Generic.Http.delete credentials string endpoint
     in
-        httpMethod credentials ("/favorite?id=" ++ tweetId)
-            |> Http.fromJson string
-            |> Task.perform (\_ -> DoNothing) (\_ -> DoNothing)
+        Task.attempt ignoreResult request
 
 
 
@@ -76,19 +77,24 @@ favoriteTweet credentials shouldFavorite tweetId =
 doRetweet : Credentials -> Bool -> String -> Cmd Msg
 doRetweet credentials shouldRetweet tweetId =
     let
-        httpMethod =
+        endpoint =
+            ("/retweet?id=" ++ tweetId)
+
+        request =
             if shouldRetweet then
-                (\cred endpoint -> Generic.Http.post cred endpoint Http.empty)
+                Generic.Http.post credentials string endpoint Http.emptyBody
             else
-                Generic.Http.delete
+                Generic.Http.delete credentials string endpoint
     in
-        httpMethod credentials ("/retweet?id=" ++ tweetId)
-            |> Http.fromJson string
-            |> Task.perform (\_ -> DoNothing) (\_ -> DoNothing)
+        Task.attempt ignoreResult request
 
 
 sendLogoutMessasge : Credentials -> Cmd Msg
 sendLogoutMessasge credentials =
-    Generic.Http.delete credentials "/app-revoke-access"
-        |> Http.fromJson string
-        |> Task.perform (\_ -> DoNothing) (\_ -> DoNothing)
+    Generic.Http.delete credentials string "/app-revoke-access"
+        |> Task.attempt ignoreResult
+
+
+ignoreResult : Result a b -> Msg
+ignoreResult r =
+    DoNothing

@@ -200,24 +200,25 @@ arrowNavigation msg =
             { preventDefault = True, stopPropagation = False }
 
         navigationDecoder =
-            Json.Decode.customDecoder keyCode
-                (\code ->
-                    case code of
-                        13 ->
-                            Ok EnterKey
+            keyCode
+                |> Json.Decode.andThen
+                    (\code ->
+                        case code of
+                            13 ->
+                                Json.Decode.succeed EnterKey
 
-                        38 ->
-                            Ok ArrowUp
+                            38 ->
+                                Json.Decode.succeed ArrowUp
 
-                        40 ->
-                            Ok ArrowDown
+                            40 ->
+                                Json.Decode.succeed ArrowDown
 
-                        27 ->
-                            Ok EscKey
+                            27 ->
+                                Json.Decode.succeed EscKey
 
-                        _ ->
-                            Err "Not handling that key"
-                )
+                            _ ->
+                                Json.Decode.fail "Not handling that key"
+                    )
                 |> Json.Decode.map msg
     in
         onWithOptions "keydown" options navigationDecoder

@@ -5,7 +5,6 @@ import Routes.Timelines.Timeline.Types exposing (..)
 import Twitter.Types exposing (Tweet, Retweet, Credentials)
 import Twitter.Serialisers
 import Twitter.Deserialisers
-import Generic.Types exposing (never)
 import Generic.Utils exposing (toCmd)
 import Generic.LocalStorage
 import Main.Types
@@ -89,11 +88,21 @@ update msg model =
                         , Cmd.none
                         )
 
-                    Failure (Http.BadResponse 401 _) ->
-                        ( updateModelTab route model { routeTab | newTweets = request }
-                        , Cmd.none
-                        , toCmd Logout
-                        )
+                    Failure (Http.BadStatus { status }) ->
+                        let
+                            newModel =
+                                updateModelTab route model { routeTab | newTweets = request }
+                        in
+                            if status.code == 401 then
+                                ( newModel
+                                , Cmd.none
+                                , toCmd Logout
+                                )
+                            else
+                                ( newModel
+                                , resetTweetFetch route fetchType 3000
+                                , Cmd.none
+                                )
 
                     Failure _ ->
                         ( updateModelTab route model { routeTab | newTweets = request }
@@ -259,7 +268,7 @@ combineTweets fetchType oldTweets newTweets =
 resetTweetFetch : TabName -> FetchType -> Float -> Cmd Msg
 resetTweetFetch route fetchType time =
     Process.sleep time
-        |> Task.perform never (\_ -> TweetFetch route fetchType NotAsked)
+        |> Task.attempt (\_ -> TweetFetch route fetchType NotAsked)
 
 
 

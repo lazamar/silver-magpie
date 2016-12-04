@@ -48,17 +48,17 @@ createSendBody tweetText replyTweet =
 sendTweet : Credentials -> Maybe Tweet -> String -> Cmd Msg
 sendTweet credentials replyTweet tweetText =
     createSendBody tweetText replyTweet
-        |> Generic.Http.post credentials "/status-update"
-        |> Http.fromJson tweetPostedDecoder
-        |> Task.perform SubmissionData.Failure SubmissionData.Success
+        |> Generic.Http.post credentials tweetPostedDecoder "/status-update"
+        |> Task.attempt
+            (Generic.Utils.mapResult SubmissionData.Failure SubmissionData.Success)
         |> Cmd.map TweetSend
 
 
 fetchHandlerSuggestion : Credentials -> String -> Cmd Msg
 fetchHandlerSuggestion credentials handler =
-    Http.uriEncode handler
+    Http.encodeUri handler
         |> (++) "/user-search?q="
-        |> Generic.Http.get credentials
-        |> Http.fromJson userListDecoder
-        |> Task.perform RemoteData.Failure RemoteData.Success
+        |> Generic.Http.get credentials userListDecoder
+        |> Task.attempt
+            (Generic.Utils.mapResult RemoteData.Failure RemoteData.Success)
         |> Cmd.map (SuggestedHandlersFetch handler)
