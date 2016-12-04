@@ -6,4 +6,6 @@
     - Hashtag
     - Username
     - urls
-    - no Debug.log
+
+  - no Debug.log
+  - Readme links

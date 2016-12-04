@@ -18,6 +18,9 @@
   - Show logged user photo
   - Keyboard command to open the app
   - Use keyed nodes in timeline
+  - Detached icon
+  - Open with keyboard shortcut
+  - Add delete option
 
 
 ## FIX
