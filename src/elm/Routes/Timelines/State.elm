@@ -1,4 +1,4 @@
-module Routes.Timelines.State exposing (init, update)
+module Routes.Timelines.State exposing (init, update, subscriptions)
 
 import Routes.Timelines.Types exposing (..)
 import Routes.Timelines.Timeline.Types as TimelineT
@@ -28,6 +28,11 @@ init credentials =
             ]
         , Cmd.none
         )
+
+
+subscriptions : Sub Msg
+subscriptions =
+    Sub.map TimelineMsg TimelineS.subscriptions
 
 
 update : Msg -> Model -> ( Model, Cmd Msg, Cmd Broadcast )

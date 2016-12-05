@@ -22,7 +22,7 @@ init _ =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    Sub.map TimelinesMsg TimelinesS.subscriptions
 
 
 

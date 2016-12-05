@@ -3,6 +3,7 @@ module Routes.Timelines.Timeline.Types exposing (..)
 import Http
 import RemoteData exposing (WebData)
 import Twitter.Types exposing (Tweet, Credentials, TweetId)
+import Time exposing (Time)
 
 
 type alias Model =
@@ -10,6 +11,7 @@ type alias Model =
     , tab : TabName
     , homeTab : Tab
     , mentionsTab : Tab
+    , clock : Time
     }
 
 
@@ -31,6 +33,7 @@ type FetchType
 
 type Msg
     = DoNothing
+    | UpdateClock Time
     | TweetFetch TabName FetchType (WebData (List Tweet))
     | ChangeTab TabName
     | FetchTweets TabName FetchType
