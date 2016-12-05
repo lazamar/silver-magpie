@@ -65,8 +65,8 @@ aproxHour =
     1000 * 60 * 50
 
 
-aproxDay =
-    1000 * 60 * 60 * 23
+day =
+    hour * 24
 
 
 minute =
@@ -87,10 +87,12 @@ timeDifference dateFrom dateTo =
     in
         if diff < aproxHour then
             floor (diff / minute)
+                |> max 1
                 |> toString
                 |> (flip (++)) "m"
-        else if diff < aproxDay then
+        else if diff < day then
             floor (diff / hour)
+                |> max 1
                 |> toString
                 |> (flip (++)) "h"
         else
