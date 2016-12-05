@@ -77,8 +77,8 @@ hour =
     60 * minute
 
 
-timeDiff : Date -> Date -> String
-timeDiff dateFrom dateTo =
+timeDifference : Date -> Date -> String
+timeDifference dateFrom dateTo =
     let
         diff =
             (Date.toTime dateTo)

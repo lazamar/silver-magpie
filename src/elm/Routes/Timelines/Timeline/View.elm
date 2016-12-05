@@ -41,14 +41,14 @@ root model =
                     [ class "Timeline-home"
                     , style [ ( "transform", "translateX(" ++ translation ++ ")" ) ]
                     ]
-                    [ div [] (List.indexedMap tweetView model.homeTab.tweets)
+                    [ div [] (List.indexedMap (tweetView model.clock) model.homeTab.tweets)
                     , loadMoreBtn model.tab model.homeTab.tweets model.homeTab.newTweets
                     ]
                 , div
                     [ class "Timeline-mentions"
                     , style [ ( "transform", "translateX(" ++ translation ++ ")" ) ]
                     ]
-                    [ div [] (List.indexedMap tweetView model.mentionsTab.tweets)
+                    [ div [] (List.indexedMap (tweetView model.clock) model.mentionsTab.tweets)
                     , loadMoreBtn model.tab model.mentionsTab.tweets model.mentionsTab.newTweets
                     ]
                 ]

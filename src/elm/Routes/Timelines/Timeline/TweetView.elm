@@ -17,16 +17,18 @@ import Twitter.Types
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Generic.Utils exposing (tooltip)
+import Generic.Utils exposing (tooltip, timeDifference)
 import List.Extra
 import Array
 import Regex
 import Json.Encode
 import Maybe
+import Time exposing (Time)
+import Date exposing (Date)
 
 
-tweetView : Int -> Tweet -> Html Msg
-tweetView index mainTweet =
+tweetView : Time -> Int -> Tweet -> Html Msg
+tweetView clock index mainTweet =
     let
         tweet =
             getMainContent mainTweet
@@ -35,7 +37,8 @@ tweetView index mainTweet =
             [ class "Tweet"
             , style [ ( "borderColor", (getColor index) ) ]
             ]
-            [ retweetInfo mainTweet
+            [ timeInfo clock tweet
+            , retweetInfo mainTweet
             , tweetContent tweet
             , quotedContent tweet
             , tweetActions tweet
@@ -48,6 +51,21 @@ getMainContent tweet =
         |> .retweeted_status
         |> Maybe.map (\(Retweet retweet) -> retweet)
         |> Maybe.withDefault tweet
+
+
+timeInfo : Time -> Tweet -> Html Msg
+timeInfo clock tweet =
+    let
+        info =
+            Date.fromTime clock
+                |> timeDifference tweet.created_at
+    in
+        a
+            [ class "Tweet-timeInfo"
+            , target "blank"
+            , href <| "https://twitter.com/statuses/" ++ tweet.id
+            ]
+            [ text info ]
 
 
 retweetInfo : Tweet -> Html Msg
