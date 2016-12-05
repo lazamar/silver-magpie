@@ -1,5 +1,7 @@
 module Twitter.Types exposing (..)
 
+import Date exposing (Date)
+
 
 type alias Credentials =
     String
@@ -19,7 +21,7 @@ type alias User =
 type alias Tweet =
     { id : String
     , user : User
-    , created_at : String
+    , created_at : Date
     , text : String
     , retweet_count : Int
     , favorite_count : Int

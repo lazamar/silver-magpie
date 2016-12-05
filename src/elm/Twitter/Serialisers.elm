@@ -2,6 +2,7 @@ module Twitter.Serialisers exposing (serialiseTweet)
 
 import Twitter.Types exposing (..)
 import Json.Encode exposing (string, int, bool, list, object)
+import Date
 
 
 --
@@ -15,7 +16,7 @@ serialiseTweet tweet =
     object
         [ ( "id", string tweet.id )
         , ( "user", serialiseUser tweet.user )
-        , ( "created_at", string tweet.created_at )
+        , ( "created_at", string <| toString tweet.created_at )
         , ( "text", string tweet.text )
         , ( "retweet_count", int tweet.retweet_count )
         , ( "favorite_count", int tweet.favorite_count )

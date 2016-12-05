@@ -2,8 +2,10 @@ module Twitter.Deserialisers exposing (..)
 
 import Twitter.Types exposing (..)
 import Twitter.Decoders.TweetDecoder exposing (..)
-import Json.Decode exposing (Decoder, string, int, bool, list, oneOf, at)
-import Json.Decode.Pipeline exposing (decode, required, hardcoded)
+import Generic.Utils
+import Json.Decode exposing (Decoder, string, field, int, bool, list, oneOf, at)
+import Json.Decode.Pipeline exposing (decode, required, hardcoded, custom)
+import Date
 
 
 deserialiseTweet : Decoder Tweet
@@ -36,7 +38,7 @@ deserialiseFirstPartOfTweet =
     decode Tweet
         |> required "id" string
         |> required "user" deserialiseUser
-        |> required "created_at" string
+        |> required "created_at" Generic.Utils.dateDecoder
         |> required "text" string
         |> required "retweet_count" int
         |> required "favorite_count" int

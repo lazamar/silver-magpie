@@ -4,6 +4,7 @@ import Generic.Types exposing (..)
 import Http
 import Task
 import Result
+import Json.Decode
 import Html exposing (Attribute)
 import Html.Attributes exposing (attribute)
 import Date exposing (Date)
@@ -47,6 +48,17 @@ mapResult failure success result =
 
         Result.Err r ->
             failure r
+
+
+dateDecoder : Json.Decode.Decoder Date
+dateDecoder =
+    Json.Decode.string
+        |> Json.Decode.andThen
+            (Date.fromString
+                >> mapResult
+                    Json.Decode.fail
+                    Json.Decode.succeed
+            )
 
 
 aproxHour =

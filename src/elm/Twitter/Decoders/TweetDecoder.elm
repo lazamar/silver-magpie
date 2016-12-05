@@ -21,9 +21,11 @@ import Twitter.Types
         , UrlRecord
         )
 import Twitter.Decoders.UserDecoder exposing (userDecoder)
+import Generic.Utils
 import Json.Decode exposing (Decoder, string, int, bool, list, dict, at, andThen, fail, field, nullable)
-import Json.Decode.Pipeline exposing (decode, required, optional, requiredAt, hardcoded)
+import Json.Decode.Pipeline exposing (decode, required, optional, requiredAt, hardcoded, custom)
 import List.Extra
+import Date exposing (Date)
 
 
 -- Types
@@ -33,7 +35,7 @@ import List.Extra
 type alias RawTweet =
     { id : String
     , user : User
-    , created_at : String
+    , created_at : Date
     , text : String
     , retweet_count : Int
     , favorite_count : Int
@@ -159,7 +161,7 @@ rawTweetDecoderFirstPart =
     decode RawTweet
         |> required "id_str" string
         |> required "user" userDecoder
-        |> required "created_at" string
+        |> required "created_at" Generic.Utils.dateDecoder
         |> required "text" string
         |> required "retweet_count" int
         |> required "favorite_count" int
