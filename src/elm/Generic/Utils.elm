@@ -6,6 +6,7 @@ import Task
 import Result
 import Html exposing (Attribute)
 import Html.Attributes exposing (attribute)
+import Date exposing (Date)
 
 
 errorMessage : Http.Error -> String
@@ -46,3 +47,95 @@ mapResult failure success result =
 
         Result.Err r ->
             failure r
+
+
+aproxHour =
+    1000 * 60 * 50
+
+
+aproxDay =
+    1000 * 60 * 60 * 23
+
+
+minute =
+    1000 * 60
+
+
+hour =
+    60 * minute
+
+
+timeDiff : Date -> Date -> String
+timeDiff dateFrom dateTo =
+    let
+        diff =
+            (Date.toTime dateTo)
+                - (Date.toTime dateFrom)
+                |> abs
+    in
+        if diff < aproxHour then
+            floor (diff / minute)
+                |> toString
+                |> (flip (++)) "m"
+        else if diff < aproxDay then
+            floor (diff / hour)
+                |> toString
+                |> (flip (++)) "h"
+        else
+            let
+                year =
+                    if Date.year dateFrom /= Date.year dateTo then
+                        Date.year dateTo
+                            |> toString
+                            |> Just
+                    else
+                        Nothing
+
+                month =
+                    case Date.month dateTo of
+                        Date.Jan ->
+                            "Jan"
+
+                        Date.Feb ->
+                            "Feb"
+
+                        Date.Mar ->
+                            "Mar"
+
+                        Date.Apr ->
+                            "Apr"
+
+                        Date.May ->
+                            "May"
+
+                        Date.Jun ->
+                            "Jun"
+
+                        Date.Jul ->
+                            "Jul"
+
+                        Date.Aug ->
+                            "Aug"
+
+                        Date.Sep ->
+                            "Sep"
+
+                        Date.Oct ->
+                            "Oct"
+
+                        Date.Nov ->
+                            "Nov"
+
+                        Date.Dec ->
+                            "Dec"
+
+                day =
+                    Date.day dateTo
+                        |> toString
+            in
+                case year of
+                    Just aYear ->
+                        month ++ " " ++ day ++ " " ++ aYear
+
+                    Nothing ->
+                        month ++ " " ++ day
