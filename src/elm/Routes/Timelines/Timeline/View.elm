@@ -14,6 +14,7 @@ import Twitter.Types
         )
 import Http
 import Generic.Utils exposing (errorMessage, tooltip)
+import Html.Lazy
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -23,7 +24,13 @@ import List.Extra
 
 
 root : Model -> Html Msg
-root model =
+root =
+    -- Add memoisation to our view function and make it super performant! :D
+    Html.Lazy.lazy view
+
+
+view : Model -> Html Msg
+view model =
     let
         ( newTweets, translation ) =
             case model.tab of
