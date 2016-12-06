@@ -94,19 +94,22 @@ tweetContent clock tweet =
             []
         , div [ class "Tweet-content" ]
             [ div
-                [ class "Tweet-userInfoContainer" ]
-                [ a
-                    [ class "Tweet-userName"
-                    , href <| userProfileLink tweet.user
-                    , target "_blank"
+                [ class "Tweet-content-header" ]
+                [ div
+                    [ class "Tweet-userInfoContainer" ]
+                    [ a
+                        [ class "Tweet-userName"
+                        , href <| userProfileLink tweet.user
+                        , target "_blank"
+                        ]
+                        [ text tweet.user.name ]
+                    , a
+                        [ class "Tweet-userHandler"
+                        , href <| userProfileLink tweet.user
+                        , target "_blank"
+                        ]
+                        [ text ("@" ++ tweet.user.screen_name) ]
                     ]
-                    [ text tweet.user.name ]
-                , a
-                    [ class "Tweet-userHandler"
-                    , href <| userProfileLink tweet.user
-                    , target "_blank"
-                    ]
-                    [ text ("@" ++ tweet.user.screen_name) ]
                 , timeInfo clock tweet
                 ]
             , p

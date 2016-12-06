@@ -65,14 +65,8 @@
     color: $txt-disabled;
     font-size: 0.8em;
     float: right;
-    position: absolute;
-    top: 1em;
-    right: 1em;
-
-    .Tweet-quoted & {
-        top: 0.5em;
-        right: 0.5em;
-    }
+    box-shadow: 0 0 6px 5px inherit;
+    background-color: inherit;
 }
 
 .Tweet-retweet-info {
@@ -112,13 +106,20 @@
 
 .Tweet-content {
     overflow: hidden;
+    width: 100%;
+}
+
+.Tweet-content-header {
+    overflow: hidden;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
 }
 
 .Tweet-userInfoContainer {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    overflow: hidden;
 }
 
 .Tweet-userName {
