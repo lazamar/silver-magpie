@@ -4,7 +4,7 @@ import Routes.Timelines.Types exposing (..)
 import Routes.Timelines.TweetBar.View
 import Routes.Timelines.Timeline.View
 import Generic.Utils exposing (tooltip)
-import Html exposing (Html, div, button)
+import Html exposing (Html, div, button, text, span)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Html
@@ -30,6 +30,9 @@ footer =
             , onClick Detach
             ]
             []
+        , span
+            [ class "Timelines-footer-cues animated fadeInUp" ]
+            [ text "You can open Silver Magpie with Ctrl+Alt+1" ]
         , button
             [ class "zmdi zmdi-power btn btn-default btn-icon"
             , tooltip "Logout"
