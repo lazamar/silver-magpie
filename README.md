@@ -17,6 +17,14 @@ This will allow for a brand new and fun way to interact with Twitter.
 
 ## Changelog
 
+### v0.0.0.4
+
+- Reply to tweets
+- See quoted tweets
+
 ### v0.0.0.5
+
 - Open extension with `Ctrl+Shift+1` for max-speed retweeting
 - Detach app window for always-connected tweeting
+- Tweet times with link to Twitter
+- Usage hints in footer

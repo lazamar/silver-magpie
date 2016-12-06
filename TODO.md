@@ -21,7 +21,7 @@
   - Detached icon
   - Open with keyboard shortcut
   - Add delete option
-
+  - Update checklist
 
 ## FIX
   - User link in retweet status not working

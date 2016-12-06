@@ -1,36 +1,36 @@
 {
-  "name": "silver-magpie",
-  "version": "1.0.0",
-  "description": "The Elm Twitter extension for Chrome",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "gulp build"
-  },
-  "author": "Lazamar",
-  "license": "ISC",
-  "devDependencies": {
-    "autoprefixer": "^6.5.0",
-    "babel-plugin-external-helpers-2": "^6.3.13",
-    "babel-plugin-transform-async-to-generator": "^6.8.0",
-    "babel-preset-es2015-rollup": "^1.2.0",
-    "browser-sync": "^2.17.0",
-    "elm": "^0.18.0",
-    "gulp": "^3.9.1",
-    "gulp-organiser": "^1.0.6",
-    "gulp-postcss": "^6.2.0",
-    "gulp-rollup": "^2.3.0",
-    "gulp-sass": "^2.3.2",
-    "gulp-shell": "^0.5.2",
-    "gulp-sourcemaps": "^1.6.0",
-    "require-dir-all": "^0.4.9",
-    "rollup-plugin-babel": "^2.6.1",
-    "rollup-plugin-commonjs": "^3.3.1",
-    "rollup-plugin-node-resolve": "^2.0.0"
-  },
-  "dependencies": {
-    "animate.css": "^3.5.2",
-    "bootstrap": "^3.3.7",
-    "bootstrap-sass": "^3.3.7"
-  }
+    "name": "silver-magpie",
+    "version": "0.0.0.5",
+    "description": "The Elm Twitter extension for Chrome",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "gulp build"
+    },
+    "author": "Lazamar",
+    "license": "ISC",
+    "devDependencies": {
+        "autoprefixer": "^6.5.0",
+        "babel-plugin-external-helpers-2": "^6.3.13",
+        "babel-plugin-transform-async-to-generator": "^6.8.0",
+        "babel-preset-es2015-rollup": "^1.2.0",
+        "browser-sync": "^2.17.0",
+        "elm": "^0.18.0",
+        "gulp": "^3.9.1",
+        "gulp-organiser": "^1.0.6",
+        "gulp-postcss": "^6.2.0",
+        "gulp-rollup": "^2.3.0",
+        "gulp-sass": "^2.3.2",
+        "gulp-shell": "^0.5.2",
+        "gulp-sourcemaps": "^1.6.0",
+        "require-dir-all": "^0.4.9",
+        "rollup-plugin-babel": "^2.6.1",
+        "rollup-plugin-commonjs": "^3.3.1",
+        "rollup-plugin-node-resolve": "^2.0.0"
+    },
+    "dependencies": {
+        "animate.css": "^3.5.2",
+        "bootstrap": "^3.3.7",
+        "bootstrap-sass": "^3.3.7"
+    }
 }
