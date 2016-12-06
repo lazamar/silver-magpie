@@ -4,6 +4,7 @@ import Routes.Timelines.Types exposing (..)
 import Routes.Timelines.TweetBar.View
 import Routes.Timelines.Timeline.View
 import Generic.Utils exposing (tooltip)
+import List.Extra
 import Html exposing (Html, div, button, text, span)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
@@ -17,12 +18,12 @@ root model =
             |> Html.map TimelineMsg
         , Routes.Timelines.TweetBar.View.root model.tweetBarModel
             |> Html.map TweetBarMsg
-        , footer
+        , footer model.footerMessageNumber
         ]
 
 
-footer : Html Msg
-footer =
+footer : Int -> Html Msg
+footer footerMessageNumber =
     div [ class "Timelines-footer" ]
         [ button
             [ class "zmdi zmdi-collection-item btn btn-default btn-icon"
@@ -32,7 +33,7 @@ footer =
             []
         , span
             [ class "Timelines-footer-cues animated fadeInUp" ]
-            [ text "You can open Silver Magpie with Ctrl+Alt+1" ]
+            [ text <| footerMessage footerMessageNumber ]
         , button
             [ class "zmdi zmdi-power btn btn-default btn-icon"
             , tooltip "Logout"
@@ -40,3 +41,26 @@ footer =
             ]
             []
         ]
+
+
+footerMessage : Int -> String
+footerMessage seed =
+    let
+        messagesLength =
+            List.length footerMessages
+
+        msgNumber =
+            seed % messagesLength
+    in
+        List.Extra.getAt msgNumber footerMessages
+            |> Maybe.withDefault ""
+
+
+footerMessages =
+    [ ""
+    , "Use arrows to navigate handler suggestions"
+    , ""
+    , "You can open Silver Magpie with Ctrl+Alt+1"
+    , ""
+    , "Use Ctrl+Enter to send your tweet"
+    ]

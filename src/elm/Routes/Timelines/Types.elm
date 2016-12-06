@@ -20,4 +20,5 @@ type Broadcast
 type alias Model =
     { timelineModel : TimelineT.Model
     , tweetBarModel : TweetBarT.Model
+    , footerMessageNumber : Int
     }

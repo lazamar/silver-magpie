@@ -7,6 +7,7 @@ import Routes.Timelines.TweetBar.Types as TweetBarT
 import Routes.Timelines.TweetBar.State as TweetBarS
 import Twitter.Types exposing (Credentials)
 import Generic.Utils exposing (toCmd)
+import Generic.LocalStorage
 import Generic.Detach
 
 
@@ -18,8 +19,11 @@ init credentials =
 
         ( tweetBarModel, tweetBarMsg, tweetBarBroadcast ) =
             TweetBarS.init credentials
+
+        footerMessageNumber =
+            generateFooterMsgNumber ()
     in
-        ( Model timelineModel tweetBarModel
+        ( Model timelineModel tweetBarModel footerMessageNumber
         , Cmd.batch
             [ Cmd.map TimelineMsg timelineMsg
             , Cmd.map TimelineBroadcast timelineBroadcast
@@ -102,3 +106,22 @@ tweetBarUpdate model ( tweetBarModel, tweetBarMsg, tweetBarBroadcast ) =
         ]
     , Cmd.none
     )
+
+
+generateFooterMsgNumber : () -> Int
+generateFooterMsgNumber _ =
+    let
+        -- get last saved number
+        generated =
+            Generic.LocalStorage.getItem "footerMsgNumber"
+                |> Maybe.map String.toInt
+                |> Maybe.withDefault (Ok 0)
+                |> Result.withDefault 0
+                |> (+) 1
+
+        -- save the one we have
+        save =
+            toString generated
+                |> Generic.LocalStorage.setItem "footerMsgNumber"
+    in
+        generated
