@@ -61,14 +61,6 @@
 //   font-weight: 300;
 // }
 
-.Tweet-timeInfo {
-    color: $txt-disabled;
-    font-size: 0.8em;
-    float: right;
-    box-shadow: 0 0 6px 5px inherit;
-    background-color: inherit;
-}
-
 .Tweet-retweet-info {
     margin-bottom: 0.5em;
     font-size: 0.8em;
@@ -110,6 +102,7 @@
 }
 
 .Tweet-content-header {
+    white-space: nowrap;
     overflow: hidden;
     display: flex;
     flex-flow: row nowrap;
@@ -117,7 +110,6 @@
 }
 
 .Tweet-userInfoContainer {
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -132,6 +124,14 @@
     opacity: 0.5;
     margin-left: 0.3em;
     color: inherit;
+}
+
+.Tweet-timeInfo {
+    color: $txt-disabled;
+    font-size: 0.8em;
+    float: right;
+    box-shadow: 0 0 6px 5px inherit;
+    background-color: inherit;
 }
 
 .Tweet-text {
