@@ -12,8 +12,8 @@ type alias Endpoint =
 
 
 serverURL =
-    -- "https://lazamar.co.uk/silver-magpie"
-    "http://localhost:8080"
+    -- "http://localhost:8080"
+    "https://lazamar.co.uk/silver-magpie"
 
 
 get : Credentials -> Decoder a -> Endpoint -> Task Http.Error a

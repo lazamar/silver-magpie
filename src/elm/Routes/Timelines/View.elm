@@ -57,10 +57,7 @@ footerMessage seed =
 
 
 footerMessages =
-    [ ""
-    , "Use arrows to navigate handler suggestions"
-    , ""
-    , "You can open Silver Magpie with Ctrl+Alt+1"
-    , ""
+    [ "You can open Silver Magpie with Ctrl+Alt+1"
     , "Use Ctrl+Enter to send your tweet"
+    , "Use arrows to navigate handler suggestions"
     ]
