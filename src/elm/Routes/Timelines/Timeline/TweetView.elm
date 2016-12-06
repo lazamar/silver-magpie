@@ -37,10 +37,9 @@ tweetView clock index mainTweet =
             [ class "Tweet"
             , style [ ( "borderColor", (getColor index) ) ]
             ]
-            [ timeInfo clock tweet
-            , retweetInfo mainTweet
-            , tweetContent tweet
-            , quotedContent tweet
+            [ retweetInfo mainTweet
+            , tweetContent clock tweet
+            , quotedContent clock tweet
             , tweetActions tweet
             ]
 
@@ -57,8 +56,7 @@ timeInfo : Time -> Tweet -> Html Msg
 timeInfo clock tweet =
     let
         info =
-            Date.fromTime clock
-                |> timeDifference tweet.created_at
+            timeDifference (Date.fromTime clock) tweet.created_at
     in
         a
             [ class "Tweet-timeInfo"
@@ -86,8 +84,8 @@ retweetInfo topTweet =
                 ]
 
 
-tweetContent : Tweet -> Html Msg
-tweetContent tweet =
+tweetContent : Time -> Tweet -> Html Msg
+tweetContent clock tweet =
     div [ class "Tweet-body" ]
         [ img
             [ class "Tweet-userImage"
@@ -109,6 +107,7 @@ tweetContent tweet =
                     , target "_blank"
                     ]
                     [ text ("@" ++ tweet.user.screen_name) ]
+                , timeInfo clock tweet
                 ]
             , p
                 [ class "Tweet-text"
@@ -122,15 +121,15 @@ tweetContent tweet =
         ]
 
 
-quotedContent : Tweet -> Html Msg
-quotedContent mainTweet =
+quotedContent : Time -> Tweet -> Html Msg
+quotedContent clock mainTweet =
     case mainTweet.quoted_status of
         Nothing ->
             text ""
 
         Just (QuotedTweet tweet) ->
             div [ class "Tweet-quoted" ]
-                [ tweetContent tweet
+                [ tweetContent clock tweet
                 ]
 
 

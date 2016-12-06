@@ -66,7 +66,7 @@ update msg model =
 
         UpdateClock time ->
             -- Update model clock
-            ( { model | clock = Debug.log "Time value" time }
+            ( { model | clock = time }
             , Cmd.none
             , Cmd.none
             )
