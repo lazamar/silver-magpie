@@ -1,193 +1,187 @@
 $tweetbar-content-min-height: 5.6em;
 
 .TweetBar {
-  flex-shrink: 0;
-  background-color: $bg-lvl-1;
-  padding: 0 $side-padding;
-  width: 100%;
-  display: flex;
-  flex-flow: column nowrap;
-	position: relative;
-  transition: all .3s ease-in-out;
+    flex-shrink: 0;
+    background-color: $bg-lvl-1;
+    padding: 0 $side-padding;
+    width: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+    position: relative;
+    transition: all 0.3s ease-in-out;
 }
 
 .TweetBar-textBox {
-  padding: .5em 7px;
-  width: 100%;
-  resize: none;
-  min-height: $tweetbar-content-min-height;
-  background-color: white;
-  border: 1px solid $c-border;
-  border-radius: 2px;
-  display: flex;
-  flex-flow: row nowrap;
-  align-content: flex-start;
+    padding: 0.5em 7px;
+    width: 100%;
+    resize: none;
+    min-height: $tweetbar-content-min-height;
+    background-color: white;
+    border: 1px solid $c-border;
+    border-radius: 2px;
+    display: flex;
+    flex-flow: row nowrap;
+    align-content: flex-start;
 }
 
 .TweetBar-textBox-charCount {
-  color: $link-color;
-  font-weight: bold;
-  padding: .1em;
-  font-size: 1.1em;
-  border-radius: 3px;
-  color: $bg-light;
-
-  > * {
-    padding: .2em .3em;
+    color: $link-color;
+    font-weight: bold;
+    padding: 0.1em;
+    font-size: 1.1em;
     border-radius: 3px;
-    min-width: 2.5em;
-    text-align: center;
-    display: inline-block;
-  }
-
-  .enough {
-    background-color: $brand-info;
-  }
-
-  .quite-a-few {
-    background-color: $brand-warning;
-  }
-
-  .few-left {
-    background-color: $brand-danger;
-  }
-
-  .too-much {
     color: $bg-light;
-    background-color: $brand-danger;
-  }
+
+    > * {
+        padding: 0.2em 0.3em;
+        border-radius: 3px;
+        min-width: 2.5em;
+        text-align: center;
+        display: inline-block;
+    }
+
+    .enough {
+        background-color: $brand-info;
+    }
+
+    .quite-a-few {
+        background-color: $brand-warning;
+    }
+
+    .few-left {
+        background-color: $brand-danger;
+    }
+
+    .too-much {
+        color: $bg-light;
+        background-color: $brand-danger;
+    }
 }
 
 .TweetBar-textBox-inputContainer {
-  position: relative; // It will contain the display and input elements
-  width: 100%;
+    position: relative; // It will contain the display and input elements
+    width: 100%;
 }
 
-.TweetBar-textBox-input,
-.TweetBar-textBox-display {
-  display: block;
-  resize: none;
-  border: 0;
-  padding: 0 7px;
-  width: 100%;
-  max-width: 320px;
-  background-color: transparent;
-  font-size: inherit;
-  font-weight: inherit;
-  line-height: inherit;
-  letter-spacing: inherit;
-  white-space: inherit;
-  word-wrap: break-word;
-  word-break: normal;
-  word-spacing: normal;
-  overflow: hidden;
+.TweetBar-textBox-display,
+.TweetBar-textBox-input {
+    display: block;
+    resize: none;
+    border: 0;
+    padding: 0 7px;
+    width: 100%;
+    max-width: 320px;
+    background-color: transparent;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    letter-spacing: inherit;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    word-break: normal;
+    word-spacing: normal;
+    overflow: hidden;
 
-  &:active,
-  &:focus,
-  &:hover {
-    outline: 0;
-  }
+    &:active,
+    &:focus,
+    &:hover {
+        outline: 0;
+    }
 }
 
 .TweetBar-textBox-input {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 .TweetBar-textBox-input {
-  color: inherit;
-  -webkit-text-fill-color: transparent;
-
-  // So that our placeholder text still appears
-  &::-webkit-input-placeholder{
-    text-shadow: none;
-    -webkit-text-fill-color: initial;
-  }
+    color: inherit;
+    -webkit-text-fill-color: transparent;
+    // So that our placeholder text still appears
+    &::-webkit-input-placeholder {
+        text-shadow: none;
+        -webkit-text-fill-color: initial;
+    }
 }
 
 .TweetBar-textBox-display-highlight {
-  color: $brand-info;
+    color: $brand-info;
 }
 
 .TweetBar-loading {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-flow: column nowrap;
-  padding: 1px;
-  min-height: $tweetbar-content-min-height;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 1px;
+    min-height: $tweetbar-content-min-height;
 }
 
 .TweetBar-suggestions {
-  position: absolute;
-  left: 0;
-  bottom: 100%;
-  padding: 0;
-  width: 100%;
-  border-top: 5px solid #673AB7;
-  background-color: inherit;
-  transition: all .2s ease-in-out;
-
+    position: absolute;
+    left: 0;
+    bottom: 100%;
+    padding: 0;
+    width: 100%;
+    border-top: 5px solid #673AB7;
+    background-color: inherit;
+    transition: all 0.2s ease-in-out;
 }
 
 .TweetBar-suggestions--loading {
-  @extend .TweetBar-suggestions;
-  min-height: 229px;
-  display: flex;
+    @extend .TweetBar-suggestions;
+    min-height: 229px;
+    display: flex;
 }
 
-.TweetBar-suggestions-option {
-  padding: .5em calc(#{$side-padding} + .2em);
-  user-select: none;
-  cursor: pointer;
-
-  & > * {
-    margin-right: .5em;
-  }
-
-  &:hover {
-    background-color: $bg-lvl-2;
-  }
-
-  &:active {
-    background-color: $bg-lvl-3;
-  }
-}
-
+.TweetBar-suggestions-option,
 .TweetBar-suggestions-option--selected {
-  @extend .TweetBar-suggestions-option;
-  @extend .TweetBar-suggestions-option:hover;
+    padding: 0.5em calc(#{$side-padding} + .2em);
+    user-select: none;
+    cursor: pointer;
+
+    & > * {
+        margin-right: 0.5em;
+    }
+
+    &--selected,
+    &:hover {
+        background-color: $bg-lvl-2;
+    }
+
+    &:active {
+        background-color: $bg-lvl-3;
+    }
 }
 
 .TweetBar-suggestions-option-image {
-  border-radius: 3px;
-  height: 1.7em;
+    border-radius: 3px;
+    height: 1.7em;
 }
 
-.TweetBar-suggestions-option-name {
-}
+.TweetBar-suggestions-option-name {}
 
 .TweetBar-suggestions-option-screenName {
-  position: relative;
-  background-color: $bg-lvl-2;
-  padding: .2em .5em .2em .45em;
-  border-radius: 3px;
-  border: 1px solid $c-border;
-  font-size: .9em;
-  font-weight: lighter;
-  // float: right;
-  transition: all .1s ease-in-out;
+    position: relative;
+    background-color: $bg-lvl-2;
+    padding: 0.2em 0.5em 0.2em 0.45em;
+    border-radius: 3px;
+    border: 1px solid $c-border;
+    font-size: 0.9em;
+    font-weight: lighter;
+    // float: right;
+    transition: all 0.1s ease-in-out;
 
-  .TweetBar-suggestions-option:hover &,
-  .TweetBar-suggestions-option--selected:hover & {
-    background-color: $bg-lvl-1;
-  }
+    .TweetBar-suggestions-option--selected &,
+    .TweetBar-suggestions-option:hover & {
+        background-color: $bg-lvl-1;
+    }
 
-  .TweetBar-suggestions-option--selected & {
-    zoom: 110%;
-    top: -1px;
-  }
+    .TweetBar-suggestions-option--selected & {
+        zoom: 110%;
+        top: -1px;
+    }
 }

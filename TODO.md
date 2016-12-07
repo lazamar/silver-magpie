@@ -9,23 +9,18 @@
   - Show new mentions notification
   - Send error reports to the server
   - DMs
-  - Visual cues about what is possible
   - Add some link to my profile in the app
   - Push notifications when interaction happens
-  - Update project README
   - Check TODO comments
-  - Allow detatching
   - Show logged user photo
-  - Keyboard command to open the app
   - Use keyed nodes in timeline
-  - Detached icon
-  - Open with keyboard shortcut
   - Add delete option
-  - Update checklist
+  - Software Update checklist
+  - Allow quoting tweets
 
 ## FIX
-  - User link in retweet status not working
   - Links gaining underline when focused.
+  - Double spaces in stylised text div
 
 ## TEMPORARILY DONE
   - Reload conditionally when changing tabs // we are currently reloading all tabs on widget open
@@ -34,6 +29,11 @@
 
 
 ## Done
+  - User link in retweet status not working
+  - Update project README
+  - Open with keyboard shortcut
+  - Allow detatching
+  - Visual cues about what is possible
   - Clicking user suggestion not working
   - Change github project website at https://github.com/lazamar/silver-magpie
   - Add Silver Magpie to lazamar.github.io
