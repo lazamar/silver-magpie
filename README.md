@@ -32,3 +32,8 @@ This will allow for a brand new and fun way to interact with Twitter.
 ### v0.0.0.6
 
 - Fix double spaces in tweet bar
+
+
+### v0.0.0.7
+
+- Allow navigating the timeline with arrow keys
