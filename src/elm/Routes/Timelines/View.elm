@@ -59,7 +59,8 @@ footerMessage seed =
 
 
 footerMessages =
-    [ "You can open Silver Magpie with Ctrl+Alt+1"
+    [ "Press Tab to navigate the timeline using the arrow keys :)"
+    , "You can open Silver Magpie with Ctrl+Alt+1"
     , "Use Ctrl+Enter to send your tweet"
     , "Use arrows to navigate handler suggestions"
     ]
