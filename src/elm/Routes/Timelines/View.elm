@@ -6,7 +6,7 @@ import Routes.Timelines.Timeline.View
 import Generic.Utils exposing (tooltip)
 import List.Extra
 import Html exposing (Html, div, button, text, span)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, tabindex)
 import Html.Events exposing (onClick)
 import Html
 
@@ -28,6 +28,7 @@ footer footerMessageNumber =
         [ button
             [ class "zmdi zmdi-collection-item btn btn-default btn-icon"
             , tooltip "Detach window"
+            , tabindex -1
             , onClick Detach
             ]
             []
@@ -36,6 +37,7 @@ footer footerMessageNumber =
             [ text <| footerMessage footerMessageNumber ]
         , button
             [ class "zmdi zmdi-power btn btn-default btn-icon"
+            , tabindex -1
             , tooltip "Logout"
             , onClick MsgLogout
             ]

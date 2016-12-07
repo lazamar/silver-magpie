@@ -3,6 +3,14 @@
     flex-flow: column nowrap;
     height: 100%;
     width: 100%;
+
+    a:active,
+    a:focus,
+    a:hover,
+    a:visited {
+        outline: 0;
+        text-decoration: none;
+    }
 }
 
 .Timeline-home,
