@@ -28,3 +28,7 @@ This will allow for a brand new and fun way to interact with Twitter.
 - Detach app window for always-connected tweeting
 - Tweet times with link to Twitter
 - Usage hints in footer
+
+### v0.0.0.6
+
+- Fix double spaces in tweet bar
