@@ -253,8 +253,20 @@ submitOnCtrlEnter { keyCode, ctrlKey } =
 remainingCharacters : String -> Html Msg
 remainingCharacters tweetText =
     let
+        -- Urls occupy a maximum of 15 characters. Anything more than
+        -- that should not be accounted for and should come out of
+        -- the total number
+        urlOverflow =
+            Regex.find Regex.All urlRegex tweetText
+                |> List.map .match
+                |> List.map String.length
+                |> List.map (\v -> v - 15 |> Basics.max 0)
+                |> List.foldl (+) 0
+
         remaining =
-            140 - (String.length tweetText)
+            140
+                - (String.length tweetText)
+                + urlOverflow
 
         remainingText =
             remaining
