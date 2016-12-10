@@ -2,6 +2,7 @@ module Routes.Timelines.Types exposing (..)
 
 import Routes.Timelines.Timeline.Types as TimelineT
 import Routes.Timelines.TweetBar.Types as TweetBarT
+import Twitter.Types exposing (Credentials)
 
 
 type Msg
@@ -18,7 +19,8 @@ type Broadcast
 
 
 type alias Model =
-    { timelineModel : TimelineT.Model
+    { credentials : Credentials
+    , timelineModel : TimelineT.Model
     , tweetBarModel : TweetBarT.Model
     , footerMessageNumber : Int
     }

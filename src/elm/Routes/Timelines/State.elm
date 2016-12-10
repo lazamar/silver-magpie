@@ -22,8 +22,15 @@ init credentials =
 
         footerMessageNumber =
             generateFooterMsgNumber ()
+
+        initialModel =
+            { credentials = credentials
+            , timelineModel = timelineModel
+            , tweetBarModel = tweetBarModel
+            , footerMessageNumber = footerMessageNumber
+            }
     in
-        ( Model timelineModel tweetBarModel footerMessageNumber
+        ( initialModel
         , Cmd.batch
             [ Cmd.map TimelineMsg timelineMsg
             , Cmd.map TimelineBroadcast timelineBroadcast
