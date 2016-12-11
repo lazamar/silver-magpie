@@ -9,14 +9,13 @@ module Routes.Timelines.TweetBar.Types
 
 import Routes.Timelines.TweetBar.Handler exposing (Handler, HandlerMatch)
 import Generic.Types exposing (SubmissionData)
-import Twitter.Types exposing (Tweet, User, Credentials)
+import Twitter.Types exposing (Tweet, User)
 import RemoteData exposing (WebData)
 import Http
 
 
 type alias Model =
-    { credentials : Credentials
-    , submission : SubmissionData Http.Error TweetPostedResponse String
+    { submission : SubmissionData Http.Error TweetPostedResponse String
     , tweetText : String
     , inReplyTo : Maybe Tweet
     , handlerSuggestions :

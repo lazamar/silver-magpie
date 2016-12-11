@@ -31,29 +31,26 @@ emptySuggestions =
     }
 
 
-emptyModel : Credentials -> Model
-emptyModel credentials =
-    { credentials = credentials
-    , submission = NotSent
+emptyModel : Model
+emptyModel =
+    { submission = NotSent
     , tweetText = ""
     , inReplyTo = Nothing
     , handlerSuggestions = emptySuggestions
     }
 
 
-init : Credentials -> ( Model, Cmd Msg, Cmd Broadcast )
-init credentials =
+init : ( Model, Cmd Msg, Cmd Broadcast )
+init =
     let
         model =
-            emptyModel credentials
-                |> \m ->
-                    { m | tweetText = getPersistedTweetText () }
+            { emptyModel | tweetText = getPersistedTweetText () }
     in
         ( model, Cmd.none, Cmd.none )
 
 
-update : Msg -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
-update msg model =
+update : Msg -> Credentials -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
+update msg credentials model =
     case msg of
         DoNothing ->
             ( model, Cmd.none, Cmd.none )
@@ -72,7 +69,7 @@ update msg model =
                             Cmd.none
 
                         Just handler ->
-                            fetchHandlerSuggestion model.credentials handler
+                            fetchHandlerSuggestion credentials handler
 
                 usersStatus =
                     case handlerMatch of
@@ -209,7 +206,7 @@ update msg model =
             case model.submission of
                 NotSent ->
                     ( { model | submission = Sending model.tweetText }
-                    , sendTweet model.credentials model.inReplyTo model.tweetText
+                    , sendTweet credentials model.inReplyTo model.tweetText
                     , Cmd.none
                     )
 
@@ -219,17 +216,13 @@ update msg model =
         TweetSend status ->
             case status of
                 Success _ ->
-                    let
-                        emptiedModel =
-                            emptyModel model.credentials
-                    in
-                        ( { emptiedModel | submission = status }
-                        , Cmd.batch
-                            [ resetTweetText 1800
-                            , persistTweetText ""
-                            ]
-                        , toCmd RefreshTweets
-                        )
+                    ( { emptyModel | submission = status }
+                    , Cmd.batch
+                        [ resetTweetText 1800
+                        , persistTweetText ""
+                        ]
+                    , toCmd RefreshTweets
+                    )
 
                 Failure _ ->
                     ( { model | submission = status }
@@ -284,15 +277,16 @@ getPersistedTweetText _ =
 -- Public
 
 
-submitTweet : Model -> ( Model, Cmd Msg, Cmd Broadcast )
+submitTweet : Credentials -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
 submitTweet =
     update SubmitTweet
 
 
 
 -- Public
+-- TODO: This should be in the parent
 
 
-setReplyTweet : Model -> Tweet -> ( Model, Cmd Msg, Cmd Broadcast )
-setReplyTweet model tweet =
-    update (SetReplyTweet tweet) model
+setReplyTweet : Credentials -> Model -> Tweet -> ( Model, Cmd Msg, Cmd Broadcast )
+setReplyTweet credentials model tweet =
+    update (SetReplyTweet tweet) credentials model

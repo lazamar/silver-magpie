@@ -18,7 +18,7 @@ init credentials =
             TimelineS.init credentials
 
         ( tweetBarModel, tweetBarMsg, tweetBarBroadcast ) =
-            TweetBarS.init credentials
+            TweetBarS.init
 
         footerMessageNumber =
             generateFooterMsgNumber ()
@@ -56,11 +56,11 @@ update msg model =
                     ( model, Cmd.none, toCmd Logout )
 
                 TimelineT.SubmitTweet ->
-                    TweetBarS.submitTweet model.tweetBarModel
+                    TweetBarS.submitTweet model.credentials model.tweetBarModel
                         |> tweetBarUpdate model
 
                 TimelineT.SetReplyTweet tweet ->
-                    TweetBarS.setReplyTweet model.tweetBarModel tweet
+                    TweetBarS.setReplyTweet model.credentials model.tweetBarModel tweet
                         |> tweetBarUpdate model
 
         TweetBarBroadcast (TweetBarT.RefreshTweets) ->
@@ -73,7 +73,7 @@ update msg model =
                 |> timelineUpdate model
 
         TweetBarMsg subMsg ->
-            TweetBarS.update subMsg model.tweetBarModel
+            TweetBarS.update subMsg model.credentials model.tweetBarModel
                 |> tweetBarUpdate model
 
         -- Own messages
