@@ -4,7 +4,7 @@ module Routes.Timelines.TweetBar.Types
         , TweetPostedResponse
         , Msg(..)
         , KeyboardNavigation(..)
-        , UpdateConfig
+        , Config
         )
 
 import Routes.Timelines.TweetBar.Handler exposing (Handler, HandlerMatch)
@@ -26,7 +26,7 @@ type alias Model =
     }
 
 
-type alias UpdateConfig msg =
+type alias Config msg =
     { onRefreshTweets : msg
     , onUpdate : Msg -> msg
     }

@@ -40,7 +40,7 @@ emptyModel =
     }
 
 
-init : UpdateConfig msg -> ( Model, Cmd msg )
+init : Config msg -> ( Model, Cmd msg )
 init _ =
     let
         model =
@@ -49,7 +49,7 @@ init _ =
         ( model, Cmd.none )
 
 
-update : Msg -> UpdateConfig msg -> Credentials -> Model -> ( Model, Cmd msg )
+update : Msg -> Config msg -> Credentials -> Model -> ( Model, Cmd msg )
 update msg conf credentials model =
     case msg of
         DoNothing ->
@@ -263,7 +263,7 @@ getPersistedTweetText _ =
 -- Public
 
 
-submitTweet : UpdateConfig msg -> Credentials -> Model -> ( Model, Cmd msg )
+submitTweet : Config msg -> Credentials -> Model -> ( Model, Cmd msg )
 submitTweet =
     update SubmitTweet
 
@@ -273,6 +273,6 @@ submitTweet =
 -- TODO: This should be in the parent
 
 
-setReplyTweet : UpdateConfig msg -> Credentials -> Model -> Tweet -> ( Model, Cmd msg )
+setReplyTweet : Config msg -> Credentials -> Model -> Tweet -> ( Model, Cmd msg )
 setReplyTweet conf credentials model tweet =
     update (SetReplyTweet tweet) conf credentials model

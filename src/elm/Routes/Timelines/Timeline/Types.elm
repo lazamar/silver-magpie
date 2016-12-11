@@ -42,7 +42,7 @@ type Msg
     | SetReplyTweet Tweet
 
 
-type alias UpdateConfig msg =
+type alias Config msg =
     { onUpdate : Msg -> msg
     , onLogout : msg
     , onSubmitTweet : msg

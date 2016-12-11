@@ -36,7 +36,7 @@ initialModel =
     }
 
 
-init : UpdateConfig msg -> ( Model, Cmd msg )
+init : Config msg -> ( Model, Cmd msg )
 init conf =
     ( initialModel
     , Cmd.batch
@@ -57,7 +57,7 @@ subscriptions =
 -- UPDATE
 
 
-update : Msg -> UpdateConfig msg -> Credentials -> Model -> ( Model, Cmd msg )
+update : Msg -> Config msg -> Credentials -> Model -> ( Model, Cmd msg )
 update msg conf credentials model =
     case msg of
         DoNothing ->
@@ -284,7 +284,7 @@ resetTweetFetch route fetchType time =
 -- Public
 
 
-refreshTweets : UpdateConfig msg -> Credentials -> Model -> ( Model, Cmd msg )
+refreshTweets : Config msg -> Credentials -> Model -> ( Model, Cmd msg )
 refreshTweets conf credentials model =
     update (FetchTweets model.tab Refresh) conf credentials model
 

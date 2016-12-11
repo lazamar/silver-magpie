@@ -39,14 +39,14 @@ init credentials =
         )
 
 
-tweetBarConfig : TweetBarT.UpdateConfig Msg
+tweetBarConfig : TweetBarT.Config Msg
 tweetBarConfig =
     { onRefreshTweets = RefreshTweets
     , onUpdate = TweetBarMsg
     }
 
 
-timelineConfig : TimelineT.UpdateConfig Msg
+timelineConfig : TimelineT.Config Msg
 timelineConfig =
     { onUpdate = TimelineMsg
     , onLogout = MsgLogout
