@@ -9,14 +9,10 @@ type Msg
     = TimelineMsg TimelineT.Msg
     | TweetBarMsg TweetBarT.Msg
     | Detach
-    | MsgLogout
+    | Logout
     | RefreshTweets
     | SubmitTweet
     | SetReplyTweet Tweet
-
-
-type Broadcast
-    = Logout
 
 
 type alias Model =
@@ -24,4 +20,10 @@ type alias Model =
     , timelineModel : TimelineT.Model
     , tweetBarModel : TweetBarT.Model
     , footerMessageNumber : Int
+    }
+
+
+type alias Config msg =
+    { onUpdate : Msg -> msg
+    , onLogout : msg
     }

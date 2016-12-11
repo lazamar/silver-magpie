@@ -39,7 +39,7 @@ footer footerMessageNumber =
             [ class "zmdi zmdi-power btn btn-default btn-icon"
             , tabindex -1
             , tooltip "Logout"
-            , onClick MsgLogout
+            , onClick Logout
             ]
             []
         ]

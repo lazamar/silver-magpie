@@ -11,8 +11,8 @@ import Generic.LocalStorage
 import Generic.Detach
 
 
-init : Credentials -> ( Model, Cmd Msg, Cmd Broadcast )
-init credentials =
+init : Config msg -> Credentials -> ( Model, Cmd msg )
+init conf credentials =
     let
         ( timelineModel, timelineMsg ) =
             TimelineS.init timelineConfig
@@ -35,7 +35,7 @@ init credentials =
             [ timelineMsg
             , tweetBarMsg
             ]
-        , Cmd.none
+            |> Cmd.map conf.onUpdate
         )
 
 
@@ -49,7 +49,7 @@ tweetBarConfig =
 timelineConfig : TimelineT.Config Msg
 timelineConfig =
     { onUpdate = TimelineMsg
-    , onLogout = MsgLogout
+    , onLogout = Logout
     , onSubmitTweet = SubmitTweet
     , onSetReplyTweet = SetReplyTweet
     }
@@ -60,54 +60,61 @@ subscriptions =
     Sub.map TimelineMsg TimelineS.subscriptions
 
 
-update : Msg -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
-update msg model =
+update : Msg -> Config msg -> Model -> ( Model, Cmd msg )
+update msg conf model =
     case msg of
         -- Msg
         TimelineMsg subMsg ->
             TimelineS.update subMsg timelineConfig model.credentials model.timelineModel
                 |> timelineUpdate model
+                |> Tuple.mapSecond (Cmd.map conf.onUpdate)
 
         TweetBarMsg subMsg ->
             TweetBarS.update subMsg tweetBarConfig model.credentials model.tweetBarModel
                 |> tweetBarUpdate model
+                |> Tuple.mapSecond (Cmd.map conf.onUpdate)
 
         SubmitTweet ->
             TweetBarS.submitTweet tweetBarConfig model.credentials model.tweetBarModel
                 |> tweetBarUpdate model
+                |> Tuple.mapSecond (Cmd.map conf.onUpdate)
 
         SetReplyTweet tweet ->
             TweetBarS.setReplyTweet tweetBarConfig model.credentials model.tweetBarModel tweet
                 |> tweetBarUpdate model
+                |> Tuple.mapSecond (Cmd.map conf.onUpdate)
 
         RefreshTweets ->
             TimelineS.refreshTweets timelineConfig model.credentials model.timelineModel
                 |> timelineUpdate model
+                |> Tuple.mapSecond (Cmd.map conf.onUpdate)
 
-        MsgLogout ->
-            ( model, Cmd.none, toCmd Logout )
+        Logout ->
+            ( model, toCmd conf.onLogout )
 
         Detach ->
             ( model
             , Generic.Detach.detach 400 600
-            , Cmd.none
+                |> Cmd.map conf.onUpdate
             )
 
 
 timelineUpdate :
     Model
     -> ( TimelineT.Model, Cmd Msg )
-    -> ( Model, Cmd Msg, Cmd Broadcast )
-timelineUpdate model ( timelineModel, cmd ) =
-    ( { model | timelineModel = timelineModel }, cmd, Cmd.none )
+    -> ( Model, Cmd Msg )
+timelineUpdate model =
+    Tuple.mapFirst
+        (\timelineModel -> { model | timelineModel = timelineModel })
 
 
 tweetBarUpdate :
     Model
     -> ( TweetBarT.Model, Cmd Msg )
-    -> ( Model, Cmd Msg, Cmd Broadcast )
-tweetBarUpdate model ( tweetBarModel, cmd ) =
-    ( { model | tweetBarModel = tweetBarModel }, cmd, Cmd.none )
+    -> ( Model, Cmd Msg )
+tweetBarUpdate model =
+    Tuple.mapFirst
+        (\tweetBarModel -> { model | tweetBarModel = tweetBarModel })
 
 
 generateFooterMsgNumber : () -> Int

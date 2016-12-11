@@ -16,6 +16,13 @@ init _ =
         |> translate LoginRoute LoginMsg LoginBroadcast
 
 
+timelinesConfig : TimelinesT.Config Msg
+timelinesConfig =
+    { onUpdate = TimelinesMsg
+    , onLogout = Logout
+    }
+
+
 
 -- SUBSCIPTIONS
 
@@ -34,10 +41,10 @@ update msg model =
     case msg of
         -- Broadcast
         LoginBroadcast (LoginT.Authenticated appToken) ->
-            TimelinesS.init appToken
-                |> translate TimelinesRoute TimelinesMsg TimelinesBroadcast
+            TimelinesS.init timelinesConfig appToken
+                |> Tuple.mapFirst TimelinesRoute
 
-        TimelinesBroadcast (TimelinesT.Logout) ->
+        Logout ->
             LoginS.logout ()
                 |> \_ -> init ()
 
@@ -54,8 +61,8 @@ update msg model =
         TimelinesMsg subMsg ->
             case model of
                 TimelinesRoute subModel ->
-                    TimelinesS.update subMsg subModel
-                        |> translate TimelinesRoute TimelinesMsg TimelinesBroadcast
+                    TimelinesS.update subMsg timelinesConfig subModel
+                        |> Tuple.mapFirst TimelinesRoute
 
                 _ ->
                     ( model, Cmd.none )
