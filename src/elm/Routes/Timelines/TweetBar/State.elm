@@ -40,20 +40,20 @@ emptyModel =
     }
 
 
-init : ( Model, Cmd Msg, Cmd Broadcast )
-init =
+init : UpdateConfig msg -> ( Model, Cmd msg )
+init _ =
     let
         model =
             { emptyModel | tweetText = getPersistedTweetText () }
     in
-        ( model, Cmd.none, Cmd.none )
+        ( model, Cmd.none )
 
 
-update : Msg -> Credentials -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
-update msg credentials model =
+update : Msg -> UpdateConfig msg -> Credentials -> Model -> ( Model, Cmd msg )
+update msg conf credentials model =
     case msg of
         DoNothing ->
-            ( model, Cmd.none, Cmd.none )
+            ( model, Cmd.none )
 
         LetterInput text ->
             let
@@ -91,7 +91,7 @@ update msg credentials model =
                     [ fetchCommand
                     , persistTweetText text
                     ]
-                , Cmd.none
+                    |> Cmd.map conf.update
                 )
 
         SuggestedHandlersFetch handler fetchStatus ->
@@ -113,16 +113,12 @@ update msg credentials model =
                             }
                       }
                     , Cmd.none
-                    , Cmd.none
                     )
                 else
-                    ( model, Cmd.none, Cmd.none )
+                    ( model, Cmd.none )
 
         SuggestedHandlerSelected user ->
-            ( selectUserSuggestion model user
-            , Cmd.none
-            , Cmd.none
-            )
+            ( selectUserSuggestion model user, Cmd.none )
 
         SuggestedHandlersNavigation keyPressed ->
             let
@@ -174,22 +170,13 @@ update msg credentials model =
                                     |> Maybe.map (selectUserSuggestion model)
                                     |> Maybe.withDefault model
                         in
-                            ( newModel
-                            , Cmd.none
-                            , Cmd.none
-                            )
+                            ( newModel, Cmd.none )
 
                     EscKey ->
-                        ( { model | handlerSuggestions = emptySuggestions }
-                        , Cmd.none
-                        , Cmd.none
-                        )
+                        ( { model | handlerSuggestions = emptySuggestions }, Cmd.none )
 
                     _ ->
-                        ( { model | handlerSuggestions = newHandlerSuggestions }
-                        , Cmd.none
-                        , Cmd.none
-                        )
+                        ( { model | handlerSuggestions = newHandlerSuggestions }, Cmd.none )
 
         SetReplyTweet tweet ->
             ( { model
@@ -198,8 +185,7 @@ update msg credentials model =
                 , handlerSuggestions = emptySuggestions
               }
             , Dom.focus inputFieldId
-                |> Task.attempt (\_ -> DoNothing)
-            , Cmd.none
+                |> Task.attempt (\_ -> conf.update DoNothing)
             )
 
         SubmitTweet ->
@@ -207,31 +193,31 @@ update msg credentials model =
                 NotSent ->
                     ( { model | submission = Sending model.tweetText }
                     , sendTweet credentials model.inReplyTo model.tweetText
-                    , Cmd.none
+                        |> Cmd.map conf.update
                     )
 
                 otherwise ->
-                    ( model, Cmd.none, Cmd.none )
+                    ( model, Cmd.none )
 
         TweetSend status ->
             case status of
                 Success _ ->
                     ( { emptyModel | submission = status }
                     , Cmd.batch
-                        [ resetTweetText 1800
-                        , persistTweetText ""
+                        [ resetTweetText 1800 |> Cmd.map conf.update
+                        , persistTweetText "" |> Cmd.map conf.update
+                        , toCmd conf.refreshTweets
                         ]
-                    , toCmd RefreshTweets
                     )
 
                 Failure _ ->
                     ( { model | submission = status }
                     , resetTweetText 3000
-                    , Cmd.none
+                        |> Cmd.map conf.update
                     )
 
                 _ ->
-                    ( { model | submission = status }, Cmd.none, Cmd.none )
+                    ( { model | submission = status }, Cmd.none )
 
 
 selectUserSuggestion : Model -> User -> Model
@@ -277,7 +263,7 @@ getPersistedTweetText _ =
 -- Public
 
 
-submitTweet : Credentials -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
+submitTweet : UpdateConfig msg -> Credentials -> Model -> ( Model, Cmd msg )
 submitTweet =
     update SubmitTweet
 
@@ -287,6 +273,6 @@ submitTweet =
 -- TODO: This should be in the parent
 
 
-setReplyTweet : Credentials -> Model -> Tweet -> ( Model, Cmd Msg, Cmd Broadcast )
-setReplyTweet credentials model tweet =
-    update (SetReplyTweet tweet) credentials model
+setReplyTweet : UpdateConfig msg -> Credentials -> Model -> Tweet -> ( Model, Cmd msg )
+setReplyTweet conf credentials model tweet =
+    update (SetReplyTweet tweet) conf credentials model

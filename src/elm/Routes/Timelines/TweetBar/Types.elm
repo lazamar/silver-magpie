@@ -3,8 +3,8 @@ module Routes.Timelines.TweetBar.Types
         ( Model
         , TweetPostedResponse
         , Msg(..)
-        , Broadcast(..)
         , KeyboardNavigation(..)
+        , UpdateConfig
         )
 
 import Routes.Timelines.TweetBar.Handler exposing (Handler, HandlerMatch)
@@ -23,6 +23,12 @@ type alias Model =
         , users : WebData (List User)
         , userSelected : Maybe Int
         }
+    }
+
+
+type alias UpdateConfig msg =
+    { refreshTweets : msg
+    , update : Msg -> msg
     }
 
 
@@ -47,7 +53,3 @@ type Msg
     | SuggestedHandlersNavigation KeyboardNavigation
     | SuggestedHandlerSelected User
     | SetReplyTweet Tweet
-
-
-type Broadcast
-    = RefreshTweets

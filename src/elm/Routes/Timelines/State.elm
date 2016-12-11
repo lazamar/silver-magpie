@@ -17,8 +17,8 @@ init credentials =
         ( timelineModel, timelineMsg, timelineBroadcast ) =
             TimelineS.init
 
-        ( tweetBarModel, tweetBarMsg, tweetBarBroadcast ) =
-            TweetBarS.init
+        ( tweetBarModel, tweetBarMsg ) =
+            TweetBarS.init tweetBarConfig
 
         footerMessageNumber =
             generateFooterMsgNumber ()
@@ -34,11 +34,17 @@ init credentials =
         , Cmd.batch
             [ Cmd.map TimelineMsg timelineMsg
             , Cmd.map TimelineBroadcast timelineBroadcast
-            , Cmd.map TweetBarMsg tweetBarMsg
-            , Cmd.map TweetBarBroadcast tweetBarBroadcast
+            , tweetBarMsg
             ]
         , Cmd.none
         )
+
+
+tweetBarConfig : TweetBarT.UpdateConfig Msg
+tweetBarConfig =
+    { refreshTweets = RefreshTweets
+    , update = TweetBarMsg
+    }
 
 
 subscriptions : Sub Msg
@@ -56,16 +62,12 @@ update msg model =
                     ( model, Cmd.none, toCmd Logout )
 
                 TimelineT.SubmitTweet ->
-                    TweetBarS.submitTweet model.credentials model.tweetBarModel
+                    TweetBarS.submitTweet tweetBarConfig model.credentials model.tweetBarModel
                         |> tweetBarUpdate model
 
                 TimelineT.SetReplyTweet tweet ->
-                    TweetBarS.setReplyTweet model.credentials model.tweetBarModel tweet
+                    TweetBarS.setReplyTweet tweetBarConfig model.credentials model.tweetBarModel tweet
                         |> tweetBarUpdate model
-
-        TweetBarBroadcast (TweetBarT.RefreshTweets) ->
-            TimelineS.refreshTweets model.credentials model.timelineModel
-                |> timelineUpdate model
 
         -- Msg
         TimelineMsg subMsg ->
@@ -73,10 +75,14 @@ update msg model =
                 |> timelineUpdate model
 
         TweetBarMsg subMsg ->
-            TweetBarS.update subMsg model.credentials model.tweetBarModel
+            TweetBarS.update subMsg tweetBarConfig model.credentials model.tweetBarModel
                 |> tweetBarUpdate model
 
         -- Own messages
+        RefreshTweets ->
+            TimelineS.refreshTweets model.credentials model.timelineModel
+                |> timelineUpdate model
+
         MsgLogout ->
             ( model, Cmd.none, toCmd Logout )
 
@@ -103,16 +109,10 @@ timelineUpdate model ( timelineModel, timelineMsg, timelineBroadcast ) =
 
 tweetBarUpdate :
     Model
-    -> ( TweetBarT.Model, Cmd TweetBarT.Msg, Cmd TweetBarT.Broadcast )
+    -> ( TweetBarT.Model, Cmd Msg )
     -> ( Model, Cmd Msg, Cmd Broadcast )
-tweetBarUpdate model ( tweetBarModel, tweetBarMsg, tweetBarBroadcast ) =
-    ( { model | tweetBarModel = tweetBarModel }
-    , Cmd.batch
-        [ Cmd.map TweetBarMsg tweetBarMsg
-        , Cmd.map TweetBarBroadcast tweetBarBroadcast
-        ]
-    , Cmd.none
-    )
+tweetBarUpdate model ( tweetBarModel, cmd ) =
+    ( { model | tweetBarModel = tweetBarModel }, Cmd.none, Cmd.none )
 
 
 generateFooterMsgNumber : () -> Int
