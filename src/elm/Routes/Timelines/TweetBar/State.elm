@@ -91,7 +91,7 @@ update msg conf credentials model =
                     [ fetchCommand
                     , persistTweetText text
                     ]
-                    |> Cmd.map conf.update
+                    |> Cmd.map conf.onUpdate
                 )
 
         SuggestedHandlersFetch handler fetchStatus ->
@@ -185,7 +185,7 @@ update msg conf credentials model =
                 , handlerSuggestions = emptySuggestions
               }
             , Dom.focus inputFieldId
-                |> Task.attempt (\_ -> conf.update DoNothing)
+                |> Task.attempt (\_ -> conf.onUpdate DoNothing)
             )
 
         SubmitTweet ->
@@ -193,7 +193,7 @@ update msg conf credentials model =
                 NotSent ->
                     ( { model | submission = Sending model.tweetText }
                     , sendTweet credentials model.inReplyTo model.tweetText
-                        |> Cmd.map conf.update
+                        |> Cmd.map conf.onUpdate
                     )
 
                 otherwise ->
@@ -204,8 +204,8 @@ update msg conf credentials model =
                 Success _ ->
                     ( { emptyModel | submission = status }
                     , Cmd.batch
-                        [ resetTweetText 1800 |> Cmd.map conf.update
-                        , persistTweetText "" |> Cmd.map conf.update
+                        [ resetTweetText 1800 |> Cmd.map conf.onUpdate
+                        , persistTweetText "" |> Cmd.map conf.onUpdate
                         , toCmd conf.onRefreshTweets
                         ]
                     )
@@ -213,7 +213,7 @@ update msg conf credentials model =
                 Failure _ ->
                     ( { model | submission = status }
                     , resetTweetText 3000
-                        |> Cmd.map conf.update
+                        |> Cmd.map conf.onUpdate
                     )
 
                 _ ->

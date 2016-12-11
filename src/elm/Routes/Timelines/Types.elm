@@ -2,16 +2,17 @@ module Routes.Timelines.Types exposing (..)
 
 import Routes.Timelines.Timeline.Types as TimelineT
 import Routes.Timelines.TweetBar.Types as TweetBarT
-import Twitter.Types exposing (Credentials)
+import Twitter.Types exposing (Tweet, Credentials)
 
 
 type Msg
     = TimelineMsg TimelineT.Msg
-    | TimelineBroadcast TimelineT.Broadcast
     | TweetBarMsg TweetBarT.Msg
     | Detach
     | MsgLogout
     | RefreshTweets
+    | SubmitTweet
+    | SetReplyTweet Tweet
 
 
 type Broadcast

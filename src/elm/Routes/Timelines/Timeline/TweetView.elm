@@ -146,7 +146,7 @@ tweetActions tweet =
     div [ class "Tweet-actions" ]
         [ button
             [ class "Tweet-actions-reply zmdi zmdi-mail-reply"
-            , onClick (MsgSetReplyTweet tweet)
+            , onClick (SetReplyTweet tweet)
             , tooltip "Reply"
             ]
             []

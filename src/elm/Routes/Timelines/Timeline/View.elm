@@ -144,7 +144,7 @@ actionBar route =
             [ text "Mentions" ]
         , button
             [ class "zmdi zmdi-mail-send Timeline-sendBtn btn btn-default btn-icon"
-            , onClick MsgSubmitTweet
+            , onClick SubmitTweet
             , tooltip "Send"
             ]
             []

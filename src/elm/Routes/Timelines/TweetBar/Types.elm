@@ -28,7 +28,7 @@ type alias Model =
 
 type alias UpdateConfig msg =
     { onRefreshTweets : msg
-    , update : Msg -> msg
+    , onUpdate : Msg -> msg
     }
 
 

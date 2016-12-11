@@ -36,37 +36,36 @@ initialModel =
     }
 
 
-subscriptions : Sub Msg
-subscriptions =
-    Time.every Time.minute UpdateClock
-
-
-init : ( Model, Cmd Msg, Cmd Broadcast )
-init =
+init : UpdateConfig msg -> ( Model, Cmd msg )
+init conf =
     ( initialModel
     , Cmd.batch
         [ toCmd (FetchTweets HomeTab Refresh)
         , toCmd (FetchTweets MentionsTab Refresh)
         , Task.perform UpdateClock Time.now
         ]
-    , Cmd.none
+        |> Cmd.map conf.onUpdate
     )
+
+
+subscriptions : Sub Msg
+subscriptions =
+    Time.every Time.minute UpdateClock
 
 
 
 -- UPDATE
 
 
-update : Msg -> Credentials -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
-update msg credentials model =
+update : Msg -> UpdateConfig msg -> Credentials -> Model -> ( Model, Cmd msg )
+update msg conf credentials model =
     case msg of
         DoNothing ->
-            ( model, Cmd.none, Cmd.none )
+            ( model, Cmd.none )
 
         UpdateClock time ->
             -- Update model clock
             ( { model | clock = time }
-            , Cmd.none
             , Cmd.none
             )
 
@@ -77,7 +76,7 @@ update msg credentials model =
             in
                 ( updateModelTab tabName model { tabBeingFetched | newTweets = Loading }
                 , getTweets credentials fetchType tabName
-                , Cmd.none
+                    |> Cmd.map conf.onUpdate
                 )
 
         TweetFetch route fetchType request ->
@@ -99,7 +98,7 @@ update msg credentials model =
                                 , newTweets = NotAsked
                             }
                         , persistTimeline route newTweets
-                        , Cmd.none
+                            |> Cmd.map conf.onUpdate
                         )
 
                     Failure (Http.BadStatus { status }) ->
@@ -110,29 +109,27 @@ update msg credentials model =
                             if status.code == 401 then
                                 ( newModel
                                 , Cmd.none
-                                , toCmd Logout
                                 )
                             else
                                 ( newModel
                                 , resetTweetFetch route fetchType 3000
-                                , Cmd.none
+                                    |> Cmd.map conf.onUpdate
                                 )
 
                     Failure _ ->
                         ( updateModelTab route model { routeTab | newTweets = request }
                         , resetTweetFetch route fetchType 3000
-                        , Cmd.none
+                            |> Cmd.map conf.onUpdate
                         )
 
                     _ ->
                         ( updateModelTab route model { routeTab | newTweets = request }
                         , Cmd.none
-                        , Cmd.none
                         )
 
         ChangeTab newRoute ->
             -- TODO: Conditionally reload this
-            update DoNothing credentials { model | tab = newRoute }
+            update DoNothing conf credentials { model | tab = newRoute }
 
         Favorite shouldFavorite tweetId ->
             let
@@ -145,7 +142,7 @@ update msg credentials model =
                         | tweets = registerFavorite shouldFavorite tweetId currentTab.tweets
                     }
                 , favoriteTweet credentials shouldFavorite tweetId
-                , Cmd.none
+                    |> Cmd.map conf.onUpdate
                 )
 
         DoRetweet shouldRetweet tweetId ->
@@ -159,19 +156,17 @@ update msg credentials model =
                         | tweets = registerRetweet shouldRetweet tweetId currentTab.tweets
                     }
                 , doRetweet credentials shouldRetweet tweetId
-                , Cmd.none
+                    |> Cmd.map conf.onUpdate
                 )
 
-        MsgSubmitTweet ->
+        SubmitTweet ->
             ( model
-            , Cmd.none
-            , toCmd SubmitTweet
+            , toCmd conf.onSubmitTweet
             )
 
-        MsgSetReplyTweet tweet ->
+        SetReplyTweet tweet ->
             ( model
-            , Cmd.none
-            , toCmd (SetReplyTweet tweet)
+            , toCmd (conf.onSetReplyTweet tweet)
             )
 
 
@@ -289,9 +284,9 @@ resetTweetFetch route fetchType time =
 -- Public
 
 
-refreshTweets : Credentials -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
-refreshTweets credentials model =
-    update (FetchTweets model.tab Refresh) credentials model
+refreshTweets : UpdateConfig msg -> Credentials -> Model -> ( Model, Cmd msg )
+refreshTweets conf credentials model =
+    update (FetchTweets model.tab Refresh) conf credentials model
 
 
 

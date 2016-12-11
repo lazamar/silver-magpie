@@ -14,8 +14,8 @@ import Generic.Detach
 init : Credentials -> ( Model, Cmd Msg, Cmd Broadcast )
 init credentials =
     let
-        ( timelineModel, timelineMsg, timelineBroadcast ) =
-            TimelineS.init
+        ( timelineModel, timelineMsg ) =
+            TimelineS.init timelineConfig
 
         ( tweetBarModel, tweetBarMsg ) =
             TweetBarS.init tweetBarConfig
@@ -32,8 +32,7 @@ init credentials =
     in
         ( initialModel
         , Cmd.batch
-            [ Cmd.map TimelineMsg timelineMsg
-            , Cmd.map TimelineBroadcast timelineBroadcast
+            [ timelineMsg
             , tweetBarMsg
             ]
         , Cmd.none
@@ -43,7 +42,16 @@ init credentials =
 tweetBarConfig : TweetBarT.UpdateConfig Msg
 tweetBarConfig =
     { onRefreshTweets = RefreshTweets
-    , update = TweetBarMsg
+    , onUpdate = TweetBarMsg
+    }
+
+
+timelineConfig : TimelineT.UpdateConfig Msg
+timelineConfig =
+    { onUpdate = TimelineMsg
+    , onLogout = MsgLogout
+    , onSubmitTweet = SubmitTweet
+    , onSetReplyTweet = SetReplyTweet
     }
 
 
@@ -55,32 +63,25 @@ subscriptions =
 update : Msg -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
 update msg model =
     case msg of
-        -- Broadcast
-        TimelineBroadcast subMsg ->
-            case subMsg of
-                TimelineT.Logout ->
-                    ( model, Cmd.none, toCmd Logout )
-
-                TimelineT.SubmitTweet ->
-                    TweetBarS.submitTweet tweetBarConfig model.credentials model.tweetBarModel
-                        |> tweetBarUpdate model
-
-                TimelineT.SetReplyTweet tweet ->
-                    TweetBarS.setReplyTweet tweetBarConfig model.credentials model.tweetBarModel tweet
-                        |> tweetBarUpdate model
-
         -- Msg
         TimelineMsg subMsg ->
-            TimelineS.update subMsg model.credentials model.timelineModel
+            TimelineS.update subMsg timelineConfig model.credentials model.timelineModel
                 |> timelineUpdate model
 
         TweetBarMsg subMsg ->
             TweetBarS.update subMsg tweetBarConfig model.credentials model.tweetBarModel
                 |> tweetBarUpdate model
 
-        -- Own messages
+        SubmitTweet ->
+            TweetBarS.submitTweet tweetBarConfig model.credentials model.tweetBarModel
+                |> tweetBarUpdate model
+
+        SetReplyTweet tweet ->
+            TweetBarS.setReplyTweet tweetBarConfig model.credentials model.tweetBarModel tweet
+                |> tweetBarUpdate model
+
         RefreshTweets ->
-            TimelineS.refreshTweets model.credentials model.timelineModel
+            TimelineS.refreshTweets timelineConfig model.credentials model.timelineModel
                 |> timelineUpdate model
 
         MsgLogout ->
@@ -95,16 +96,10 @@ update msg model =
 
 timelineUpdate :
     Model
-    -> ( TimelineT.Model, Cmd TimelineT.Msg, Cmd TimelineT.Broadcast )
+    -> ( TimelineT.Model, Cmd Msg )
     -> ( Model, Cmd Msg, Cmd Broadcast )
-timelineUpdate model ( timelineModel, timelineMsg, timelineBroadcast ) =
-    ( { model | timelineModel = timelineModel }
-    , Cmd.batch
-        [ Cmd.map TimelineMsg timelineMsg
-        , Cmd.map TimelineBroadcast timelineBroadcast
-        ]
-    , Cmd.none
-    )
+timelineUpdate model ( timelineModel, cmd ) =
+    ( { model | timelineModel = timelineModel }, cmd, Cmd.none )
 
 
 tweetBarUpdate :
@@ -112,7 +107,7 @@ tweetBarUpdate :
     -> ( TweetBarT.Model, Cmd Msg )
     -> ( Model, Cmd Msg, Cmd Broadcast )
 tweetBarUpdate model ( tweetBarModel, cmd ) =
-    ( { model | tweetBarModel = tweetBarModel }, Cmd.none, Cmd.none )
+    ( { model | tweetBarModel = tweetBarModel }, cmd, Cmd.none )
 
 
 generateFooterMsgNumber : () -> Int

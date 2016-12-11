@@ -38,11 +38,13 @@ type Msg
     | FetchTweets TabName FetchType
     | Favorite Bool TweetId
     | DoRetweet Bool TweetId
-    | MsgSubmitTweet
-    | MsgSetReplyTweet Tweet
-
-
-type Broadcast
-    = Logout
     | SubmitTweet
     | SetReplyTweet Tweet
+
+
+type alias UpdateConfig msg =
+    { onUpdate : Msg -> msg
+    , onLogout : msg
+    , onSubmitTweet : msg
+    , onSetReplyTweet : Tweet -> msg
+    }
