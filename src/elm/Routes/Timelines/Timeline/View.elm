@@ -21,16 +21,17 @@ import Html.Events exposing (onClick)
 import Routes.Timelines.Timeline.TweetView exposing (tweetView)
 import RemoteData exposing (..)
 import List.Extra
+import Time exposing (Time)
 
 
-root : Model -> Html Msg
+root : Time -> Model -> Html Msg
 root =
     -- Add memoisation to our view function and make it super performant! :D
-    Html.Lazy.lazy view
+    Html.Lazy.lazy2 view
 
 
-view : Model -> Html Msg
-view model =
+view : Time -> Model -> Html Msg
+view time model =
     let
         ( newTweets, translation ) =
             case model.tab of
@@ -48,14 +49,14 @@ view model =
                     [ class "Timeline-home"
                     , style [ ( "transform", "translateX(" ++ translation ++ ")" ) ]
                     ]
-                    [ div [] (List.indexedMap (tweetView model.clock) model.homeTab.tweets)
+                    [ div [] (List.indexedMap (tweetView time) model.homeTab.tweets)
                     , loadMoreBtn model.tab model.homeTab.tweets model.homeTab.newTweets
                     ]
                 , div
                     [ class "Timeline-mentions"
                     , style [ ( "transform", "translateX(" ++ translation ++ ")" ) ]
                     ]
-                    [ div [] (List.indexedMap (tweetView model.clock) model.mentionsTab.tweets)
+                    [ div [] (List.indexedMap (tweetView time) model.mentionsTab.tweets)
                     , loadMoreBtn model.tab model.mentionsTab.tweets model.mentionsTab.newTweets
                     ]
                 ]

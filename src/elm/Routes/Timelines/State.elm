@@ -9,6 +9,8 @@ import Twitter.Types exposing (Credentials)
 import Generic.Utils exposing (toCmd)
 import Generic.LocalStorage
 import Generic.Detach
+import Time exposing (Time)
+import Task
 
 
 init : Config msg -> Credentials -> ( Model, Cmd msg )
@@ -28,12 +30,14 @@ init conf credentials =
             , timelineModel = timelineModel
             , tweetBarModel = tweetBarModel
             , footerMessageNumber = footerMessageNumber
+            , time = 0.0
             }
     in
         ( initialModel
         , Cmd.batch
             [ timelineMsg
             , tweetBarMsg
+            , Task.perform UpdateTime Time.now
             ]
             |> Cmd.map conf.onUpdate
         )
@@ -57,13 +61,12 @@ timelineConfig =
 
 subscriptions : Sub Msg
 subscriptions =
-    Sub.map TimelineMsg TimelineS.subscriptions
+    Time.every Time.minute UpdateTime
 
 
 update : Msg -> Config msg -> Model -> ( Model, Cmd msg )
 update msg conf model =
     case msg of
-        -- Msg
         TimelineMsg subMsg ->
             TimelineS.update subMsg timelineConfig model.credentials model.timelineModel
                 |> timelineUpdate model
@@ -73,6 +76,9 @@ update msg conf model =
             TweetBarS.update subMsg tweetBarConfig model.credentials model.tweetBarModel
                 |> tweetBarUpdate model
                 |> Tuple.mapSecond (Cmd.map conf.onUpdate)
+
+        UpdateTime time ->
+            ( { model | time = time }, Cmd.none )
 
         SubmitTweet ->
             TweetBarS.submitTweet tweetBarConfig model.credentials model.tweetBarModel

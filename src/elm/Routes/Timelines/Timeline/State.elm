@@ -1,4 +1,4 @@
-module Routes.Timelines.Timeline.State exposing (init, update, subscriptions, refreshTweets)
+module Routes.Timelines.Timeline.State exposing (init, update, refreshTweets)
 
 import Routes.Timelines.Timeline.Rest exposing (getTweets, favoriteTweet, doRetweet)
 import Routes.Timelines.Timeline.Types exposing (..)
@@ -32,7 +32,6 @@ initialModel =
         { tweets = getPersistedTimeline MentionsTab
         , newTweets = NotAsked
         }
-    , clock = 1480949494846.0
     }
 
 
@@ -42,15 +41,9 @@ init conf =
     , Cmd.batch
         [ toCmd (FetchTweets HomeTab Refresh)
         , toCmd (FetchTweets MentionsTab Refresh)
-        , Task.perform UpdateClock Time.now
         ]
         |> Cmd.map conf.onUpdate
     )
-
-
-subscriptions : Sub Msg
-subscriptions =
-    Time.every Time.minute UpdateClock
 
 
 
@@ -62,12 +55,6 @@ update msg conf credentials model =
     case msg of
         DoNothing ->
             ( model, Cmd.none )
-
-        UpdateClock time ->
-            -- Update model clock
-            ( { model | clock = time }
-            , Cmd.none
-            )
 
         FetchTweets tabName fetchType ->
             let

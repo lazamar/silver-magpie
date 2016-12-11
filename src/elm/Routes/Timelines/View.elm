@@ -14,7 +14,7 @@ import Html
 root : Model -> Html Msg
 root model =
     div [ class "Timelines" ]
-        [ Routes.Timelines.Timeline.View.root model.timelineModel
+        [ Routes.Timelines.Timeline.View.root model.time model.timelineModel
             |> Html.map TimelineMsg
         , Routes.Timelines.TweetBar.View.root model.tweetBarModel
             |> Html.map TweetBarMsg

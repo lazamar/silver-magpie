@@ -3,6 +3,7 @@ module Routes.Timelines.Types exposing (..)
 import Routes.Timelines.Timeline.Types as TimelineT
 import Routes.Timelines.TweetBar.Types as TweetBarT
 import Twitter.Types exposing (Tweet, Credentials)
+import Time exposing (Time)
 
 
 type Msg
@@ -13,6 +14,7 @@ type Msg
     | RefreshTweets
     | SubmitTweet
     | SetReplyTweet Tweet
+    | UpdateTime Time
 
 
 type alias Model =
@@ -20,6 +22,7 @@ type alias Model =
     , timelineModel : TimelineT.Model
     , tweetBarModel : TweetBarT.Model
     , footerMessageNumber : Int
+    , time : Time
     }
 
 
