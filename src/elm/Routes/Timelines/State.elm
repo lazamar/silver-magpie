@@ -15,7 +15,7 @@ init : Credentials -> ( Model, Cmd Msg, Cmd Broadcast )
 init credentials =
     let
         ( timelineModel, timelineMsg, timelineBroadcast ) =
-            TimelineS.init credentials
+            TimelineS.init
 
         ( tweetBarModel, tweetBarMsg, tweetBarBroadcast ) =
             TweetBarS.init
@@ -64,12 +64,12 @@ update msg model =
                         |> tweetBarUpdate model
 
         TweetBarBroadcast (TweetBarT.RefreshTweets) ->
-            TimelineS.refreshTweets model.timelineModel
+            TimelineS.refreshTweets model.credentials model.timelineModel
                 |> timelineUpdate model
 
         -- Msg
         TimelineMsg subMsg ->
-            TimelineS.update subMsg model.timelineModel
+            TimelineS.update subMsg model.credentials model.timelineModel
                 |> timelineUpdate model
 
         TweetBarMsg subMsg ->

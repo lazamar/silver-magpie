@@ -21,10 +21,9 @@ import Time
 -- MAIN FUNCTIONS
 
 
-initialModel : Credentials -> Model
-initialModel credentials =
-    { credentials = credentials
-    , tab = HomeTab
+initialModel : Model
+initialModel =
+    { tab = HomeTab
     , homeTab =
         { tweets = getPersistedTimeline HomeTab
         , newTweets = NotAsked
@@ -42,9 +41,9 @@ subscriptions =
     Time.every Time.minute UpdateClock
 
 
-init : Credentials -> ( Model, Cmd Msg, Cmd Broadcast )
-init credentials =
-    ( initialModel credentials
+init : ( Model, Cmd Msg, Cmd Broadcast )
+init =
+    ( initialModel
     , Cmd.batch
         [ toCmd (FetchTweets HomeTab Refresh)
         , toCmd (FetchTweets MentionsTab Refresh)
@@ -58,8 +57,8 @@ init credentials =
 -- UPDATE
 
 
-update : Msg -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
-update msg model =
+update : Msg -> Credentials -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
+update msg credentials model =
     case msg of
         DoNothing ->
             ( model, Cmd.none, Cmd.none )
@@ -77,7 +76,7 @@ update msg model =
                     getModelTab tabName model
             in
                 ( updateModelTab tabName model { tabBeingFetched | newTweets = Loading }
-                , getTweets model.credentials fetchType tabName
+                , getTweets credentials fetchType tabName
                 , Cmd.none
                 )
 
@@ -133,7 +132,7 @@ update msg model =
 
         ChangeTab newRoute ->
             -- TODO: Conditionally reload this
-            update DoNothing { model | tab = newRoute }
+            update DoNothing credentials { model | tab = newRoute }
 
         Favorite shouldFavorite tweetId ->
             let
@@ -145,7 +144,7 @@ update msg model =
                     { currentTab
                         | tweets = registerFavorite shouldFavorite tweetId currentTab.tweets
                     }
-                , favoriteTweet model.credentials shouldFavorite tweetId
+                , favoriteTweet credentials shouldFavorite tweetId
                 , Cmd.none
                 )
 
@@ -159,7 +158,7 @@ update msg model =
                     { currentTab
                         | tweets = registerRetweet shouldRetweet tweetId currentTab.tweets
                     }
-                , doRetweet model.credentials shouldRetweet tweetId
+                , doRetweet credentials shouldRetweet tweetId
                 , Cmd.none
                 )
 
@@ -290,9 +289,9 @@ resetTweetFetch route fetchType time =
 -- Public
 
 
-refreshTweets : Model -> ( Model, Cmd Msg, Cmd Broadcast )
-refreshTweets model =
-    update (FetchTweets model.tab Refresh) model
+refreshTweets : Credentials -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
+refreshTweets credentials model =
+    update (FetchTweets model.tab Refresh) credentials model
 
 
 

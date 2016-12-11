@@ -2,13 +2,12 @@ module Routes.Timelines.Timeline.Types exposing (..)
 
 import Http
 import RemoteData exposing (WebData)
-import Twitter.Types exposing (Tweet, Credentials, TweetId)
+import Twitter.Types exposing (Tweet, TweetId)
 import Time exposing (Time)
 
 
 type alias Model =
-    { credentials : Credentials
-    , tab : TabName
+    { tab : TabName
     , homeTab : Tab
     , mentionsTab : Tab
     , clock : Time
