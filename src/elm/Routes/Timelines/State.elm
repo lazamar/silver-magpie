@@ -42,7 +42,7 @@ init credentials =
 
 tweetBarConfig : TweetBarT.UpdateConfig Msg
 tweetBarConfig =
-    { refreshTweets = RefreshTweets
+    { onRefreshTweets = RefreshTweets
     , update = TweetBarMsg
     }
 

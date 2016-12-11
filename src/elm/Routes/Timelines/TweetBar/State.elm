@@ -206,7 +206,7 @@ update msg conf credentials model =
                     , Cmd.batch
                         [ resetTweetText 1800 |> Cmd.map conf.update
                         , persistTweetText "" |> Cmd.map conf.update
-                        , toCmd conf.refreshTweets
+                        , toCmd conf.onRefreshTweets
                         ]
                     )
 
