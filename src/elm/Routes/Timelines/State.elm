@@ -69,31 +69,26 @@ update msg conf model =
     case msg of
         TimelineMsg subMsg ->
             TimelineS.update subMsg timelineConfig model.credentials model.timelineModel
-                |> timelineUpdate model
-                |> Tuple.mapSecond (Cmd.map conf.onUpdate)
+                |> timelineUpdate conf.onUpdate model
 
         TweetBarMsg subMsg ->
             TweetBarS.update subMsg tweetBarConfig model.credentials model.tweetBarModel
-                |> tweetBarUpdate model
-                |> Tuple.mapSecond (Cmd.map conf.onUpdate)
+                |> tweetBarUpdate conf.onUpdate model
 
         UpdateTime time ->
             ( { model | time = time }, Cmd.none )
 
         SubmitTweet ->
             TweetBarS.submitTweet tweetBarConfig model.credentials model.tweetBarModel
-                |> tweetBarUpdate model
-                |> Tuple.mapSecond (Cmd.map conf.onUpdate)
+                |> tweetBarUpdate conf.onUpdate model
 
         SetReplyTweet tweet ->
             TweetBarS.setReplyTweet tweetBarConfig model.credentials model.tweetBarModel tweet
-                |> tweetBarUpdate model
-                |> Tuple.mapSecond (Cmd.map conf.onUpdate)
+                |> tweetBarUpdate conf.onUpdate model
 
         RefreshTweets ->
             TimelineS.refreshTweets timelineConfig model.credentials model.timelineModel
-                |> timelineUpdate model
-                |> Tuple.mapSecond (Cmd.map conf.onUpdate)
+                |> timelineUpdate conf.onUpdate model
 
         Logout ->
             ( model, toCmd conf.onLogout )
@@ -105,22 +100,16 @@ update msg conf model =
             )
 
 
-timelineUpdate :
-    Model
-    -> ( TimelineT.Model, Cmd Msg )
-    -> ( Model, Cmd Msg )
-timelineUpdate model =
-    Tuple.mapFirst
-        (\timelineModel -> { model | timelineModel = timelineModel })
+timelineUpdate : (Msg -> msg) -> Model -> ( TimelineT.Model, Cmd Msg ) -> ( Model, Cmd msg )
+timelineUpdate onUpdate model =
+    Tuple.mapFirst (\m -> { model | timelineModel = m })
+        >> Tuple.mapSecond (Cmd.map onUpdate)
 
 
-tweetBarUpdate :
-    Model
-    -> ( TweetBarT.Model, Cmd Msg )
-    -> ( Model, Cmd Msg )
-tweetBarUpdate model =
-    Tuple.mapFirst
-        (\tweetBarModel -> { model | tweetBarModel = tweetBarModel })
+tweetBarUpdate : (Msg -> msg) -> Model -> ( TweetBarT.Model, Cmd Msg ) -> ( Model, Cmd msg )
+tweetBarUpdate onUpdate model =
+    Tuple.mapFirst (\m -> { model | tweetBarModel = m })
+        >> Tuple.mapSecond (Cmd.map onUpdate)
 
 
 generateFooterMsgNumber : () -> Int
