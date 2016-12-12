@@ -7,7 +7,7 @@ module Generic.CredentialsHandler
         , eraseFromStorage
         )
 
-import Twitter.Types exposing (Credentials)
+import Twitter.Types exposing (Credential)
 import Generic.LocalStorage exposing (getItem, setItem)
 import Generic.Utils exposing (toCmd)
 import Generic.UniqueID
@@ -27,36 +27,36 @@ generateSessionID _ =
         |> Debug.log "Generated session id"
 
 
-retrieveStored : () -> List Credentials
+retrieveStored : () -> List Credential
 retrieveStored _ =
-    Generic.LocalStorage.getItem "credentials"
+    Generic.LocalStorage.getItem "credential"
         |> Maybe.andThen decodeStringList
         |> Maybe.withDefault []
 
 
-store : (List Credentials -> msg) -> Credentials -> Cmd msg
-store msg credentials =
+store : (List Credential -> msg) -> Credential -> Cmd msg
+store msg credential =
     retrieveStored ()
-        |> (++) [ credentials ]
-        |> setStoredCredentials msg
+        |> (++) [ credential ]
+        |> setStoredCredential msg
 
 
-eraseFromStorage : (List Credentials -> msg) -> Credentials -> Cmd msg
-eraseFromStorage msg credentials =
+eraseFromStorage : (List Credential -> msg) -> Credential -> Cmd msg
+eraseFromStorage msg credential =
     retrieveStored ()
-        |> List.filter (\c -> c /= credentials)
-        |> setStoredCredentials msg
+        |> List.filter (\c -> c /= credential)
+        |> setStoredCredential msg
 
 
 
 -- PRIVATE
 
 
-setStoredCredentials : (List Credentials -> msg) -> List Credentials -> Cmd msg
-setStoredCredentials msg credentialsList =
-    encodeStringList credentialsList
-        |> Generic.LocalStorage.setItem "credentials"
-        |> \_ -> toCmd (msg credentialsList)
+setStoredCredential : (List Credential -> msg) -> List Credential -> Cmd msg
+setStoredCredential msg credentialList =
+    encodeStringList credentialList
+        |> Generic.LocalStorage.setItem "credential"
+        |> \_ -> toCmd (msg credentialList)
 
 
 encodeStringList : List String -> String

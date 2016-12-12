@@ -1,16 +1,27 @@
 module Main.Types exposing (..)
 
 import Routes.Timelines.Types as TimelinesT
-import Routes.Login.Types as LoginT
+import Twitter.Types exposing (Credential)
+import RemoteData exposing (WebData)
 
 
 type Msg
-    = TimelinesMsg TimelinesT.Msg
-    | LoginMsg LoginT.Msg
-    | LoginBroadcast LoginT.Broadcast
-    | Logout
+    = DoNothing
+    | TimelinesMsg TimelinesT.Msg
+    | UserCredentialFetch (WebData Credential)
+    | Logout Credential
+    | Authenticated Credential
 
 
-type Model
-    = LoginRoute LoginT.Model
-    | TimelinesRoute TimelinesT.Model
+type alias SessionID =
+    String
+
+
+type alias Model =
+    { timelinesModel : Maybe TimelinesT.Model
+    , sessionID : SessionID
+    , credentials : List Credential
+    , authenticatingCredential :
+        WebData Credential
+        -- Credential sent to the server for authentication
+    }

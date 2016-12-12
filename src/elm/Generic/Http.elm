@@ -1,6 +1,6 @@
 module Generic.Http exposing (get, post, delete, sameDomain, toJsonBody)
 
-import Twitter.Types exposing (Credentials)
+import Twitter.Types exposing (Credential)
 import Http
 import Task exposing (Task)
 import Json.Encode
@@ -16,30 +16,30 @@ serverURL =
     "https://lazamar.co.uk/silver-magpie"
 
 
-get : Credentials -> Decoder a -> Endpoint -> Task Http.Error a
-get credentials decoder endpoint =
-    makeRequest "GET" Http.emptyBody credentials decoder endpoint
+get : Credential -> Decoder a -> Endpoint -> Task Http.Error a
+get credential decoder endpoint =
+    makeRequest "GET" Http.emptyBody credential decoder endpoint
         |> Http.toTask
 
 
-delete : Credentials -> Decoder a -> Endpoint -> Task Http.Error a
-delete credentials decoder endpoint =
-    makeRequest "DELETE" Http.emptyBody credentials decoder endpoint
+delete : Credential -> Decoder a -> Endpoint -> Task Http.Error a
+delete credential decoder endpoint =
+    makeRequest "DELETE" Http.emptyBody credential decoder endpoint
         |> Http.toTask
 
 
-post : Credentials -> Decoder a -> Endpoint -> Http.Body -> Task Http.Error a
-post credentials decoder endpoint body =
-    makeRequest "POST" body credentials decoder endpoint
+post : Credential -> Decoder a -> Endpoint -> Http.Body -> Task Http.Error a
+post credential decoder endpoint body =
+    makeRequest "POST" body credential decoder endpoint
         |> Http.toTask
 
 
-makeRequest : String -> Http.Body -> Credentials -> Decoder a -> Endpoint -> Http.Request a
-makeRequest method body credentials decoder endpoint =
+makeRequest : String -> Http.Body -> Credential -> Decoder a -> Endpoint -> Http.Request a
+makeRequest method body credential decoder endpoint =
     let
         options =
             { method = method
-            , headers = headers credentials
+            , headers = headers credential
             , url = sameDomain endpoint
             , body = body
             , expect = Http.expectJson decoder
@@ -50,7 +50,7 @@ makeRequest method body credentials decoder endpoint =
         Http.request options
 
 
-headers : Credentials -> List Http.Header
+headers : Credential -> List Http.Header
 headers appToken =
     [ Http.header "X-App-Token" appToken
     ]

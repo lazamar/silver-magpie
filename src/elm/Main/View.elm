@@ -1,20 +1,19 @@
 module Main.View exposing (..)
 
-import Main.Types exposing (Msg(..), Model(..))
+import Main.Types exposing (..)
+import Main.LoginView
 import Html exposing (Html)
 import Html.Attributes exposing (class)
 import Html
 import Routes.Timelines.View
-import Routes.Login.View
 
 
 view : Model -> Html Msg
-view modelRoute =
-    case modelRoute of
-        LoginRoute model ->
-            Routes.Login.View.root model
-                |> Html.map LoginMsg
+view model =
+    case model.timelinesModel of
+        Nothing ->
+            Main.LoginView.root model
 
-        TimelinesRoute model ->
-            Routes.Timelines.View.root model
+        Just timelinesModel ->
+            Routes.Timelines.View.root timelinesModel
                 |> Html.map TimelinesMsg

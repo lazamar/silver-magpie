@@ -2,7 +2,7 @@ module Routes.Timelines.Timeline.Types exposing (..)
 
 import Http
 import RemoteData exposing (WebData)
-import Twitter.Types exposing (Tweet, TweetId)
+import Twitter.Types exposing (Tweet, TweetId, Credential)
 
 
 type alias Model =
@@ -41,7 +41,7 @@ type Msg
 
 type alias Config msg =
     { onUpdate : Msg -> msg
-    , onLogout : msg
+    , onLogout : Credential -> msg
     , onSubmitTweet : msg
     , onSetReplyTweet : Tweet -> msg
     }

@@ -2,7 +2,7 @@ module Routes.Timelines.Timeline.Rest exposing (getTweets, favoriteTweet, doRetw
 
 import Routes.Timelines.Timeline.Types exposing (..)
 import Twitter.Decoders exposing (tweetDecoder)
-import Twitter.Types exposing (Tweet, Credentials)
+import Twitter.Types exposing (Tweet, Credential)
 import Generic.Http
 import Generic.Utils exposing (mapResult)
 import Http
@@ -25,8 +25,8 @@ serverMsgDecoder =
 -- DATA FETCHING
 
 
-getTweets : Credentials -> FetchType -> TabName -> Cmd Msg
-getTweets credentials fetchType route =
+getTweets : Credential -> FetchType -> TabName -> Cmd Msg
+getTweets credential fetchType route =
     let
         section =
             case route of
@@ -44,7 +44,7 @@ getTweets credentials fetchType route =
                 BottomTweets tweetId ->
                     (Debug.log "Tweet id" tweetId)
     in
-        Generic.Http.get credentials serverMsgDecoder ("/" ++ section ++ "?maxId=" ++ maxId)
+        Generic.Http.get credential serverMsgDecoder ("/" ++ section ++ "?maxId=" ++ maxId)
             |> Task.attempt (mapResult Failure Success)
             |> Cmd.map (TweetFetch route fetchType)
 
@@ -54,17 +54,17 @@ getTweets credentials fetchType route =
 -- request is always successfully sent, even when offline.
 
 
-favoriteTweet : Credentials -> Bool -> String -> Cmd Msg
-favoriteTweet credentials shouldFavorite tweetId =
+favoriteTweet : Credential -> Bool -> String -> Cmd Msg
+favoriteTweet credential shouldFavorite tweetId =
     let
         endpoint =
             "/favorite?id=" ++ tweetId
 
         request =
             if shouldFavorite then
-                Generic.Http.post credentials string endpoint Http.emptyBody
+                Generic.Http.post credential string endpoint Http.emptyBody
             else
-                Generic.Http.delete credentials string endpoint
+                Generic.Http.delete credential string endpoint
     in
         Task.attempt ignoreResult request
 
@@ -74,24 +74,24 @@ favoriteTweet credentials shouldFavorite tweetId =
 -- request is always successfully sent, even when offline.
 
 
-doRetweet : Credentials -> Bool -> String -> Cmd Msg
-doRetweet credentials shouldRetweet tweetId =
+doRetweet : Credential -> Bool -> String -> Cmd Msg
+doRetweet credential shouldRetweet tweetId =
     let
         endpoint =
             ("/retweet?id=" ++ tweetId)
 
         request =
             if shouldRetweet then
-                Generic.Http.post credentials string endpoint Http.emptyBody
+                Generic.Http.post credential string endpoint Http.emptyBody
             else
-                Generic.Http.delete credentials string endpoint
+                Generic.Http.delete credential string endpoint
     in
         Task.attempt ignoreResult request
 
 
-sendLogoutMessasge : Credentials -> Cmd Msg
-sendLogoutMessasge credentials =
-    Generic.Http.delete credentials string "/app-revoke-access"
+sendLogoutMessasge : Credential -> Cmd Msg
+sendLogoutMessasge credential =
+    Generic.Http.delete credential string "/app-revoke-access"
         |> Task.attempt ignoreResult
 
 

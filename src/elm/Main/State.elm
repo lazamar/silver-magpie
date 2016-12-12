@@ -1,19 +1,39 @@
 module Main.State exposing (..)
 
 import Main.Types exposing (..)
-import Routes.Login.Types as LoginT
-import Routes.Login.State as LoginS
+import Main.Rest exposing (fetchCredential)
 import Routes.Timelines.Types as TimelinesT
 import Routes.Timelines.State as TimelinesS
+import Generic.Utils exposing (toCmd)
+import Generic.CredentialsHandler as CredentialsHandler
+import Generic.LocalStorage as LocalStorage
+import Twitter.Types exposing (Credential)
+import RemoteData
 
 
 -- INITIALISATION
+-- TODO : Clean all of this impurity by using flags
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    LoginS.init ()
-        |> translate LoginRoute LoginMsg LoginBroadcast
+    let
+        initialModel =
+            { timelinesModel = Nothing
+            , sessionID =
+                case (CredentialsHandler.retrieveSessionID ()) of
+                    Nothing ->
+                        CredentialsHandler.generateSessionID ()
+
+                    Just sessionID ->
+                        sessionID
+            , credentials = CredentialsHandler.retrieveStored ()
+            , authenticatingCredential = RemoteData.NotAsked
+            }
+    in
+        ( initialModel
+        , toCmd <| UserCredentialFetch initialModel.authenticatingCredential
+        )
 
 
 timelinesConfig : TimelinesT.Config Msg
@@ -39,40 +59,54 @@ subscriptions model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        -- Broadcast
-        LoginBroadcast (LoginT.Authenticated appToken) ->
-            TimelinesS.init timelinesConfig appToken
-                |> Tuple.mapFirst TimelinesRoute
-
-        Logout ->
-            LoginS.logout ()
-                |> \_ -> init ()
-
-        -- Msg
-        LoginMsg subMsg ->
-            case model of
-                LoginRoute subModel ->
-                    LoginS.update subMsg subModel
-                        |> translate LoginRoute LoginMsg LoginBroadcast
-
-                _ ->
-                    ( model, Cmd.none )
+        DoNothing ->
+            ( model, Cmd.none )
 
         TimelinesMsg subMsg ->
-            case model of
-                TimelinesRoute subModel ->
-                    TimelinesS.update subMsg timelinesConfig subModel
-                        |> Tuple.mapFirst TimelinesRoute
+            model.timelinesModel
+                |> Maybe.map (TimelinesS.update subMsg timelinesConfig)
+                |> updateTimelinesModel model
+
+        -- TODO Implement this
+        UserCredentialFetch request ->
+            case request of
+                RemoteData.Success credential ->
+                    ( { model | authenticatingCredential = request }
+                    , Cmd.batch
+                        [ CredentialsHandler.store (\_ -> DoNothing) credential
+                        , toCmd (Authenticated credential)
+                        ]
+                    )
+
+                RemoteData.NotAsked ->
+                    ( { model | authenticatingCredential = RemoteData.Loading }
+                    , fetchCredential model.sessionID
+                    )
 
                 _ ->
-                    ( model, Cmd.none )
+                    ( { model | authenticatingCredential = request }
+                    , Cmd.none
+                    )
+
+        -- TODO Implement this
+        Logout credential ->
+            CredentialsHandler.eraseFromStorage (\_ -> DoNothing) credential
+                |> \_ -> init ()
+
+        Authenticated credential ->
+            -- TODO This is should be put into an array
+            TimelinesS.init timelinesConfig credential
+                |> Just
+                |> updateTimelinesModel model
 
 
-translate : (a -> Model) -> (b -> Msg) -> (c -> Msg) -> ( a, Cmd b, Cmd c ) -> ( Model, Cmd Msg )
-translate modelTag localMsgTag broadcastMsgTag ( model, localMsg, broadcastMsg ) =
-    ( modelTag model
-    , Cmd.batch
-        [ Cmd.map localMsgTag localMsg
-        , Cmd.map broadcastMsgTag broadcastMsg
-        ]
-    )
+updateTimelinesModel : Model -> Maybe ( TimelinesT.Model, Cmd Msg ) -> ( Model, Cmd Msg )
+updateTimelinesModel model maybeTuple =
+    case maybeTuple of
+        Nothing ->
+            ( model, Cmd.none )
+
+        Just ( timelinesModel, cmd ) ->
+            ( { model | timelinesModel = Just timelinesModel }
+            , cmd
+            )

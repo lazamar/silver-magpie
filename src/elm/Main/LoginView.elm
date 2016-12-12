@@ -1,6 +1,6 @@
-module Routes.Login.View exposing (root)
+module Main.LoginView exposing (root)
 
-import Routes.Login.Types exposing (..)
+import Main.Types exposing (..)
 import Generic.Animations
 import Generic.Http
 import RemoteData exposing (RemoteData)
@@ -70,7 +70,7 @@ root model =
 
 loginContent : Model -> Html Msg
 loginContent model =
-    case model.credentials of
+    case model.authenticatingCredential of
         RemoteData.Failure error ->
             case error of
                 Http.BadStatus { status } ->
@@ -84,12 +84,12 @@ loginContent model =
                             ]
                     else
                         p [ class "Loading-content-info" ]
-                            [ text "There was an error loading your credentials. Please retry." ]
+                            [ text "There was an error loading your credential. Please retry." ]
 
                 -- TODO: Handle other HTTP errors properly
                 _ ->
                     p [ class "Loading-content-info" ]
-                        [ text "There was an error loading your credentials. Please retry." ]
+                        [ text "There was an error loading your credential. Please retry." ]
 
         RemoteData.Loading ->
             Generic.Animations.twistingCircle

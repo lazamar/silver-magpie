@@ -4,7 +4,7 @@ import Routes.Timelines.TweetBar.Types exposing (..)
 import Routes.Timelines.TweetBar.Rest exposing (sendTweet, fetchHandlerSuggestion)
 import Routes.Timelines.TweetBar.Handler as TwHandler exposing (Handler, HandlerMatch)
 import Routes.Timelines.TweetBar.View exposing (inputFieldId)
-import Twitter.Types exposing (Credentials, User, Tweet)
+import Twitter.Types exposing (Credential, User, Tweet)
 import Generic.Utils exposing (toCmd)
 import Generic.LocalStorage
 import Generic.Types
@@ -49,8 +49,8 @@ init _ =
         ( model, Cmd.none )
 
 
-update : Msg -> Config msg -> Credentials -> Model -> ( Model, Cmd msg )
-update msg conf credentials model =
+update : Msg -> Config msg -> Credential -> Model -> ( Model, Cmd msg )
+update msg conf credential model =
     case msg of
         DoNothing ->
             ( model, Cmd.none )
@@ -69,7 +69,7 @@ update msg conf credentials model =
                             Cmd.none
 
                         Just handler ->
-                            fetchHandlerSuggestion credentials handler
+                            fetchHandlerSuggestion credential handler
 
                 usersStatus =
                     case handlerMatch of
@@ -192,7 +192,7 @@ update msg conf credentials model =
             case model.submission of
                 NotSent ->
                     ( { model | submission = Sending model.tweetText }
-                    , sendTweet credentials model.inReplyTo model.tweetText
+                    , sendTweet credential model.inReplyTo model.tweetText
                         |> Cmd.map conf.onUpdate
                     )
 
@@ -263,7 +263,7 @@ getPersistedTweetText _ =
 -- Public
 
 
-submitTweet : Config msg -> Credentials -> Model -> ( Model, Cmd msg )
+submitTweet : Config msg -> Credential -> Model -> ( Model, Cmd msg )
 submitTweet =
     update SubmitTweet
 
@@ -273,6 +273,6 @@ submitTweet =
 -- TODO: This should be in the parent
 
 
-setReplyTweet : Config msg -> Credentials -> Model -> Tweet -> ( Model, Cmd msg )
-setReplyTweet conf credentials model tweet =
-    update (SetReplyTweet tweet) conf credentials model
+setReplyTweet : Config msg -> Credential -> Model -> Tweet -> ( Model, Cmd msg )
+setReplyTweet conf credential model tweet =
+    update (SetReplyTweet tweet) conf credential model

@@ -5,7 +5,7 @@ import Routes.Timelines.Timeline.Types as TimelineT
 import Routes.Timelines.Timeline.State as TimelineS
 import Routes.Timelines.TweetBar.Types as TweetBarT
 import Routes.Timelines.TweetBar.State as TweetBarS
-import Twitter.Types exposing (Credentials)
+import Twitter.Types exposing (Credential)
 import Generic.Utils exposing (toCmd)
 import Generic.LocalStorage
 import Generic.Detach
@@ -13,8 +13,8 @@ import Time exposing (Time)
 import Task
 
 
-init : Config msg -> Credentials -> ( Model, Cmd msg )
-init conf credentials =
+init : Config msg -> Credential -> ( Model, Cmd msg )
+init conf credential =
     let
         ( timelineModel, timelineMsg ) =
             TimelineS.init timelineConfig
@@ -26,7 +26,7 @@ init conf credentials =
             generateFooterMsgNumber ()
 
         initialModel =
-            { credentials = credentials
+            { credential = credential
             , timelineModel = timelineModel
             , tweetBarModel = tweetBarModel
             , footerMessageNumber = footerMessageNumber
@@ -68,30 +68,30 @@ update : Msg -> Config msg -> Model -> ( Model, Cmd msg )
 update msg conf model =
     case msg of
         TimelineMsg subMsg ->
-            TimelineS.update subMsg timelineConfig model.credentials model.timelineModel
+            TimelineS.update subMsg timelineConfig model.credential model.timelineModel
                 |> timelineUpdate conf.onUpdate model
 
         TweetBarMsg subMsg ->
-            TweetBarS.update subMsg tweetBarConfig model.credentials model.tweetBarModel
+            TweetBarS.update subMsg tweetBarConfig model.credential model.tweetBarModel
                 |> tweetBarUpdate conf.onUpdate model
 
         UpdateTime time ->
             ( { model | time = time }, Cmd.none )
 
         SubmitTweet ->
-            TweetBarS.submitTweet tweetBarConfig model.credentials model.tweetBarModel
+            TweetBarS.submitTweet tweetBarConfig model.credential model.tweetBarModel
                 |> tweetBarUpdate conf.onUpdate model
 
         SetReplyTweet tweet ->
-            TweetBarS.setReplyTweet tweetBarConfig model.credentials model.tweetBarModel tweet
+            TweetBarS.setReplyTweet tweetBarConfig model.credential model.tweetBarModel tweet
                 |> tweetBarUpdate conf.onUpdate model
 
         RefreshTweets ->
-            TimelineS.refreshTweets timelineConfig model.credentials model.timelineModel
+            TimelineS.refreshTweets timelineConfig model.credential model.timelineModel
                 |> timelineUpdate conf.onUpdate model
 
-        Logout ->
-            ( model, toCmd conf.onLogout )
+        Logout credential ->
+            ( model, toCmd (conf.onLogout credential) )
 
         Detach ->
             ( model

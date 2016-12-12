@@ -2,7 +2,7 @@ module Routes.Timelines.Types exposing (..)
 
 import Routes.Timelines.Timeline.Types as TimelineT
 import Routes.Timelines.TweetBar.Types as TweetBarT
-import Twitter.Types exposing (Tweet, Credentials)
+import Twitter.Types exposing (Tweet, Credential)
 import Time exposing (Time)
 
 
@@ -10,7 +10,7 @@ type Msg
     = TimelineMsg TimelineT.Msg
     | TweetBarMsg TweetBarT.Msg
     | Detach
-    | Logout
+    | Logout Credential
     | RefreshTweets
     | SubmitTweet
     | SetReplyTweet Tweet
@@ -18,7 +18,7 @@ type Msg
 
 
 type alias Model =
-    { credentials : Credentials
+    { credential : Credential
     , timelineModel : TimelineT.Model
     , tweetBarModel : TweetBarT.Model
     , footerMessageNumber : Int
@@ -28,5 +28,5 @@ type alias Model =
 
 type alias Config msg =
     { onUpdate : Msg -> msg
-    , onLogout : msg
+    , onLogout : Credential -> msg
     }

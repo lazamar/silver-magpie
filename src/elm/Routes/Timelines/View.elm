@@ -8,6 +8,7 @@ import List.Extra
 import Html exposing (Html, div, button, text, span)
 import Html.Attributes exposing (class, tabindex)
 import Html.Events exposing (onClick)
+import Twitter.Types exposing (Credential)
 import Html
 
 
@@ -18,12 +19,12 @@ root model =
             |> Html.map TimelineMsg
         , Routes.Timelines.TweetBar.View.root model.tweetBarModel
             |> Html.map TweetBarMsg
-        , footer model.footerMessageNumber
+        , footer model.credential model.footerMessageNumber
         ]
 
 
-footer : Int -> Html Msg
-footer footerMessageNumber =
+footer : Credential -> Int -> Html Msg
+footer credential footerMessageNumber =
     div [ class "Timelines-footer" ]
         [ button
             [ class "zmdi zmdi-collection-item btn btn-default btn-icon"
@@ -39,7 +40,7 @@ footer footerMessageNumber =
             [ class "zmdi zmdi-power btn btn-default btn-icon"
             , tabindex -1
             , tooltip "Logout"
-            , onClick Logout
+            , onClick <| Logout credential
             ]
             []
         ]

@@ -6,18 +6,19 @@ module Routes.Login.Types
         )
 
 import RemoteData exposing (WebData)
-import Twitter.Types exposing (Credentials)
+import Twitter.Types exposing (Credential)
 
 
 type alias Model =
     { sessionID : String
-    , credentials : WebData Credentials
+    , credential : WebData Credential
     }
 
 
 type Msg
-    = UserCredentialsFetch (WebData Credentials)
+    = UserCredentialFetch (WebData Credential)
+    | DoNothing
 
 
 type Broadcast
-    = Authenticated Credentials
+    = Authenticated Credential

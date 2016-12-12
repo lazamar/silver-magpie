@@ -6,25 +6,27 @@ import Routes.Login.Types
         , Msg(..)
         , Broadcast(Authenticated)
         )
-import Routes.Login.Rest exposing (fetchCredentials)
+import Routes.Login.Rest exposing (fetchCredential)
 import Generic.LocalStorage
 import Generic.UniqueID
+import Generic.CredentialsHandler as CredentialsHandler
 import Generic.Utils exposing (toCmd)
 import RemoteData exposing (RemoteData)
-import Twitter.Types exposing (Credentials)
+import Twitter.Types exposing (Credential)
 import Task
 
 
 initialModel : () -> Model
 initialModel _ =
     let
-        credentials =
-            getSavedCredentials ()
+        credential =
+            CredentialsHandler.retrieveStored ()
+                |> List.head
                 |> Maybe.map RemoteData.Success
                 |> Maybe.withDefault RemoteData.NotAsked
     in
         { sessionID = getSessionID ()
-        , credentials = credentials
+        , credential = credential
         }
 
 
@@ -35,7 +37,7 @@ init _ =
             initialModel ()
     in
         ( model
-        , toCmd <| UserCredentialsFetch model.credentials
+        , toCmd <| UserCredentialFetch model.credential
         , Cmd.none
         )
 
@@ -43,22 +45,25 @@ init _ =
 update : Msg -> Model -> ( Model, Cmd Msg, Cmd Broadcast )
 update msg model =
     case msg of
-        UserCredentialsFetch request ->
+        DoNothing ->
+            ( model, Cmd.none, Cmd.none )
+
+        UserCredentialFetch request ->
             case request of
-                RemoteData.Success credentials ->
-                    ( { model | credentials = request }
-                    , saveCredentials credentials
-                    , Generic.Utils.toCmd (Authenticated credentials)
+                RemoteData.Success credential ->
+                    ( { model | credential = request }
+                    , CredentialsHandler.store (\_ -> DoNothing) credential
+                    , Generic.Utils.toCmd (Authenticated credential)
                     )
 
                 RemoteData.NotAsked ->
-                    ( { model | credentials = RemoteData.Loading }
-                    , fetchCredentials model.sessionID
+                    ( { model | credential = RemoteData.Loading }
+                    , fetchCredential model.sessionID
                     , Cmd.none
                     )
 
                 _ ->
-                    ( { model | credentials = request }
+                    ( { model | credential = request }
                     , Cmd.none
                     , Cmd.none
                     )
@@ -66,13 +71,6 @@ update msg model =
 
 
 -- Generates a random uinique session ID
-
-
-generateSessionID : String -> String
-generateSessionID seed =
-    Generic.UniqueID.generate seed
-        |> Generic.LocalStorage.setItem "sessionID"
-        |> Debug.log "Generated session id"
 
 
 getSessionID : () -> String
@@ -83,25 +81,20 @@ getSessionID _ =
     in
         case Debug.log "retrieved value: " retrieved of
             Nothing ->
-                generateSessionID "random_string"
+                CredentialsHandler.generateSessionID ()
 
             Just sessionID ->
                 sessionID
 
 
-saveCredentials : Credentials -> Cmd msg
-saveCredentials credentials =
-    Generic.LocalStorage.setItem "credentials" credentials
+saveCredential : Credential -> Cmd msg
+saveCredential credential =
+    Generic.LocalStorage.setItem "credential" credential
         |> \_ -> Cmd.none
 
 
-getSavedCredentials : () -> Maybe Credentials
-getSavedCredentials _ =
-    Generic.LocalStorage.getItem "credentials"
 
-
-
--- Erase all stored credentials
+-- Erase all stored credential
 
 
 logout : () -> Bool
