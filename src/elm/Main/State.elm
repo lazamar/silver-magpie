@@ -34,6 +34,17 @@ init _ =
             storedSessionID
                 |> Maybe.map Authenticating
                 |> Maybe.withDefault NotAttempted
+
+        authenticateSessionIDCmd =
+            case storedSessionID of
+                Nothing ->
+                    if List.length storedCredentials == 0 then
+                        toCmd <| UserCredentialFetch sessionID
+                    else
+                        Cmd.none
+
+                Just anID ->
+                    fetchCredential anID
     in
         ( { timelinesModel = timelinesModel
           , sessionID = sessionID
@@ -41,9 +52,7 @@ init _ =
           }
         , Cmd.batch
             [ timelinesCmd
-            , storedSessionID
-                |> Maybe.map fetchCredential
-                |> Maybe.withDefault (toCmd <| UserCredentialFetch sessionID)
+            , authenticateSessionIDCmd
             ]
         )
 
