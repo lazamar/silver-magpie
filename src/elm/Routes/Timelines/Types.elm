@@ -18,8 +18,7 @@ type Msg
 
 
 type alias Model =
-    { credential : Credential
-    , timelineModel : TimelineT.Model
+    { timelineModel : TimelineT.Model
     , tweetBarModel : TweetBarT.Model
     , footerMessageNumber : Int
     , time : Time

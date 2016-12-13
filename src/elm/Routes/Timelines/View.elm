@@ -12,14 +12,14 @@ import Twitter.Types exposing (Credential)
 import Html
 
 
-root : Model -> Html Msg
-root model =
+root : Credential -> Model -> Html Msg
+root credential model =
     div [ class "Timelines" ]
         [ Routes.Timelines.Timeline.View.root model.time model.timelineModel
             |> Html.map TimelineMsg
         , Routes.Timelines.TweetBar.View.root model.tweetBarModel
             |> Html.map TweetBarMsg
-        , footer model.credential model.footerMessageNumber
+        , footer credential model.footerMessageNumber
         ]
 
 

@@ -26,8 +26,7 @@ init conf credential =
             generateFooterMsgNumber ()
 
         initialModel =
-            { credential = credential
-            , timelineModel = timelineModel
+            { timelineModel = timelineModel
             , tweetBarModel = tweetBarModel
             , footerMessageNumber = footerMessageNumber
             , time = 0.0
@@ -64,30 +63,30 @@ subscriptions =
     Time.every Time.minute UpdateTime
 
 
-update : Msg -> Config msg -> Model -> ( Model, Cmd msg )
-update msg conf model =
+update : Msg -> Config msg -> Credential -> Model -> ( Model, Cmd msg )
+update msg conf credential model =
     case msg of
         TimelineMsg subMsg ->
-            TimelineS.update subMsg timelineConfig model.credential model.timelineModel
+            TimelineS.update subMsg timelineConfig credential model.timelineModel
                 |> timelineUpdate conf.onUpdate model
 
         TweetBarMsg subMsg ->
-            TweetBarS.update subMsg tweetBarConfig model.credential model.tweetBarModel
+            TweetBarS.update subMsg tweetBarConfig credential model.tweetBarModel
                 |> tweetBarUpdate conf.onUpdate model
 
         UpdateTime time ->
             ( { model | time = time }, Cmd.none )
 
         SubmitTweet ->
-            TweetBarS.submitTweet tweetBarConfig model.credential model.tweetBarModel
+            TweetBarS.submitTweet tweetBarConfig credential model.tweetBarModel
                 |> tweetBarUpdate conf.onUpdate model
 
         SetReplyTweet tweet ->
-            TweetBarS.setReplyTweet tweetBarConfig model.credential model.tweetBarModel tweet
+            TweetBarS.setReplyTweet tweetBarConfig credential model.tweetBarModel tweet
                 |> tweetBarUpdate conf.onUpdate model
 
         RefreshTweets ->
-            TimelineS.refreshTweets timelineConfig model.credential model.timelineModel
+            TimelineS.refreshTweets timelineConfig credential model.timelineModel
                 |> timelineUpdate conf.onUpdate model
 
         Logout credential ->

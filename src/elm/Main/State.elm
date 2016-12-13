@@ -84,9 +84,7 @@ update msg model =
             ( model, Cmd.none )
 
         TimelinesMsg subMsg ->
-            model.timelinesModel
-                |> Maybe.map (TimelinesS.update subMsg timelinesConfig)
-                |> updateTimelinesModel model
+            updateTimelinesModel model subMsg
 
         UserCredentialFetch authentication ->
             case authentication of
@@ -129,13 +127,20 @@ update msg model =
                 |> \_ -> init ()
 
 
-updateTimelinesModel : Model -> Maybe ( TimelinesT.Model, Cmd Msg ) -> ( Model, Cmd Msg )
-updateTimelinesModel model maybeTuple =
-    case maybeTuple of
-        Nothing ->
-            ( model, Cmd.none )
+updateTimelinesModel : Model -> TimelinesT.Msg -> ( Model, Cmd Msg )
+updateTimelinesModel model subMsg =
+    let
+        maybeTuple =
+            Maybe.map2
+                (\c m -> TimelinesS.update subMsg timelinesConfig c m)
+                (List.head model.credentials)
+                model.timelinesModel
+    in
+        case maybeTuple of
+            Nothing ->
+                ( model, Cmd.none )
 
-        Just ( timelinesModel, cmd ) ->
-            ( { model | timelinesModel = Just timelinesModel }
-            , cmd
-            )
+            Just ( timelinesModel, cmd ) ->
+                ( { model | timelinesModel = Just timelinesModel }
+                , cmd
+                )

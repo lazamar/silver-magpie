@@ -10,10 +10,9 @@ import Routes.Timelines.View
 
 view : Model -> Html Msg
 view model =
-    case model.timelinesModel of
-        Nothing ->
-            Main.LoginView.root model
-
-        Just timelinesModel ->
-            Routes.Timelines.View.root timelinesModel
-                |> Html.map TimelinesMsg
+    Maybe.map2
+        (\c m -> Routes.Timelines.View.root c m)
+        (List.head model.credentials)
+        model.timelinesModel
+        |> Maybe.map (Html.map TimelinesMsg)
+        |> Maybe.withDefault (Main.LoginView.root model)
