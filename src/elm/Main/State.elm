@@ -2,34 +2,43 @@ module Main.State exposing (init, update, subscriptions, credentialInUse)
 
 import Main.Types exposing (..)
 import Main.Rest exposing (fetchCredential)
+import Main.CredentialsHandler as CredentialsHandler
 import Routes.Timelines.Types as TimelinesT
 import Routes.Timelines.State as TimelinesS
 import Generic.Utils exposing (toCmd)
-import Generic.CredentialsHandler as CredentialsHandler
 import Generic.LocalStorage as LocalStorage
 import Twitter.Types exposing (Credential)
 import RemoteData
 import Generic.Detach
+import List.Extra
 
 
 -- INITIALISATION
+
+
+emptyModel : List UserDetails -> Model
+emptyModel usersDetails =
+    { timelinesModel = Nothing
+    , sessionID = NotAttempted
+    , usersDetails = usersDetails
+    , footerMessageNumber = generateFooterMsgNumber ()
+    }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
     let
         -- TODO : Clean all of this impurity by using flags
-        storedCredentials =
-            CredentialsHandler.retrieveStored ()
-
-        ( timelinesModel, timelinesCmd ) =
-            List.head storedCredentials
-                |> Maybe.map (TimelinesS.init timelinesConfig)
-                |> Maybe.map (Tuple.mapFirst Just)
-                |> Maybe.withDefault ( Nothing, Cmd.none )
+        storedUsersDetails =
+            CredentialsHandler.retrieveUsersDetails ()
 
         storedSessionID =
             CredentialsHandler.retrieveSessionID ()
+
+        ( initialModel, initialCmd ) =
+            List.head storedUsersDetails
+                |> Maybe.map (\d -> update (SelectAccount d.credential) (emptyModel storedUsersDetails))
+                |> Maybe.withDefault ( emptyModel [], Cmd.none )
 
         sessionID =
             storedSessionID
@@ -39,7 +48,7 @@ init _ =
         authenticateSessionIDCmd =
             case storedSessionID of
                 Nothing ->
-                    if List.length storedCredentials == 0 then
+                    if List.length storedUsersDetails == 0 then
                         toCmd <| UserCredentialFetch sessionID
                     else
                         Cmd.none
@@ -47,14 +56,10 @@ init _ =
                 Just anID ->
                     fetchCredential anID
     in
-        ( { timelinesModel = timelinesModel
-          , sessionID = sessionID
-          , credentials = storedCredentials
-          , footerMessageNumber = generateFooterMsgNumber ()
-          }
+        ( { initialModel | sessionID = sessionID }
         , Cmd.batch
             [ authenticateSessionIDCmd
-            , timelinesCmd
+            , initialCmd
             ]
         )
 
@@ -90,22 +95,23 @@ update msg model =
 
         UserCredentialFetch authentication ->
             case authentication of
-                Authenticated sessionID credential ->
+                Authenticated sessionID userDetails ->
                     let
-                        ( timelinesModel, timelinesCmd ) =
-                            TimelinesS.init timelinesConfig credential
+                        ( newModel, newCmd ) =
+                            update
+                                (SelectAccount userDetails.credential)
+                                { model
+                                    | sessionID = NotAttempted
+                                    , usersDetails = model.usersDetails ++ [ userDetails ]
+                                }
                     in
-                        ( { model
-                            | sessionID = NotAttempted
-                            , credentials =
-                                credential :: model.credentials
-                                -- TODO Timelinemodel must take a list of credentials
-                            , timelinesModel = Just timelinesModel
-                          }
+                        ( newModel
                         , Cmd.batch
-                            [ timelinesCmd
+                            [ newCmd
                             , CredentialsHandler.eraseSessionID DoNothing
-                            , CredentialsHandler.store (\_ -> DoNothing) (Debug.log "Storing " credential)
+                            , CredentialsHandler.storeUsersDetails
+                                (\_ -> DoNothing)
+                                newModel.usersDetails
                             ]
                         )
 
@@ -123,9 +129,38 @@ update msg model =
                     , Cmd.none
                     )
 
-        -- TODO Implement this
+        SelectAccount credential ->
+            let
+                selectedUserDetails =
+                    List.Extra.find
+                        (\d -> d.credential == credential)
+                        model.usersDetails
+            in
+                case selectedUserDetails of
+                    Nothing ->
+                        ( model, Cmd.none )
+
+                    Just details ->
+                        let
+                            newUsersDetails =
+                                model.usersDetails
+                                    |> List.filter ((/=) details)
+                                    |> (::) details
+
+                            ( timelinesModel, timelinesCmd ) =
+                                TimelinesS.init timelinesConfig details.credential
+                        in
+                            ( { model
+                                | timelinesModel = Just timelinesModel
+                                , usersDetails = newUsersDetails
+                              }
+                            , timelinesCmd
+                            )
+
         Logout credential ->
-            CredentialsHandler.eraseCredential (\_ -> DoNothing) credential
+            model.usersDetails
+                |> List.filter (\d -> d.credential /= credential)
+                |> CredentialsHandler.storeUsersDetails (\_ -> DoNothing)
                 |> \_ -> init ()
 
         Detach ->
@@ -154,8 +189,10 @@ updateTimelinesModel model subMsg =
 
 
 credentialInUse : Model -> Maybe Credential
-credentialInUse model =
-    List.head model.credentials
+credentialInUse =
+    .usersDetails
+        >> List.head
+        >> Maybe.map .credential
 
 
 generateFooterMsgNumber : () -> Int

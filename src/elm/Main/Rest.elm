@@ -5,14 +5,14 @@ import Generic.Http
 import Generic.Utils exposing (mapResult)
 import Twitter.Types exposing (Credential)
 import Http
-import Json.Decode exposing (Decoder, string, at)
-import Json.Decode.Pipeline exposing (decode, required)
+import Json.Decode exposing (Decoder, string)
+import Json.Decode.Pipeline exposing (decode, required, requiredAt)
 import Task
 
 
 fetchCredential : SessionID -> Cmd Msg
 fetchCredential sessionID =
-    Generic.Http.get sessionID credentialDecoder "/app-get-access"
+    Generic.Http.get sessionID detailsDecoder "/app-get-access"
         |> Task.attempt
             (mapResult
                 (AuthenticationFailed sessionID)
@@ -21,6 +21,8 @@ fetchCredential sessionID =
         |> Cmd.map UserCredentialFetch
 
 
-credentialDecoder : Decoder Credential
-credentialDecoder =
-    at [ "app_access_token" ] string
+detailsDecoder : Decoder UserDetails
+detailsDecoder =
+    decode UserDetails
+        |> requiredAt [ "app_access_token" ] string
+        |> requiredAt [ "screen_name" ] string

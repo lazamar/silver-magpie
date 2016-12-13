@@ -9,6 +9,7 @@ type Msg
     = DoNothing
     | TimelinesMsg TimelinesT.Msg
     | UserCredentialFetch SessionIDAuthentication
+    | SelectAccount Credential
     | Logout Credential
     | Detach
 
@@ -16,7 +17,7 @@ type Msg
 type SessionIDAuthentication
     = NotAttempted
     | Authenticating SessionID
-    | Authenticated SessionID Credential
+    | Authenticated SessionID UserDetails
     | AuthenticationFailed SessionID Http.Error
 
 
@@ -27,6 +28,12 @@ type alias SessionID =
 type alias Model =
     { timelinesModel : Maybe TimelinesT.Model
     , sessionID : SessionIDAuthentication
-    , credentials : List Credential
+    , usersDetails : List UserDetails
     , footerMessageNumber : Int
+    }
+
+
+type alias UserDetails =
+    { credential : Credential
+    , handler : String
     }
