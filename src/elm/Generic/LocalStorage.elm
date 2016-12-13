@@ -1,4 +1,4 @@
-module Generic.LocalStorage exposing (setItem, getItem, clear)
+module Generic.LocalStorage exposing (setItem, getItem, clear, removeItem)
 
 import Native.LocalStorage
 import Json.Decode exposing (Decoder, null, decodeString, string, oneOf)
@@ -24,6 +24,12 @@ getItem key =
     Native.LocalStorage.getItem key
         |> decodeString (nullOr string)
         |> Result.withDefault Nothing
+
+
+removeItem : String -> String
+removeItem key =
+    Native.LocalStorage.removeItem key
+        |> \_ -> key
 
 
 nullOr : Decoder a -> Decoder (Maybe a)

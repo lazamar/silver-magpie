@@ -95,7 +95,7 @@ update msg conf credential model =
                         in
                             if status.code == 401 then
                                 ( newModel
-                                , Cmd.none
+                                , toCmd <| conf.onLogout credential
                                 )
                             else
                                 ( newModel

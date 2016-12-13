@@ -12,6 +12,10 @@ const _user$project$Native_LocalStorage = { // eslint-disable-line no-underscore
     return JSON.stringify(value);
   },
 
+  removeItem: (key) => {
+    window.localStorage.removeItem(key);
+  },
+
   setItem: ({ key, value }) => {
     window.localStorage.setItem(key, stringify(value));
     return value;

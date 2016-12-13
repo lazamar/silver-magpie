@@ -1,6 +1,6 @@
 module Main.Rest exposing (fetchCredential)
 
-import Main.Types exposing (Msg(UserCredentialFetch))
+import Main.Types exposing (..)
 import Generic.Http
 import Generic.Utils exposing (mapResult)
 import Twitter.Types exposing (Credential)
@@ -8,13 +8,16 @@ import Http
 import Json.Decode exposing (Decoder, string, at)
 import Json.Decode.Pipeline exposing (decode, required)
 import Task
-import RemoteData
 
 
-fetchCredential : String -> Cmd Msg
+fetchCredential : SessionID -> Cmd Msg
 fetchCredential sessionID =
     Generic.Http.get sessionID credentialDecoder "/app-get-access"
-        |> Task.attempt (mapResult RemoteData.Failure RemoteData.Success)
+        |> Task.attempt
+            (mapResult
+                (AuthenticationFailed sessionID)
+                (Authenticated sessionID)
+            )
         |> Cmd.map UserCredentialFetch
 
 

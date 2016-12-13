@@ -12,27 +12,39 @@ import RemoteData
 
 
 -- INITIALISATION
--- TODO : Clean all of this impurity by using flags
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
     let
-        initialModel =
-            { timelinesModel = Nothing
-            , sessionID =
-                case (CredentialsHandler.retrieveSessionID ()) of
-                    Nothing ->
-                        CredentialsHandler.generateSessionID ()
+        -- TODO : Clean all of this impurity by using flags
+        storedCredentials =
+            CredentialsHandler.retrieveStored ()
 
-                    Just sessionID ->
-                        sessionID
-            , credentials = CredentialsHandler.retrieveStored ()
-            , authenticatingCredential = RemoteData.NotAsked
-            }
+        ( timelinesModel, timelinesCmd ) =
+            List.head storedCredentials
+                |> Maybe.map (TimelinesS.init timelinesConfig)
+                |> Maybe.map (Tuple.mapFirst Just)
+                |> Maybe.withDefault ( Nothing, Cmd.none )
+
+        storedSessionID =
+            CredentialsHandler.retrieveSessionID ()
+
+        sessionID =
+            storedSessionID
+                |> Maybe.map Authenticating
+                |> Maybe.withDefault NotAttempted
     in
-        ( initialModel
-        , toCmd <| UserCredentialFetch initialModel.authenticatingCredential
+        ( { timelinesModel = timelinesModel
+          , sessionID = sessionID
+          , credentials = storedCredentials
+          }
+        , Cmd.batch
+            [ timelinesCmd
+            , storedSessionID
+                |> Maybe.map fetchCredential
+                |> Maybe.withDefault (toCmd <| UserCredentialFetch sessionID)
+            ]
         )
 
 
@@ -67,37 +79,44 @@ update msg model =
                 |> Maybe.map (TimelinesS.update subMsg timelinesConfig)
                 |> updateTimelinesModel model
 
-        -- TODO Implement this
-        UserCredentialFetch request ->
-            case request of
-                RemoteData.Success credential ->
-                    ( { model | authenticatingCredential = request }
-                    , Cmd.batch
-                        [ CredentialsHandler.store (\_ -> DoNothing) credential
-                        , toCmd (Authenticated credential)
-                        ]
-                    )
+        UserCredentialFetch authentication ->
+            case authentication of
+                Authenticated sessionID credential ->
+                    let
+                        ( timelinesModel, cmd ) =
+                            TimelinesS.init timelinesConfig credential
+                    in
+                        ( { model
+                            | sessionID = NotAttempted
+                            , credentials =
+                                credential :: model.credentials
+                                -- TODO Timelinemodel must take a list of credentials
+                            , timelinesModel = Just timelinesModel
+                          }
+                        , Cmd.batch
+                            [ CredentialsHandler.eraseSessionID DoNothing
+                            , CredentialsHandler.store (\_ -> DoNothing) (Debug.log "Storing " credential)
+                            ]
+                        )
 
-                RemoteData.NotAsked ->
-                    ( { model | authenticatingCredential = RemoteData.Loading }
-                    , fetchCredential model.sessionID
-                    )
+                NotAttempted ->
+                    let
+                        newSessionID =
+                            CredentialsHandler.generateSessionID ()
+                    in
+                        ( { model | sessionID = Authenticating newSessionID }
+                        , fetchCredential newSessionID
+                        )
 
                 _ ->
-                    ( { model | authenticatingCredential = request }
+                    ( { model | sessionID = authentication }
                     , Cmd.none
                     )
 
         -- TODO Implement this
         Logout credential ->
-            CredentialsHandler.eraseFromStorage (\_ -> DoNothing) credential
+            CredentialsHandler.eraseCredential (\_ -> DoNothing) credential
                 |> \_ -> init ()
-
-        Authenticated credential ->
-            -- TODO This is should be put into an array
-            TimelinesS.init timelinesConfig credential
-                |> Just
-                |> updateTimelinesModel model
 
 
 updateTimelinesModel : Model -> Maybe ( TimelinesT.Model, Cmd Msg ) -> ( Model, Cmd Msg )

@@ -4,11 +4,12 @@ module Generic.CredentialsHandler
         , generateSessionID
         , retrieveStored
         , store
-        , eraseFromStorage
+        , eraseCredential
+        , eraseSessionID
         )
 
 import Twitter.Types exposing (Credential)
-import Generic.LocalStorage exposing (getItem, setItem)
+import Generic.LocalStorage
 import Generic.Utils exposing (toCmd)
 import Generic.UniqueID
 import Json.Encode
@@ -27,6 +28,12 @@ generateSessionID _ =
         |> Debug.log "Generated session id"
 
 
+eraseSessionID : msg -> Cmd msg
+eraseSessionID msg =
+    Generic.LocalStorage.removeItem (Debug.log "erasing" "sessionID")
+        |> (\_ -> toCmd msg)
+
+
 retrieveStored : () -> List Credential
 retrieveStored _ =
     Generic.LocalStorage.getItem "credential"
@@ -41,8 +48,8 @@ store msg credential =
         |> setStoredCredential msg
 
 
-eraseFromStorage : (List Credential -> msg) -> Credential -> Cmd msg
-eraseFromStorage msg credential =
+eraseCredential : (List Credential -> msg) -> Credential -> Cmd msg
+eraseCredential msg credential =
     retrieveStored ()
         |> List.filter (\c -> c /= credential)
         |> setStoredCredential msg

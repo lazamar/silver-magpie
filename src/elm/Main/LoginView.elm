@@ -70,13 +70,13 @@ root model =
 
 loginContent : Model -> Html Msg
 loginContent model =
-    case model.authenticatingCredential of
-        RemoteData.Failure error ->
+    case model.sessionID of
+        AuthenticationFailed sessionID error ->
             case error of
                 Http.BadStatus { status } ->
                     if status.code == 401 then
                         a
-                            [ href <| Generic.Http.sameDomain <| "/sign-in/?app_session_id=" ++ model.sessionID
+                            [ href <| Generic.Http.sameDomain <| "/sign-in/?app_session_id=" ++ sessionID
                             , target "blank"
                             , class "Login-signinBtn"
                             ]
@@ -91,13 +91,13 @@ loginContent model =
                     p [ class "Loading-content-info" ]
                         [ text "There was an error loading your credential. Please retry." ]
 
-        RemoteData.Loading ->
+        Authenticating _ ->
             Generic.Animations.twistingCircle
 
-        RemoteData.Success _ ->
+        Authenticated _ _ ->
             p [ class "Loading-content-info" ]
                 [ text "You are logged in." ]
 
-        RemoteData.NotAsked ->
+        NotAttempted ->
             p [ class "Loading-content-info" ]
                 [ text "Uh, I'm stuck. Something went wrong." ]
