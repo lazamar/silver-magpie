@@ -7,8 +7,6 @@ import Routes.Timelines.TweetBar.Types as TweetBarT
 import Routes.Timelines.TweetBar.State as TweetBarS
 import Twitter.Types exposing (Credential)
 import Generic.Utils exposing (toCmd)
-import Generic.LocalStorage
-import Generic.Detach
 import Time exposing (Time)
 import Task
 
@@ -22,13 +20,9 @@ init conf credential =
         ( tweetBarModel, tweetBarMsg ) =
             TweetBarS.init tweetBarConfig
 
-        footerMessageNumber =
-            generateFooterMsgNumber ()
-
         initialModel =
             { timelineModel = timelineModel
             , tweetBarModel = tweetBarModel
-            , footerMessageNumber = footerMessageNumber
             , time = 0.0
             }
     in
@@ -92,12 +86,6 @@ update msg conf credential model =
         Logout credential ->
             ( model, toCmd (conf.onLogout credential) )
 
-        Detach ->
-            ( model
-            , Generic.Detach.detach 400 600
-                |> Cmd.map conf.onUpdate
-            )
-
 
 timelineUpdate : (Msg -> msg) -> Model -> ( TimelineT.Model, Cmd Msg ) -> ( Model, Cmd msg )
 timelineUpdate onUpdate model =
@@ -109,22 +97,3 @@ tweetBarUpdate : (Msg -> msg) -> Model -> ( TweetBarT.Model, Cmd Msg ) -> ( Mode
 tweetBarUpdate onUpdate model =
     Tuple.mapFirst (\m -> { model | tweetBarModel = m })
         >> Tuple.mapSecond (Cmd.map onUpdate)
-
-
-generateFooterMsgNumber : () -> Int
-generateFooterMsgNumber _ =
-    let
-        -- get last saved number
-        generated =
-            Generic.LocalStorage.getItem "footerMsgNumber"
-                |> Maybe.map String.toInt
-                |> Maybe.withDefault (Ok 0)
-                |> Result.withDefault 0
-                |> (+) 1
-
-        -- save the one we have
-        save =
-            toString generated
-                |> Generic.LocalStorage.setItem "footerMsgNumber"
-    in
-        generated

@@ -9,7 +9,6 @@ import Time exposing (Time)
 type Msg
     = TimelineMsg TimelineT.Msg
     | TweetBarMsg TweetBarT.Msg
-    | Detach
     | Logout Credential
     | RefreshTweets
     | SubmitTweet
@@ -20,7 +19,6 @@ type Msg
 type alias Model =
     { timelineModel : TimelineT.Model
     , tweetBarModel : TweetBarT.Model
-    , footerMessageNumber : Int
     , time : Time
     }
 

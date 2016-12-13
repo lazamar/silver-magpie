@@ -10,6 +10,7 @@ type Msg
     | TimelinesMsg TimelinesT.Msg
     | UserCredentialFetch SessionIDAuthentication
     | Logout Credential
+    | Detach
 
 
 type SessionIDAuthentication
@@ -27,4 +28,5 @@ type alias Model =
     { timelinesModel : Maybe TimelinesT.Model
     , sessionID : SessionIDAuthentication
     , credentials : List Credential
+    , footerMessageNumber : Int
     }

@@ -1,4 +1,4 @@
-module Main.State exposing (..)
+module Main.State exposing (init, update, subscriptions, credentialInUse)
 
 import Main.Types exposing (..)
 import Main.Rest exposing (fetchCredential)
@@ -9,6 +9,7 @@ import Generic.CredentialsHandler as CredentialsHandler
 import Generic.LocalStorage as LocalStorage
 import Twitter.Types exposing (Credential)
 import RemoteData
+import Generic.Detach
 
 
 -- INITIALISATION
@@ -49,6 +50,7 @@ init _ =
         ( { timelinesModel = timelinesModel
           , sessionID = sessionID
           , credentials = storedCredentials
+          , footerMessageNumber = generateFooterMsgNumber ()
           }
         , Cmd.batch
             [ authenticateSessionIDCmd
@@ -126,6 +128,11 @@ update msg model =
             CredentialsHandler.eraseCredential (\_ -> DoNothing) credential
                 |> \_ -> init ()
 
+        Detach ->
+            ( model
+            , Generic.Detach.detach 400 600
+            )
+
 
 updateTimelinesModel : Model -> TimelinesT.Msg -> ( Model, Cmd Msg )
 updateTimelinesModel model subMsg =
@@ -133,7 +140,7 @@ updateTimelinesModel model subMsg =
         maybeTuple =
             Maybe.map2
                 (\c m -> TimelinesS.update subMsg timelinesConfig c m)
-                (List.head model.credentials)
+                (credentialInUse model)
                 model.timelinesModel
     in
         case maybeTuple of
@@ -144,3 +151,27 @@ updateTimelinesModel model subMsg =
                 ( { model | timelinesModel = Just timelinesModel }
                 , cmd
                 )
+
+
+credentialInUse : Model -> Maybe Credential
+credentialInUse model =
+    List.head model.credentials
+
+
+generateFooterMsgNumber : () -> Int
+generateFooterMsgNumber _ =
+    let
+        -- get last saved number
+        generated =
+            LocalStorage.getItem "footerMsgNumber"
+                |> Maybe.map String.toInt
+                |> Maybe.withDefault (Ok 0)
+                |> Result.withDefault 0
+                |> (+) 1
+
+        -- save the one we have
+        save =
+            toString generated
+                |> LocalStorage.setItem "footerMsgNumber"
+    in
+        generated
