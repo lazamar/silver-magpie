@@ -1,7 +1,7 @@
-module Routes.Timelines.TweetBar.View exposing (root, inputFieldId)
+module Timelines.TweetBar.View exposing (root, inputFieldId)
 
-import Routes.Timelines.TweetBar.Types exposing (..)
-import Routes.Timelines.TweetBar.Handler as TwHandler
+import Timelines.TweetBar.Types exposing (..)
+import Timelines.TweetBar.Handler as TwHandler
 import Twitter.Types exposing (User)
 import Generic.Utils exposing (errorMessage)
 import Generic.Animations

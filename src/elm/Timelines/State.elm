@@ -1,10 +1,10 @@
-module Routes.Timelines.State exposing (init, update, subscriptions)
+module Timelines.State exposing (init, update, subscriptions)
 
-import Routes.Timelines.Types exposing (..)
-import Routes.Timelines.Timeline.Types as TimelineT
-import Routes.Timelines.Timeline.State as TimelineS
-import Routes.Timelines.TweetBar.Types as TweetBarT
-import Routes.Timelines.TweetBar.State as TweetBarS
+import Timelines.Types exposing (..)
+import Timelines.Timeline.Types as TimelineT
+import Timelines.Timeline.State as TimelineS
+import Timelines.TweetBar.Types as TweetBarT
+import Timelines.TweetBar.State as TweetBarS
 import Twitter.Types exposing (Credential)
 import Generic.Utils exposing (toCmd)
 import Time exposing (Time)

@@ -1,4 +1,4 @@
-module Routes.Timelines.TweetBar.Types
+module Timelines.TweetBar.Types
     exposing
         ( Model
         , TweetPostedResponse
@@ -7,7 +7,7 @@ module Routes.Timelines.TweetBar.Types
         , Config
         )
 
-import Routes.Timelines.TweetBar.Handler exposing (Handler, HandlerMatch)
+import Timelines.TweetBar.Handler exposing (Handler, HandlerMatch)
 import Generic.Types exposing (SubmissionData)
 import Twitter.Types exposing (Tweet, User)
 import RemoteData exposing (WebData)

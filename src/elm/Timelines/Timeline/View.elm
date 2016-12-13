@@ -1,6 +1,6 @@
-module Routes.Timelines.Timeline.View exposing (root)
+module Timelines.Timeline.View exposing (root)
 
-import Routes.Timelines.Timeline.Types exposing (..)
+import Timelines.Timeline.Types exposing (..)
 import Twitter.Types
     exposing
         ( Tweet
@@ -18,7 +18,7 @@ import Html.Lazy
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Routes.Timelines.Timeline.TweetView exposing (tweetView)
+import Timelines.Timeline.TweetView exposing (tweetView)
 import RemoteData exposing (..)
 import List.Extra
 import Time exposing (Time)

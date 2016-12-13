@@ -1,4 +1,4 @@
-module Routes.Timelines.TweetBar.Handler
+module Timelines.TweetBar.Handler
     exposing
         ( Handler
         , HandlerMatch

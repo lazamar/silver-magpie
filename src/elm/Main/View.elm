@@ -4,7 +4,7 @@ import Main.State exposing (credentialInUse)
 import Main.Types exposing (..)
 import Main.LoginView
 import Twitter.Types exposing (Credential)
-import Routes.Timelines.View
+import Timelines.View
 import Generic.Utils exposing (tooltip)
 import List.Extra
 import Html exposing (Html, div, button, text, span)
@@ -36,7 +36,7 @@ view model =
 timelinesView : Model -> Maybe (Html Msg)
 timelinesView model =
     model.timelinesModel
-        |> Maybe.map (\m -> Routes.Timelines.View.root m)
+        |> Maybe.map (\m -> Timelines.View.root m)
         |> Maybe.map (Html.map TimelinesMsg)
 
 

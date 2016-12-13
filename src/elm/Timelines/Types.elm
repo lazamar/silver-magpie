@@ -1,7 +1,7 @@
-module Routes.Timelines.Types exposing (..)
+module Timelines.Types exposing (..)
 
-import Routes.Timelines.Timeline.Types as TimelineT
-import Routes.Timelines.TweetBar.Types as TweetBarT
+import Timelines.Timeline.Types as TimelineT
+import Timelines.TweetBar.Types as TweetBarT
 import Twitter.Types exposing (Tweet, Credential)
 import Time exposing (Time)
 

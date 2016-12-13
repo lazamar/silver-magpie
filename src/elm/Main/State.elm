@@ -3,8 +3,8 @@ module Main.State exposing (init, update, subscriptions, credentialInUse)
 import Main.Types exposing (..)
 import Main.Rest exposing (fetchCredential)
 import Main.CredentialsHandler as CredentialsHandler
-import Routes.Timelines.Types as TimelinesT
-import Routes.Timelines.State as TimelinesS
+import Timelines.Types as TimelinesT
+import Timelines.State as TimelinesS
 import Generic.Utils exposing (toCmd)
 import Generic.LocalStorage as LocalStorage
 import Twitter.Types exposing (Credential)

@@ -1,9 +1,9 @@
-module Routes.Timelines.TweetBar.State exposing (init, update, submitTweet, setReplyTweet)
+module Timelines.TweetBar.State exposing (init, update, submitTweet, setReplyTweet)
 
-import Routes.Timelines.TweetBar.Types exposing (..)
-import Routes.Timelines.TweetBar.Rest exposing (sendTweet, fetchHandlerSuggestion)
-import Routes.Timelines.TweetBar.Handler as TwHandler exposing (Handler, HandlerMatch)
-import Routes.Timelines.TweetBar.View exposing (inputFieldId)
+import Timelines.TweetBar.Types exposing (..)
+import Timelines.TweetBar.Rest exposing (sendTweet, fetchHandlerSuggestion)
+import Timelines.TweetBar.Handler as TwHandler exposing (Handler, HandlerMatch)
+import Timelines.TweetBar.View exposing (inputFieldId)
 import Twitter.Types exposing (Credential, User, Tweet)
 import Generic.Utils exposing (toCmd)
 import Generic.LocalStorage

@@ -1,6 +1,6 @@
-module Routes.Timelines.Timeline.Rest exposing (getTweets, favoriteTweet, doRetweet, sendLogoutMessasge)
+module Timelines.Timeline.Rest exposing (getTweets, favoriteTweet, doRetweet, sendLogoutMessasge)
 
-import Routes.Timelines.Timeline.Types exposing (..)
+import Timelines.Timeline.Types exposing (..)
 import Twitter.Decoders exposing (tweetDecoder)
 import Twitter.Types exposing (Tweet, Credential)
 import Generic.Http

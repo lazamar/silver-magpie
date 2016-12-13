@@ -1,7 +1,7 @@
-module Routes.Timelines.Timeline.State exposing (init, update, refreshTweets)
+module Timelines.Timeline.State exposing (init, update, refreshTweets)
 
-import Routes.Timelines.Timeline.Rest exposing (getTweets, favoriteTweet, doRetweet)
-import Routes.Timelines.Timeline.Types exposing (..)
+import Timelines.Timeline.Rest exposing (getTweets, favoriteTweet, doRetweet)
+import Timelines.Timeline.Types exposing (..)
 import Twitter.Types exposing (Tweet, Retweet, Credential)
 import Twitter.Serialisers
 import Twitter.Deserialisers

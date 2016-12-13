@@ -1,6 +1,6 @@
 module Main.Types exposing (..)
 
-import Routes.Timelines.Types as TimelinesT
+import Timelines.Types as TimelinesT
 import Twitter.Types exposing (Credential)
 import Http
 
