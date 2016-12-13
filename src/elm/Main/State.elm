@@ -51,8 +51,8 @@ init _ =
           , credentials = storedCredentials
           }
         , Cmd.batch
-            [ timelinesCmd
-            , authenticateSessionIDCmd
+            [ authenticateSessionIDCmd
+            , timelinesCmd
             ]
         )
 
@@ -92,7 +92,7 @@ update msg model =
             case authentication of
                 Authenticated sessionID credential ->
                     let
-                        ( timelinesModel, cmd ) =
+                        ( timelinesModel, timelinesCmd ) =
                             TimelinesS.init timelinesConfig credential
                     in
                         ( { model
@@ -103,7 +103,8 @@ update msg model =
                             , timelinesModel = Just timelinesModel
                           }
                         , Cmd.batch
-                            [ CredentialsHandler.eraseSessionID DoNothing
+                            [ timelinesCmd
+                            , CredentialsHandler.eraseSessionID DoNothing
                             , CredentialsHandler.store (\_ -> DoNothing) (Debug.log "Storing " credential)
                             ]
                         )
