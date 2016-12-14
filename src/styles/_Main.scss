@@ -11,6 +11,14 @@
     padding: $std-el-distance $side-padding;
     box-sizing: content-box;
     min-height: 2.1em;
+
+    & > * {
+        margin-left: 0.5em;
+
+        &:first-child {
+            margin-left: 0;
+        }
+    }
 }
 $cue-show-time: 15s;
 $cue-delay: 2s;
@@ -23,10 +31,11 @@ $cue-delay: 2s;
     animation: fadeIn 1s $cue-delay both, fadeOut 1s ($cue-delay + $cue-show-time) forwards;
 }
 
-.Main-footer-accounts {
+.Main-footer-addAccount {
     margin-right: auto;
-    margin-left: 0.5em;
 }
+
+.Main-footer-accounts {}
 
 .Main-footer-accounts-img {
     height: 30px;

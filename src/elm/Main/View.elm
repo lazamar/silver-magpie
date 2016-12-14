@@ -5,10 +5,11 @@ import Main.Types exposing (..)
 import Main.LoginView
 import Twitter.Types exposing (Credential)
 import Timelines.View
+import Generic.Http
 import Generic.Utils exposing (tooltip)
 import List.Extra
-import Html exposing (Html, div, button, text, span, img)
-import Html.Attributes exposing (class, tabindex, src)
+import Html exposing (Html, div, button, text, span, img, a)
+import Html.Attributes exposing (class, tabindex, src, href, target)
 import Html.Events exposing (onClick)
 import Twitter.Types exposing (Credential)
 import Html
@@ -23,7 +24,10 @@ view model =
         Just aView ->
             div [ class "Main" ]
                 [ aView
-                , footerView model.footerMessageNumber model.usersDetails
+                , footerView
+                    model.footerMessageNumber
+                    model.usersDetails
+                    (getSessionID model.sessionID)
                 ]
 
 
@@ -34,8 +38,8 @@ timelinesView model =
         |> Maybe.map (Html.map TimelinesMsg)
 
 
-footerView : Int -> List UserDetails -> Html Msg
-footerView footerMessageNumber usersDetails =
+footerView : Int -> List UserDetails -> SessionID -> Html Msg
+footerView footerMessageNumber usersDetails sessionID =
     let
         currentCredential =
             credentialInUse usersDetails
@@ -57,6 +61,12 @@ footerView footerMessageNumber usersDetails =
               -- , span
               --     [ class "Timelines-footer-cues animated fadeInUp" ]
               --     [ text <| footerMessage footerMessageNumber ]
+            , a
+                [ class "zmdi zmdi-plus btn btn-default btn-icon Main-footer-addAccount"
+                , target "blank"
+                , href <| Generic.Http.sameDomain <| "/sign-in/?app_session_id=" ++ sessionID
+                ]
+                []
             , button
                 [ class "zmdi zmdi-power btn btn-default btn-icon"
                 , tabindex -1
@@ -99,3 +109,19 @@ accountsView =
                     ]
                     []
             )
+
+
+getSessionID : SessionIDAuthentication -> SessionID
+getSessionID auth =
+    case auth of
+        NotAttempted ->
+            ""
+
+        Authenticating id ->
+            id
+
+        Authenticated id _ ->
+            id
+
+        AuthenticationFailed id _ ->
+            id
