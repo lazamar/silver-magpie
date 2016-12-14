@@ -11,14 +11,6 @@
     padding: $std-el-distance $side-padding;
     box-sizing: content-box;
     min-height: 2.1em;
-
-    & > * {
-        margin-left: 0.5em;
-
-        &:first-child {
-            margin-left: 0;
-        }
-    }
 }
 $cue-show-time: 15s;
 $cue-delay: 2s;
@@ -33,6 +25,7 @@ $cue-delay: 2s;
 
 .Main-footer-addAccount {
     margin-right: auto;
+    margin-left: 0.5em;
 }
 
 .Main-footer-accounts {}
@@ -42,6 +35,15 @@ $cue-delay: 2s;
     border-radius: $border-radius;
     margin-left: 0.5em;
     opacity: 0.3;
+    transition: all 0.2s;
+    cursor: pointer;
+    position: relative;
+    border: 1px solid transparent;
+
+    &:hover {
+        opacity: 1;
+        border-color: $brand-info;
+    }
 }
 
 .Main-footer-accounts-img--selected {

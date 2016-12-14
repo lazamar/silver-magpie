@@ -115,7 +115,10 @@ accountsView usersDetails =
                 ]
                 []
     in
-        List.indexedMap createAvatar usersDetails
+        usersDetails
+            |> List.indexedMap (\idx u -> ( u, createAvatar idx u ))
+            |> List.sortBy (Tuple.first >> .handler)
+            |> List.map Tuple.second
 
 
 getSessionID : SessionIDAuthentication -> SessionID
