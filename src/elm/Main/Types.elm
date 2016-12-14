@@ -15,7 +15,7 @@ type Msg
 
 
 type SessionIDAuthentication
-    = NotAttempted
+    = NotAttempted SessionID
     | Authenticating SessionID
     | Authenticated SessionID UserDetails
     | AuthenticationFailed SessionID Http.Error

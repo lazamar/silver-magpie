@@ -16,10 +16,10 @@ import List.Extra
 -- INITIALISATION
 
 
-emptyModel : List UserDetails -> Model
-emptyModel usersDetails =
+emptyModel : SessionID -> List UserDetails -> Model
+emptyModel sessionID usersDetails =
     { timelinesModel = Nothing
-    , sessionID = NotAttempted
+    , sessionID = NotAttempted sessionID
     , usersDetails = usersDetails
     , footerMessageNumber = generateFooterMsgNumber ()
     }
@@ -32,33 +32,21 @@ init _ =
         storedUsersDetails =
             CredentialsHandler.retrieveUsersDetails ()
 
-        storedSessionID =
+        sessionID =
             CredentialsHandler.retrieveSessionID ()
+                |> Maybe.withDefault (CredentialsHandler.generateSessionID ())
 
         ( initialModel, initialCmd ) =
-            List.head storedUsersDetails
-                |> Maybe.map (\d -> update (SelectAccount d.credential) (emptyModel storedUsersDetails))
-                |> Maybe.withDefault ( emptyModel [], Cmd.none )
-
-        sessionID =
-            storedSessionID
-                |> Maybe.map Authenticating
-                |> Maybe.withDefault NotAttempted
-
-        authenticateSessionIDCmd =
-            case storedSessionID of
-                Nothing ->
-                    if List.length storedUsersDetails == 0 then
-                        toCmd <| UserCredentialFetch sessionID
-                    else
-                        Cmd.none
-
-                Just anID ->
-                    fetchCredential anID
+            storedUsersDetails
+                |> List.map .credential
+                |> List.head
+                |> Maybe.map SelectAccount
+                |> Maybe.map (\msg -> update msg (emptyModel sessionID storedUsersDetails))
+                |> Maybe.withDefault ( emptyModel sessionID [], Cmd.none )
     in
-        ( { initialModel | sessionID = sessionID }
+        ( initialModel
         , Cmd.batch
-            [ authenticateSessionIDCmd
+            [ fetchCredential sessionID
             , initialCmd
             ]
         )
@@ -97,32 +85,30 @@ update msg model =
             case authentication of
                 Authenticated sessionID userDetails ->
                     let
+                        newId =
+                            CredentialsHandler.generateSessionID ()
+
                         ( newModel, newCmd ) =
                             update
                                 (SelectAccount userDetails.credential)
                                 { model
-                                    | sessionID = NotAttempted
+                                    | sessionID = NotAttempted newId
                                     , usersDetails = model.usersDetails ++ [ userDetails ]
                                 }
                     in
                         ( newModel
                         , Cmd.batch
                             [ newCmd
-                            , CredentialsHandler.eraseSessionID DoNothing
                             , CredentialsHandler.storeUsersDetails
                                 (\_ -> DoNothing)
                                 newModel.usersDetails
                             ]
                         )
 
-                NotAttempted ->
-                    let
-                        newSessionID =
-                            CredentialsHandler.generateSessionID ()
-                    in
-                        ( { model | sessionID = Authenticating newSessionID }
-                        , fetchCredential newSessionID
-                        )
+                NotAttempted anID ->
+                    ( { model | sessionID = Authenticating anID }
+                    , fetchCredential anID
+                    )
 
                 _ ->
                     ( { model | sessionID = authentication }

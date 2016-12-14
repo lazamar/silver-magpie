@@ -98,6 +98,6 @@ loginContent model =
             p [ class "Loading-content-info" ]
                 [ text "You are logged in." ]
 
-        NotAttempted ->
+        NotAttempted _ ->
             p [ class "Loading-content-info" ]
                 [ text "Uh, I'm stuck. Something went wrong." ]

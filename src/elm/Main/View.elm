@@ -114,8 +114,8 @@ accountsView =
 getSessionID : SessionIDAuthentication -> SessionID
 getSessionID auth =
     case auth of
-        NotAttempted ->
-            ""
+        NotAttempted id ->
+            id
 
         Authenticating id ->
             id

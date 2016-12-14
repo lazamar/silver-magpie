@@ -2,7 +2,6 @@ module Main.CredentialsHandler
     exposing
         ( retrieveSessionID
         , generateSessionID
-        , eraseSessionID
         , retrieveUsersDetails
         , storeUsersDetails
         )
@@ -30,12 +29,6 @@ generateSessionID _ =
     UniqueID.generate "seed"
         |> LocalStorage.setItem "sessionID"
         |> Debug.log "Generated session id"
-
-
-eraseSessionID : msg -> Cmd msg
-eraseSessionID msg =
-    LocalStorage.removeItem (Debug.log "erasing" "sessionID")
-        |> (\_ -> toCmd msg)
 
 
 
