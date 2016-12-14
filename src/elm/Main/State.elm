@@ -33,8 +33,12 @@ init _ =
             CredentialsHandler.retrieveUsersDetails ()
 
         sessionID =
-            CredentialsHandler.retrieveSessionID ()
-                |> Maybe.withDefault (CredentialsHandler.generateSessionID ())
+            case CredentialsHandler.retrieveSessionID () of
+                Just anID ->
+                    anID
+
+                Nothing ->
+                    CredentialsHandler.generateSessionID ()
 
         ( initialModel, initialCmd ) =
             storedUsersDetails
