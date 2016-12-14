@@ -40,4 +40,11 @@ $cue-delay: 2s;
 .Main-footer-accounts-img {
     height: 30px;
     border-radius: $border-radius;
+    margin-left: 0.5em;
+    opacity: 0.3;
+}
+
+.Main-footer-accounts-img--selected {
+    @extend .Main-footer-accounts-img;
+    opacity: 1;
 }

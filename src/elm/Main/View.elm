@@ -99,16 +99,23 @@ footerMessages =
 
 
 accountsView : List UserDetails -> List (Html Msg)
-accountsView =
-    List.map .profile_image
-        >> List.map
-            (\url ->
-                img
-                    [ src url
-                    , class "Main-footer-accounts-img"
-                    ]
-                    []
-            )
+accountsView usersDetails =
+    let
+        avatarClass idx =
+            if idx == 0 then
+                "Main-footer-accounts-img--selected"
+            else
+                "Main-footer-accounts-img"
+
+        createAvatar idx acc =
+            img
+                [ src acc.profile_image
+                , class <| avatarClass idx
+                , onClick <| SelectAccount acc.credential
+                ]
+                []
+    in
+        List.indexedMap createAvatar usersDetails
 
 
 getSessionID : SessionIDAuthentication -> SessionID
