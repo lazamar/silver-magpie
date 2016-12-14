@@ -7,8 +7,8 @@ import Twitter.Types exposing (Credential)
 import Timelines.View
 import Generic.Utils exposing (tooltip)
 import List.Extra
-import Html exposing (Html, div, button, text, span)
-import Html.Attributes exposing (class, tabindex)
+import Html exposing (Html, div, button, text, span, img)
+import Html.Attributes exposing (class, tabindex, src)
 import Html.Events exposing (onClick)
 import Twitter.Types exposing (Credential)
 import Html
@@ -16,21 +16,15 @@ import Html
 
 view : Model -> Html Msg
 view model =
-    let
-        footer =
-            credentialInUse model
-                |> Maybe.map (footerView model.footerMessageNumber)
-                |> Maybe.withDefault (div [] [])
-    in
-        case timelinesView model of
-            Nothing ->
-                Main.LoginView.root model
+    case timelinesView model of
+        Nothing ->
+            Main.LoginView.root model
 
-            Just aView ->
-                div [ class "Main" ]
-                    [ aView
-                    , footer
-                    ]
+        Just aView ->
+            div [ class "Main" ]
+                [ aView
+                , footerView model.footerMessageNumber model.usersDetails
+                ]
 
 
 timelinesView : Model -> Maybe (Html Msg)
@@ -40,27 +34,37 @@ timelinesView model =
         |> Maybe.map (Html.map TimelinesMsg)
 
 
-footerView : Int -> Credential -> Html Msg
-footerView footerMessageNumber credential =
-    div [ class "Timelines-footer" ]
-        [ button
-            [ class "zmdi zmdi-collection-item btn btn-default btn-icon"
-            , tooltip "Detach window"
-            , tabindex -1
-            , onClick Detach
+footerView : Int -> List UserDetails -> Html Msg
+footerView footerMessageNumber usersDetails =
+    let
+        currentCredential =
+            credentialInUse usersDetails
+                |> Maybe.withDefault ""
+
+        -- TODO Remove this
+    in
+        div [ class "Main-footer" ]
+            [ button
+                [ class "zmdi zmdi-collection-item btn btn-default btn-icon"
+                , tooltip "Detach window"
+                , tabindex -1
+                , onClick Detach
+                ]
+                []
+            , span
+                [ class "Main-footer-accounts" ]
+                (accountsView usersDetails)
+              -- , span
+              --     [ class "Timelines-footer-cues animated fadeInUp" ]
+              --     [ text <| footerMessage footerMessageNumber ]
+            , button
+                [ class "zmdi zmdi-power btn btn-default btn-icon"
+                , tabindex -1
+                , tooltip "Logout"
+                , onClick <| Logout currentCredential
+                ]
+                []
             ]
-            []
-        , span
-            [ class "Timelines-footer-cues animated fadeInUp" ]
-            [ text <| footerMessage footerMessageNumber ]
-        , button
-            [ class "zmdi zmdi-power btn btn-default btn-icon"
-            , tabindex -1
-            , tooltip "Logout"
-            , onClick <| Logout credential
-            ]
-            []
-        ]
 
 
 footerMessage : Int -> String
@@ -82,3 +86,16 @@ footerMessages =
     , "Use Ctrl+Enter to send your tweet"
     , "Use arrows to navigate handler suggestions"
     ]
+
+
+accountsView : List UserDetails -> List (Html Msg)
+accountsView =
+    List.map .profile_image
+        >> List.map
+            (\url ->
+                img
+                    [ src url
+                    , class "Main-footer-accounts-img"
+                    ]
+                    []
+            )

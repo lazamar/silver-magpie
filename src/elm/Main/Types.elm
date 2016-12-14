@@ -36,4 +36,5 @@ type alias Model =
 type alias UserDetails =
     { credential : Credential
     , handler : String
+    , profile_image : String
     }

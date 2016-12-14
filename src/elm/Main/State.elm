@@ -175,7 +175,7 @@ updateTimelinesModel model subMsg =
         maybeTuple =
             Maybe.map2
                 (\c m -> TimelinesS.update subMsg timelinesConfig c m)
-                (credentialInUse model)
+                (credentialInUse model.usersDetails)
                 model.timelinesModel
     in
         case maybeTuple of
@@ -188,10 +188,9 @@ updateTimelinesModel model subMsg =
                 )
 
 
-credentialInUse : Model -> Maybe Credential
+credentialInUse : List UserDetails -> Maybe Credential
 credentialInUse =
-    .usersDetails
-        >> List.head
+    List.head
         >> Maybe.map .credential
 
 

@@ -1,0 +1,34 @@
+.Main {
+    display: flex;
+    flex-flow: column nowrap;
+    height: 100%;
+    width: 100%;
+}
+
+.Main-footer {
+    display: flex;
+    justify-content: space-between;
+    padding: $std-el-distance $side-padding;
+    box-sizing: content-box;
+    min-height: 2.1em;
+}
+$cue-show-time: 15s;
+$cue-delay: 2s;
+
+.Main-footer-cues {
+    font-size: 0.8em;
+    position: relative;
+    bottom: -.6em;
+    color: $c-border;
+    animation: fadeIn 1s $cue-delay both, fadeOut 1s ($cue-delay + $cue-show-time) forwards;
+}
+
+.Main-footer-accounts {
+    margin-right: auto;
+    margin-left: 0.5em;
+}
+
+.Main-footer-accounts-img {
+    height: 30px;
+    border-radius: $border-radius;
+}

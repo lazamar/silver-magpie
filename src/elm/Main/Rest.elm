@@ -26,3 +26,4 @@ detailsDecoder =
     decode UserDetails
         |> requiredAt [ "app_access_token" ] string
         |> requiredAt [ "screen_name" ] string
+        |> requiredAt [ "profile_image_url_https" ] string

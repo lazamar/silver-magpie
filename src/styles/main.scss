@@ -1,13 +1,11 @@
 @import 'https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500';
 @import './variables';
 @import '../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap';
-
 @import './material-font';
 @import './animate';
 @import './mixins';
-
-
 @import './common';
+@import './Main';
 @import './Login';
 @import './Timelines';
 @import './Timeline';

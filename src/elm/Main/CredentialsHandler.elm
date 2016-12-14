@@ -68,10 +68,11 @@ serialiseUsersDetails =
 
 
 userDetailsSerialiser : UserDetails -> Json.Encode.Value
-userDetailsSerialiser { credential, handler } =
+userDetailsSerialiser { credential, handler, profile_image } =
     Json.Encode.object
         [ ( "credential", Json.Encode.string credential )
         , ( "handler", Json.Encode.string handler )
+        , ( "profile_image", Json.Encode.string profile_image )
         ]
 
 
@@ -79,7 +80,8 @@ userDetailsDeserialiser : Json.Decode.Decoder UserDetails
 userDetailsDeserialiser =
     decode UserDetails
         |> required "credential" Json.Decode.string
-        |> required "credential" Json.Decode.string
+        |> required "handler" Json.Decode.string
+        |> required "profile_image" Json.Decode.string
 
 
 deserialiseUserDetails : String -> Maybe (List UserDetails)
