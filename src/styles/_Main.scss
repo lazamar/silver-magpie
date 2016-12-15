@@ -23,17 +23,30 @@ $cue-delay: 2s;
     animation: fadeIn 1s $cue-delay both, fadeOut 1s ($cue-delay + $cue-show-time) forwards;
 }
 
-.Main-footer-addAccount {
-    margin-right: auto;
-    margin-left: 0.5em;
+.Main-footer-accounts-wrapper {
+    overflow: hidden;
+    display: flex;
+
+    &:hover .Main-footer-accounts {
+        transform: translateX(0);
+    }
 }
 
-.Main-footer-accounts {}
+.Main-footer-accounts {
+    overflow: hidden;
+    transform: translateX(100%);
+    transition: all 0.2s ease-out;
+
+    & > * {
+        margin-right: 0.5em;
+    }
+}
+
+.Main-footer-addAccount {}
 
 .Main-footer-accounts-img {
     height: 30px;
     border-radius: $border-radius;
-    margin-left: 0.5em;
     opacity: 0.3;
     transition: all 0.2s;
     cursor: pointer;

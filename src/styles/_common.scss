@@ -20,6 +20,7 @@ body {
     width: 100%;
 }
 // ---------
+
 * {
     box-sizing: border-box;
 }
@@ -51,8 +52,8 @@ textarea {
 }
 
 .btn-default {
-    background-color: transparent;
     border: none;
+    background-color: $bg-lvl-1;
 
     &:active,
     &:active:focus {

@@ -26,8 +26,8 @@ view model =
                 [ aView
                 , footerView
                     model.footerMessageNumber
-                    model.usersDetails
                     (getSessionID model.sessionID)
+                    model.usersDetails
                 ]
 
 
@@ -38,43 +38,21 @@ timelinesView model =
         |> Maybe.map (Html.map TimelinesMsg)
 
 
-footerView : Int -> List UserDetails -> SessionID -> Html Msg
-footerView footerMessageNumber usersDetails sessionID =
-    let
-        currentCredential =
-            credentialInUse usersDetails
-                |> Maybe.withDefault ""
-
-        -- TODO Remove this
-    in
-        div [ class "Main-footer" ]
-            [ button
-                [ class "zmdi zmdi-collection-item btn btn-default btn-icon"
-                , tooltip "Detach window"
-                , tabindex -1
-                , onClick Detach
-                ]
-                []
-            , span
-                [ class "Main-footer-accounts" ]
-                (accountsView usersDetails)
-              -- , span
-              --     [ class "Timelines-footer-cues animated fadeInUp" ]
-              --     [ text <| footerMessage footerMessageNumber ]
-            , a
-                [ class "zmdi zmdi-plus btn btn-default btn-icon Main-footer-addAccount"
-                , target "blank"
-                , href <| Generic.Http.sameDomain <| "/sign-in/?app_session_id=" ++ sessionID
-                ]
-                []
-            , button
-                [ class "zmdi zmdi-power btn btn-default btn-icon"
-                , tabindex -1
-                , tooltip "Logout"
-                , onClick <| Logout currentCredential
-                ]
-                []
+footerView : Int -> SessionID -> List UserDetails -> Html Msg
+footerView footerMessageNumber sessionID usersDetails =
+    div [ class "Main-footer" ]
+        [ button
+            [ class "zmdi zmdi-collection-item btn btn-default btn-icon"
+            , tooltip "Detach window"
+            , tabindex -1
+            , onClick Detach
             ]
+            []
+          -- , span
+          --     [ class "Timelines-footer-cues animated fadeInUp" ]
+          --     [ text <| footerMessage footerMessageNumber ]
+        , accountsView sessionID usersDetails
+        ]
 
 
 footerMessage : Int -> String
@@ -98,8 +76,8 @@ footerMessages =
     ]
 
 
-accountsView : List UserDetails -> List (Html Msg)
-accountsView usersDetails =
+accountsView : SessionID -> List UserDetails -> Html Msg
+accountsView sessionID usersDetails =
     let
         avatarClass idx =
             if idx == 0 then
@@ -114,11 +92,37 @@ accountsView usersDetails =
                 , onClick <| SelectAccount acc.credential
                 ]
                 []
+
+        accountsAvatars =
+            usersDetails
+                |> List.indexedMap (\idx u -> ( u, createAvatar idx u ))
+                |> List.sortBy (Tuple.first >> .handler)
+                |> List.map Tuple.second
+
+        currentCredential =
+            credentialInUse usersDetails
+                |> Maybe.withDefault ""
+
+        addAccountButton =
+            a
+                [ class "zmdi zmdi-plus btn btn-default btn-icon Main-footer-addAccount"
+                , target "blank"
+                , href <| Generic.Http.sameDomain <| "/sign-in/?app_session_id=" ++ sessionID
+                ]
+                []
     in
-        usersDetails
-            |> List.indexedMap (\idx u -> ( u, createAvatar idx u ))
-            |> List.sortBy (Tuple.first >> .handler)
-            |> List.map Tuple.second
+        div [ class "Main-footer-accounts-wrapper" ]
+            [ span
+                [ class "Main-footer-accounts" ]
+                (addAccountButton :: accountsAvatars)
+            , button
+                [ class "zmdi zmdi-power btn btn-default btn-icon"
+                , tabindex -1
+                , tooltip "Logout"
+                , onClick <| Logout currentCredential
+                ]
+                []
+            ]
 
 
 getSessionID : SessionIDAuthentication -> SessionID
