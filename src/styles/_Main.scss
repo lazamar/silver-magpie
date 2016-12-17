@@ -35,7 +35,7 @@ $cue-delay: 2s;
 .Main-footer-accounts {
     overflow: hidden;
     transform: translateX(100%);
-    transition: all 0.2s ease-out;
+    transition: all 0.4s cubic-bezier(.2,.54,0,.99);
 
     & > * {
         margin-right: 0.5em;
