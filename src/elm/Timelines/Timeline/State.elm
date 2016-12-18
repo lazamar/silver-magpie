@@ -240,7 +240,18 @@ combineTweets : FetchType -> List Tweet -> List Tweet -> List Tweet
 combineTweets fetchType oldTweets newTweets =
     case fetchType of
         Refresh ->
-            newTweets
+            let
+                newIds =
+                    List.map .id newTweets
+
+                notInNewIds tweet =
+                    tweet.id
+                        |> (flip List.member) newIds
+                        |> not
+            in
+                oldTweets
+                    |> List.filter notInNewIds
+                    |> (flip (++)) newTweets
 
         BottomTweets lastTweetIdAtFetchTime ->
             List.Extra.last oldTweets
