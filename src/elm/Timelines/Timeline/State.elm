@@ -21,8 +21,8 @@ import Time
 -- MAIN FUNCTIONS
 
 
-initialModel : Model
-initialModel =
+initialModel : () -> Model
+initialModel _ =
     { tab = HomeTab
     , homeTab =
         { tweets = getPersistedTimeline HomeTab
@@ -37,7 +37,7 @@ initialModel =
 
 init : Config msg -> ( Model, Cmd msg )
 init conf =
-    ( initialModel
+    ( initialModel ()
     , Cmd.batch
         [ toCmd (FetchTweets HomeTab Refresh)
         , toCmd (FetchTweets MentionsTab Refresh)
