@@ -21,15 +21,18 @@ $cue-delay: 2s;
     bottom: -.6em;
     color: $c-border;
     animation: fadeIn 1s $cue-delay both, fadeOut 1s ($cue-delay + $cue-show-time) forwards;
+    transition: color 0.2s ease;
+
+    .Main-footer:hover & {
+        color: transparent;
+    }
 }
 
 .Main-footer-accounts-wrapper {
     overflow: hidden;
     display: flex;
-
-    &:hover .Main-footer-accounts {
-        transform: translateX(0);
-    }
+    position: absolute;
+    right: 3.5em;
 }
 
 .Main-footer-accounts {
@@ -39,6 +42,10 @@ $cue-delay: 2s;
 
     & > * {
         margin-right: 0.5em;
+    }
+
+    .Main-footer:hover & {
+        transform: translateX(0);
     }
 }
 

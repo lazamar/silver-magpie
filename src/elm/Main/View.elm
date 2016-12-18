@@ -40,19 +40,31 @@ timelinesView model =
 
 footerView : Int -> SessionID -> List UserDetails -> Html Msg
 footerView footerMessageNumber sessionID usersDetails =
-    div [ class "Main-footer" ]
-        [ button
-            [ class "zmdi zmdi-collection-item btn btn-default btn-icon"
-            , tooltip "Detach window"
-            , tabindex -1
-            , onClick Detach
+    let
+        currentCredential =
+            credentialInUse usersDetails
+                |> Maybe.withDefault ""
+    in
+        div [ class "Main-footer" ]
+            [ button
+                [ class "zmdi zmdi-collection-item btn btn-default btn-icon"
+                , tooltip "Detach window"
+                , tabindex -1
+                , onClick Detach
+                ]
+                []
+            , span
+                [ class "Main-footer-cues animated fadeInUp" ]
+                [ text <| footerMessage footerMessageNumber ]
+            , accountsView sessionID usersDetails
+            , button
+                [ class "zmdi zmdi-power btn btn-default btn-icon"
+                , tabindex -1
+                , tooltip "Logout"
+                , onClick <| Logout currentCredential
+                ]
+                []
             ]
-            []
-          -- , span
-          --     [ class "Timelines-footer-cues animated fadeInUp" ]
-          --     [ text <| footerMessage footerMessageNumber ]
-        , accountsView sessionID usersDetails
-        ]
 
 
 footerMessage : Int -> String
@@ -99,10 +111,6 @@ accountsView sessionID usersDetails =
                 |> List.sortBy (Tuple.first >> .handler)
                 |> List.map Tuple.second
 
-        currentCredential =
-            credentialInUse usersDetails
-                |> Maybe.withDefault ""
-
         addAccountButton =
             a
                 [ class "zmdi zmdi-plus btn btn-default btn-icon Main-footer-addAccount"
@@ -115,13 +123,6 @@ accountsView sessionID usersDetails =
             [ span
                 [ class "Main-footer-accounts" ]
                 (addAccountButton :: accountsAvatars)
-            , button
-                [ class "zmdi zmdi-power btn btn-default btn-icon"
-                , tabindex -1
-                , tooltip "Logout"
-                , onClick <| Logout currentCredential
-                ]
-                []
             ]
 
 
