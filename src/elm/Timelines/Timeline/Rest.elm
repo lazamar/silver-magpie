@@ -38,6 +38,9 @@ getTweets credential fetchType route =
 
         maxId =
             case fetchType of
+                ClearFetch ->
+                    ""
+
                 Refresh ->
                     ""
 

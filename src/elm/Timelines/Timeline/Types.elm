@@ -24,7 +24,8 @@ type TabName
 
 
 type FetchType
-    = Refresh
+    = ClearFetch
+    | Refresh
     | BottomTweets TweetId
 
 

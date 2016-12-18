@@ -39,8 +39,8 @@ init : Config msg -> ( Model, Cmd msg )
 init conf =
     ( initialModel ()
     , Cmd.batch
-        [ toCmd (FetchTweets HomeTab Refresh)
-        , toCmd (FetchTweets MentionsTab Refresh)
+        [ toCmd (FetchTweets HomeTab ClearFetch)
+        , toCmd (FetchTweets MentionsTab ClearFetch)
         ]
         |> Cmd.map conf.onUpdate
     )
@@ -239,6 +239,9 @@ applyToRelevantTweet func tweet =
 combineTweets : FetchType -> List Tweet -> List Tweet -> List Tweet
 combineTweets fetchType oldTweets newTweets =
     case fetchType of
+        ClearFetch ->
+            newTweets
+
         Refresh ->
             let
                 newIds =
@@ -251,7 +254,7 @@ combineTweets fetchType oldTweets newTweets =
             in
                 oldTweets
                     |> List.filter notInNewIds
-                    |> (flip (++)) newTweets
+                    |> (++) newTweets
 
         BottomTweets lastTweetIdAtFetchTime ->
             List.Extra.last oldTweets
