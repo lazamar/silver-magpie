@@ -144,7 +144,12 @@ update msg model =
                                 | timelinesModel = Just timelinesModel
                                 , usersDetails = newUsersDetails
                               }
-                            , timelinesCmd
+                            , Cmd.batch
+                                [ timelinesCmd
+                                , CredentialsHandler.storeUsersDetails
+                                    (\_ -> DoNothing)
+                                    newUsersDetails
+                                ]
                             )
 
         Logout credential ->
