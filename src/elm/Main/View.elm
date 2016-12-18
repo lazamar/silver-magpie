@@ -9,7 +9,7 @@ import Generic.Http
 import Generic.Utils exposing (tooltip)
 import List.Extra
 import Html exposing (Html, div, button, text, span, img, a)
-import Html.Attributes exposing (class, tabindex, src, href, target)
+import Html.Attributes exposing (class, tabindex, src, href, target, title)
 import Html.Events exposing (onClick)
 import Twitter.Types exposing (Credential)
 import Html
@@ -48,7 +48,7 @@ footerView footerMessageNumber sessionID usersDetails =
         div [ class "Main-footer" ]
             [ button
                 [ class "zmdi zmdi-collection-item btn btn-default btn-icon"
-                , tooltip "Detach window"
+                , title "Detach window"
                 , tabindex -1
                 , onClick Detach
                 ]
@@ -60,7 +60,7 @@ footerView footerMessageNumber sessionID usersDetails =
             , button
                 [ class "zmdi zmdi-power btn btn-default btn-icon"
                 , tabindex -1
-                , tooltip "Logout"
+                , title "Logout"
                 , onClick <| Logout currentCredential
                 ]
                 []
@@ -102,6 +102,7 @@ accountsView sessionID usersDetails =
                 [ src acc.profile_image
                 , class <| avatarClass idx
                 , onClick <| SelectAccount acc.credential
+                , title <| "@" ++ acc.handler
                 ]
                 []
 
@@ -115,6 +116,7 @@ accountsView sessionID usersDetails =
             a
                 [ class "zmdi zmdi-plus btn btn-default btn-icon Main-footer-addAccount"
                 , target "blank"
+                , title "Add another account"
                 , href <| Generic.Http.sameDomain <| "/sign-in/?app_session_id=" ++ sessionID
                 ]
                 []
