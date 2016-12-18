@@ -35,7 +35,7 @@ tweetView clock index mainTweet =
     in
         div
             [ class "Tweet"
-            , style [ ( "borderColor", (getColor index) ) ]
+              -- , style [ ( "borderColor", (getColor index) ) ]
             ]
             [ retweetInfo mainTweet
             , tweetContent clock tweet
