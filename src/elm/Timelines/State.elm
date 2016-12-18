@@ -54,7 +54,10 @@ timelineConfig =
 
 subscriptions : Sub Msg
 subscriptions =
-    Time.every Time.minute UpdateTime
+    Sub.batch
+        [ Time.every Time.minute UpdateTime
+        , Time.every (30 * Time.second) (\_ -> RefreshTweets)
+        ]
 
 
 update : Msg -> Config msg -> Credential -> Model -> ( Model, Cmd msg )

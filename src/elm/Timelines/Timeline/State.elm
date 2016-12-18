@@ -18,7 +18,7 @@ import Process
 import Time
 
 
--- MAIN FUNCTIONS
+-- INITIALISATION
 
 
 initialModel : () -> Model
