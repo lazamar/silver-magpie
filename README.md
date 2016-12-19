@@ -37,3 +37,7 @@ This will allow for a brand new and fun way to interact with Twitter.
 ### v0.0.0.7
 
 - Allow navigating the timeline with arrow keys
+
+### v0.1.0
+
+- Add support for multiple accounts

@@ -11,25 +11,25 @@
   - DMs
   - Add some link to my profile in the app
   - Push notifications when interaction happens
-  - Check TODO comments
   - Show logged user photo
   - Use keyed nodes in timeline
   - Add delete option
   - Software Update checklist
   - Allow quoting tweets
+  - Send since_id when refreshing
 
 ## FIX
-  - Links gaining underline when focused.
-  - Double spaces in stylised text div
 
 ## TEMPORARILY DONE
   - Reload conditionally when changing tabs // we are currently reloading all tabs on widget open
   - Infinite scroll // through a load-more button
-  - Allow reply to tweets // Needs to show which tweet is being replied to
 
 
 ## Done
+  - Allow reply to tweets // Needs to show which tweet is being replied to
   - User link in retweet status not working
+  - Links gaining underline when focused.
+  - Double spaces in stylised text div
   - Update project README
   - Open with keyboard shortcut
   - Allow detatching
