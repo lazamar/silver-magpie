@@ -28,16 +28,18 @@ $tweetbar-content-min-height: 5.6em;
     color: $link-color;
     font-weight: bold;
     padding: 0.1em;
-    font-size: 1.1em;
     border-radius: 3px;
     color: $bg-light;
 
     > * {
-        padding: 0.2em 0.3em;
+        padding: 0 0.3em;
         border-radius: 3px;
         min-width: 2.5em;
         text-align: center;
         display: inline-block;
+        height: 1.5em;
+        position: relative;
+        top: -.1em;
     }
 
     .enough {
