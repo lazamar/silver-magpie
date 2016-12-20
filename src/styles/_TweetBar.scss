@@ -24,37 +24,42 @@ $tweetbar-content-min-height: 5.6em;
     align-content: flex-start;
 }
 
+.TweetBar-textBox-leftColumn {
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+.TweetBar-userImage {
+    margin-bottom: 0.3em;
+    border-radius: $border-radius;
+    width: 48px;
+    height: 48px;
+}
+
 .TweetBar-textBox-charCount {
-    color: $link-color;
+    padding: 0.15em 0.3em 0;
+    border-radius: $border-radius;
+    min-width: 2.5em;
+    text-align: center;
+    display: inline-block;
+    height: 1.5em;
+    position: relative;
     font-weight: bold;
-    padding: 0.1em;
-    border-radius: 3px;
     color: $bg-light;
 
-    > * {
-        padding: 0 0.3em;
-        border-radius: 3px;
-        min-width: 2.5em;
-        text-align: center;
-        display: inline-block;
-        height: 1.5em;
-        position: relative;
-        top: -.1em;
-    }
-
-    .enough {
+    &.enough {
         background-color: $brand-info;
     }
 
-    .quite-a-few {
+    &.quite-a-few {
         background-color: $brand-warning;
     }
 
-    .few-left {
+    &.few-left {
         background-color: $brand-danger;
     }
 
-    .too-much {
+    &.too-much {
         color: $bg-light;
         background-color: $brand-danger;
     }

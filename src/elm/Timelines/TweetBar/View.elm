@@ -32,7 +32,10 @@ root userDetails model =
         NotSent ->
             div [ class "TweetBar" ]
                 [ suggestions model.handlerSuggestions.users model.handlerSuggestions.userSelected
-                , inputBoxView model.tweetText (RemoteData.toMaybe model.handlerSuggestions.users)
+                , inputBoxView
+                    model.tweetText
+                    (RemoteData.toMaybe model.handlerSuggestions.users)
+                    userDetails
                 ]
 
         Sending _ ->
@@ -120,8 +123,8 @@ inputFieldId =
     "TweetBar-textBox-input"
 
 
-inputBoxView : String -> Maybe (List User) -> Html Msg
-inputBoxView tweetText suggestions =
+inputBoxView : String -> Maybe (List User) -> UserDetails -> Html Msg
+inputBoxView tweetText suggestions userDetails =
     let
         keyListener =
             case suggestions of
@@ -133,8 +136,14 @@ inputBoxView tweetText suggestions =
     in
         div [ class "TweetBar-textBox" ]
             [ span
-                [ class "TweetBar-textBox-charCount" ]
-                [ remainingCharacters tweetText ]
+                [ class "TweetBar-textBox-leftColumn" ]
+                [ img
+                    [ src userDetails.profile_image
+                    , class "TweetBar-userImage"
+                    ]
+                    []
+                , remainingCharacters tweetText
+                ]
             , div
                 [ class "TweetBar-textBox-inputContainer" ]
                 [ colouredTweetView tweetText
@@ -275,10 +284,10 @@ remainingCharacters tweetText =
                 |> text
     in
         if remaining >= 50 then
-            span [ class "enough" ] [ remainingText ]
+            span [ class "TweetBar-textBox-charCount enough" ] [ remainingText ]
         else if remaining > 10 then
-            span [ class "quite-a-few" ] [ remainingText ]
+            span [ class "TweetBar-textBox-charCount quite-a-few" ] [ remainingText ]
         else if remaining >= 0 then
-            span [ class "few-left" ] [ remainingText ]
+            span [ class "TweetBar-textBox-charCount few-left" ] [ remainingText ]
         else
-            span [ class "too-much" ] [ remainingText ]
+            span [ class "TweetBar-textBox-charCount too-much" ] [ remainingText ]
