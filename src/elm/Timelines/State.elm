@@ -56,9 +56,9 @@ subscriptions : Sub Msg
 subscriptions =
     Sub.batch
         [ Time.every Time.minute UpdateTime
-          -- The refresh has to be every minute because of Twitter's
-          -- rest API restrictions
-        , Time.every Time.minute (\_ -> RefreshTweets)
+          -- The refresh has to be every one and a half minute
+          -- because of Twitter's rest API restrictions
+        , Time.every (1.5 * Time.minute) (\_ -> RefreshTweets)
         ]
 
 
