@@ -33,8 +33,10 @@ view model =
 
 timelinesView : Model -> Maybe (Html Msg)
 timelinesView model =
-    model.timelinesModel
-        |> Maybe.map (\m -> Timelines.View.root m)
+    Maybe.map2
+        (\userDetails model -> Timelines.View.root userDetails model)
+        (List.head model.usersDetails)
+        model.timelinesModel
         |> Maybe.map (Html.map TimelinesMsg)
 
 

@@ -3,6 +3,7 @@ module Timelines.TweetBar.View exposing (root, inputFieldId)
 import Timelines.TweetBar.Types exposing (..)
 import Timelines.TweetBar.Handler as TwHandler
 import Twitter.Types exposing (User)
+import Main.Types exposing (UserDetails)
 import Generic.Utils exposing (errorMessage)
 import Generic.Animations
 import Generic.Types
@@ -25,8 +26,8 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 
 
-root : Model -> Html Msg
-root model =
+root : UserDetails -> Model -> Html Msg
+root userDetails model =
     case model.submission of
         NotSent ->
             div [ class "TweetBar" ]
