@@ -106,6 +106,7 @@ accountsView sessionID usersDetails =
                 , class <| avatarClass idx
                 , onClick <| SelectAccount acc.credential
                 , title <| "@" ++ acc.handler
+                , tabindex -1
                 ]
                 []
 
@@ -120,6 +121,7 @@ accountsView sessionID usersDetails =
                 [ class "zmdi zmdi-plus btn btn-default btn-icon Main-footer-addAccount"
                 , target "blank"
                 , title "Add another account"
+                , tabindex -1
                 , href <| Generic.Http.sameDomain <| "/sign-in/?app_session_id=" ++ sessionID
                 ]
                 []
