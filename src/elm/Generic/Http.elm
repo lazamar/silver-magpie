@@ -11,8 +11,8 @@ type alias Endpoint =
     String
 
 
+serverURL : String
 serverURL =
-    -- "http://localhost:8080"
     "https://lazamar.co.uk/silver-magpie"
 
 
