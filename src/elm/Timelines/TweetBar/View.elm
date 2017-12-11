@@ -270,11 +270,11 @@ remainingCharacters tweetText =
             Regex.find Regex.All urlRegex tweetText
                 |> List.map .match
                 |> List.map String.length
-                |> List.map (\v -> v - 15 |> Basics.max 0)
+                |> List.map (\v -> v - 25 |> Basics.max 0)
                 |> List.foldl (+) 0
 
         remaining =
-            140
+            280
                 - (String.length tweetText)
                 + urlOverflow
 

@@ -22,7 +22,7 @@ import Twitter.Types
         )
 import Twitter.Decoders.UserDecoder exposing (userDecoder)
 import Generic.Utils
-import Json.Decode exposing (Decoder, string, int, bool, list, dict, at, andThen, fail, field, nullable)
+import Json.Decode exposing (Decoder, string, int, bool, list, dict, at, andThen, fail, field, nullable, oneOf)
 import Json.Decode.Pipeline exposing (decode, required, optional, requiredAt, hardcoded, custom)
 import List.Extra
 import Date exposing (Date)
@@ -162,7 +162,15 @@ rawTweetDecoderFirstPart =
         |> required "id_str" string
         |> required "user" userDecoder
         |> required "created_at" Generic.Utils.dateDecoder
-        |> required "text" string
+        |> custom
+            (oneOf
+                -- TODO: Remove "text". This is only here whilst
+                -- we do the server transition from "text" to "full_text" so
+                -- that we see the full 280 characters
+                [ at [ "full_text" ] string
+                , at [ "text" ] string
+                ]
+            )
         |> required "retweet_count" int
         |> required "favorite_count" int
         |> required "favorited" bool

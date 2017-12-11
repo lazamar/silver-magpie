@@ -16,6 +16,10 @@ serverURL =
     "https://lazamar.co.uk/silver-magpie"
 
 
+
+-- "http://localhost:8080"
+
+
 get : Credential -> Decoder a -> Endpoint -> Task Http.Error a
 get credential decoder endpoint =
     makeRequest "GET" Http.emptyBody credential decoder endpoint

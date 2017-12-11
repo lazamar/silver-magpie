@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Silver Magpie",
     "description": "The cleanest Twitter client for Chrome",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "author": "Marcelo Lazaroni - @Marcelolaza",
     "browser_action": {
         "default_icon": {
