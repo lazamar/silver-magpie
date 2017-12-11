@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Silver Magpie",
     "description": "The cleanest Twitter client for Chrome",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "author": "Marcelo Lazaroni - @Marcelolaza",
     "browser_action": {
         "default_icon": {
@@ -18,10 +18,7 @@
         },
         "default_popup": "pages/index.html"
     },
-    "permissions": [
-        "activeTab",
-        "https://ajax.googleapis.com/"
-    ],
+    "permissions": ["activeTab", "https://ajax.googleapis.com/"],
     "icons": {
         "16": "images/icon-sizes/favicon-16x16.png",
         "32": "images/icon-sizes/favicon-32x32.png",
@@ -43,5 +40,6 @@
             "description": "Open extension window"
         }
     },
-    "content_security_policy": "script-src 'self' https://www.google-analytics.com/analytics.js;  object-src 'self';"
+    "content_security_policy":
+        "script-src 'self' https://www.google-analytics.com;  object-src 'self';"
 }
