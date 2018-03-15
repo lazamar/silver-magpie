@@ -35,7 +35,8 @@ tweetView clock index mainTweet =
     in
         div
             [ class "Tweet"
-              -- , style [ ( "borderColor", (getColor index) ) ]
+
+            -- , style [ ( "borderColor", (getColor index) ) ]
             ]
             [ retweetInfo mainTweet
             , tweetContent clock tweet
@@ -347,11 +348,16 @@ videoView videoMedia =
             [ src videoMedia.media_url
             , autoplay True
             , loop True
-            , attribute "muted" "true"
+            , muted True
             , class "Tweet-media-video"
             ]
             []
         ]
+
+
+muted : Bool -> Html.Attribute Msg
+muted v =
+    property "muted" <| Json.Encode.bool v
 
 
 multiPhotoView : MultiPhoto -> Html Msg
