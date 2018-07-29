@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 const gulp = require("gulp");
 const organiser = require("gulp-organiser");
 const Future = require("fluture");
@@ -34,14 +36,26 @@ const exec = command =>
     });
 
 // ========== GIT ==========
+const uncommittedError = `
+-----------------------------------------------
+Uncommitted changes in the working tree.
+Commit your changes before bumping the version
+-----------------------------------------------
+`;
 
 const gitCurrentTag = exec("git describe --tags");
 
 const gitIsThereAnythingToCommit = exec("git status --porcelain").map(v => !!v);
 
-const gitCommit = message => exec(`git commit -a -m "${message}"`);
+const gitCommit = message => {
+    console.info(`Creating commit "${message}"`);
+    return exec(`git commit -a -m "${message}"`);
+};
 
-const gitCreateTag = tagName => exec(`git tag ${tagName}`);
+const gitCreateTag = tagName => {
+    console.info(`Creating tag "${tagName}"`);
+    return exec(`git tag ${tagName}`);
+};
 
 // ===== VERSION HANDLING =====
 
@@ -76,26 +90,21 @@ const bumpVersion = bump => aVersion => {
     return [major + majorBump, minor + minorBump, patch + patchBump].join(".");
 };
 
-const setFileVersion = version => address =>
-    readJSON(address)
+const setFileVersion = version => address => {
+    console.info("Setting version ", version, "in", address);
+    return readJSON(address)
         .map(obj => Object.assign({}, obj, { version }))
         .map(v => JSON.stringify(v, null, 4))
         .chain(writeFile(address));
+};
 
 module.exports = organiser.register(task => {
     gulp.task(task.name, done => {
-        gitIsThereAnythingToCommit
-            .chain(
-                yes =>
-                    yes
-                        ? Future.reject(`
-                        	-----------------------------------------------
-                        	Uncommitted changes in the working tree.
-                         	Commit your changes before bumping the version
-                         	-----------------------------------------------
-                         `)
-                        : Future.of()
-            )
+        const bump = task.bumpType;
+        console.info(bump, "version change.");
+
+        return gitIsThereAnythingToCommit
+            .chain(yes => (yes ? Future.reject(uncommittedError) : Future.of()))
             .chain(_ => gitCurrentTag)
             .map(bumpVersion(task.bumpType))
             .chain(
@@ -105,7 +114,6 @@ module.exports = organiser.register(task => {
                         .chain(_ => gitCommit("Version " + tag))
                         .chain(_ => gitCreateTag("v" + tag))
             )
-            // Trigger things
             .fork(done, () => done());
     });
 });
