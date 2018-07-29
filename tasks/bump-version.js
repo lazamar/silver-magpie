@@ -33,6 +33,18 @@ const exec = command =>
         childProcess.exec(command, (err, stdout) => (err ? reject(err) : resolve(stdout)));
     });
 
+// ========== GIT ==========
+
+const gitCurrentTag = exec("git describe --tags");
+
+const gitIsThereAnythingToCommit = exec("git status --porcelain").map(v => !!v);
+
+const gitCommit = message => exec(`git commit -a -m "${message}"`);
+
+const gitCreateTag = tagName => exec(`git tag ${tagName}`);
+
+// ===== VERSION HANDLING =====
+
 const MAJOR = "major";
 const MINOR = "minor";
 const PATCH = "patch";
@@ -69,10 +81,25 @@ const setFileVersion = version => address =>
 
 module.exports = organiser.register(task => {
     gulp.task(task.name, done => {
-        // Get current tag, which should be the software version
-        exec("git describe --tags")
+        gitIsThereAnythingToCommit
+            .chain(
+                yes =>
+                    yes
+                        ? Future.reject(`
+                        	-----------------------------------------------
+                        	Uncommitted changes in the working tree.
+                         	Commit your changes before bumping the version
+                         	-----------------------------------------------
+                         `)
+                        : Future.of()
+            )
+            .chain(_ => gitCurrentTag)
             .map(bumpVersion(task.bumpType))
-            .chain(tag => Future.parallel(Infinity, task.src.map(setFileVersion(tag))))
+            .chain(tag =>
+                Future.parallel(Infinity, task.src.map(setFileVersion(tag)))
+                    .chain(_ => gitCommit("Version " + tag))
+                    .chain(_ => gitCreateTag("v" + tag))
+            )
             // Trigger things
             .fork(done, () => done());
     });
