@@ -13,11 +13,8 @@ type alias Endpoint =
 
 serverURL : String
 serverURL =
+    --"http://localhost:8080/"
     "https://lazamar.co.uk/silver-magpie"
-
-
-
--- "http://localhost:8080"
 
 
 get : Credential -> Decoder a -> Endpoint -> Task Http.Error a
