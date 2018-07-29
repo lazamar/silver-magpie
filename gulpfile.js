@@ -35,7 +35,7 @@ organiser.registerAll("./tasks", {
         tasks: ["copy-static", "sass", "build-elm", "create-zip"]
     },
     "bump-version": {
-        src: ["./package.json"],
+        src: ["./package.json", "./elm-package.json", "./src/manifest.json"],
         bumpType: "patch"
     }
 });
