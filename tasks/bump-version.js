@@ -56,9 +56,12 @@ const parseNum = n => parseInt(n, 10) || 0;
 // MINOR, 1.1.1 -> 1.2.1
 // PATCH, 1.1.1 -> 1.1.2
 const bumpVersion = bump => aVersion => {
-    // Leave only numbers with dots.
-    // v3.4.5 --> 3.4.5
-    const withoutLetters = aVersion.replace(/[^0-9.]/gi, "");
+    const withoutLetters = aVersion
+        // Get the first part of the tag
+        // v3.4.5-4-g7adfvd --> v3.4.5
+        .split("-")[0]
+        // Remove letters from tag
+        .replace(/[^0-9.]/gi, "");
     const numbers = withoutLetters.split(".");
     const major = parseNum(numbers[0]);
     const minor = parseNum(numbers[1]);
@@ -95,10 +98,12 @@ module.exports = organiser.register(task => {
             )
             .chain(_ => gitCurrentTag)
             .map(bumpVersion(task.bumpType))
-            .chain(tag =>
-                Future.parallel(Infinity, task.src.map(setFileVersion(tag)))
-                    .chain(_ => gitCommit("Version " + tag))
-                    .chain(_ => gitCreateTag("v" + tag))
+            .chain(
+                tag =>
+                    console.log(tag) ||
+                    Future.parallel(Infinity, task.src.map(setFileVersion(tag)))
+                        .chain(_ => gitCommit("Version " + tag))
+                        .chain(_ => gitCreateTag("v" + tag))
             )
             // Trigger things
             .fork(done, () => done());
