@@ -1,4 +1,4 @@
-module Main.State exposing (init, update, subscriptions, credentialInUse)
+port module Main.State exposing (init, update, subscriptions, credentialInUse)
 
 import Main.Types exposing (..)
 import Main.Rest exposing (fetchCredential)
@@ -9,7 +9,6 @@ import Generic.Utils exposing (toCmd)
 import Generic.LocalStorage as LocalStorage
 import Twitter.Types exposing (Credential)
 import RemoteData
-import Generic.Detach
 import List.Extra
 
 
@@ -61,6 +60,13 @@ timelinesConfig =
     { onUpdate = TimelinesMsg
     , onLogout = Logout
     }
+
+
+
+-- PORTS
+
+
+port detachWindow : { width : Int, height : Int } -> Cmd msg
 
 
 
@@ -160,7 +166,7 @@ update msg model =
 
         Detach ->
             ( model
-            , Generic.Detach.detach 400 600
+            , detachWindow { width = 400, height = 600 }
             )
 
 

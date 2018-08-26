@@ -1,5 +1,5 @@
 Arguments: 
-  /home/marcelo/.nvm/versions/node/v9.7.1/bin/node /home/marcelo/.nvm/versions/node/v9.7.1/bin/yarn gulp bump-version
+  /home/marcelo/.nvm/versions/node/v9.7.1/bin/node /home/marcelo/.nvm/versions/node/v9.7.1/bin/yarn gulp build-elm
 
 PATH: 
   /home/marcelo/.nvm/versions/node/v9.7.1/bin:/home/marcelo/bin:/home/marcelo/.local/bin:/home/marcelo/.npm-global/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/marcelo/.cabal/bin:/home/marcelo/.fzf/bin
@@ -3998,7 +3998,7 @@ Trace:
   Error: Command failed.
   Exit code: 1
   Command: sh
-  Arguments: -c /home/marcelo/Programs/Projects/silver-magpie/node_modules/.bin/gulp bump-version
+  Arguments: -c /home/marcelo/Programs/Projects/silver-magpie/node_modules/.bin/gulp build-elm
   Directory: /home/marcelo/Programs/Projects/silver-magpie
   Output:
   
