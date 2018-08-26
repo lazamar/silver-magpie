@@ -10,42 +10,53 @@ import Generic.LocalStorage as LocalStorage
 import Twitter.Types exposing (Credential)
 import RemoteData
 import List.Extra
+import Random exposing (Seed, Generator)
+import Time exposing (Time)
 
 
 -- INITIALISATION
 
 
-emptyModel : SessionID -> List UserDetails -> Model
-emptyModel sessionID usersDetails =
+emptyModel : SessionID -> List UserDetails -> Time -> Seed -> Generator SessionID -> Model
+emptyModel sessionID usersDetails time seed gen =
     { timelinesModel = Nothing
     , sessionID = NotAttempted sessionID
     , usersDetails = usersDetails
     , footerMessageNumber = generateFooterMsgNumber ()
+    , generator = gen
+    , seed = seed
+    , startTime = time
     }
 
 
-init : () -> ( Model, Cmd Msg )
-init _ =
+init : { time : Time, seed : Int } -> ( Model, Cmd Msg )
+init { time, seed } =
     let
         -- TODO : Clean all of this impurity by using flags
         storedUsersDetails =
             CredentialsHandler.retrieveUsersDetails ()
 
-        sessionID =
+        generator =
+            CredentialsHandler.idGenerator time
+
+        initialSeed =
+            Random.initialSeed seed
+
+        ( sessionID, newSeed ) =
             case CredentialsHandler.retrieveSessionID () of
                 Just anID ->
-                    anID
+                    ( anID, initialSeed )
 
                 Nothing ->
-                    CredentialsHandler.generateSessionID ()
+                    CredentialsHandler.generateSessionID generator initialSeed
 
         ( initialModel, initialCmd ) =
             storedUsersDetails
                 |> List.map .credential
                 |> List.head
                 |> Maybe.map SelectAccount
-                |> Maybe.map (\msg -> update msg (emptyModel sessionID storedUsersDetails))
-                |> Maybe.withDefault ( emptyModel sessionID [], Cmd.none )
+                |> Maybe.map (\msg -> update msg (emptyModel sessionID storedUsersDetails time newSeed generator))
+                |> Maybe.withDefault ( emptyModel sessionID [] time newSeed generator, Cmd.none )
     in
         ( initialModel
         , Cmd.batch
@@ -95,8 +106,10 @@ update msg model =
             case authentication of
                 Authenticated sessionID userDetails ->
                     let
-                        newId =
-                            CredentialsHandler.generateSessionID ()
+                        ( newId, newSeed ) =
+                            CredentialsHandler.generateSessionID
+                                model.generator
+                                model.seed
 
                         ( newModel, newCmd ) =
                             update
@@ -104,6 +117,7 @@ update msg model =
                                 { model
                                     | sessionID = NotAttempted newId
                                     , usersDetails = model.usersDetails ++ [ userDetails ]
+                                    , seed = newSeed
                                 }
                     in
                         ( newModel
@@ -159,10 +173,21 @@ update msg model =
                             )
 
         Logout credential ->
-            model.usersDetails
-                |> List.filter (\d -> d.credential /= credential)
-                |> CredentialsHandler.storeUsersDetails (\_ -> DoNothing)
-                |> \_ -> init ()
+            let
+                ( newStartInt, _ ) =
+                    Random.step
+                        (Random.int Random.minInt Random.maxInt)
+                        model.seed
+            in
+                model.usersDetails
+                    |> List.filter (\d -> d.credential /= credential)
+                    |> CredentialsHandler.storeUsersDetails (\_ -> DoNothing)
+                    |> (\_ ->
+                            init
+                                { time = model.startTime
+                                , seed = newStartInt
+                                }
+                       )
 
         Detach ->
             ( model

@@ -9,10 +9,9 @@ import Html
 -- APP
 
 
-main : Program Never Model Msg
 main =
-    Html.program
-        { init = init ()
+    Html.programWithFlags
+        { init = init
         , view = view
         , update = update
         , subscriptions = subscriptions

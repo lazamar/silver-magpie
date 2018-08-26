@@ -3,7 +3,8 @@ module Main.Types exposing (..)
 import Timelines.Types as TimelinesT
 import Twitter.Types exposing (Credential)
 import Http
-import Main.SessionID
+import Random exposing (Seed, Generator)
+import Time exposing (Time)
 
 
 type Msg
@@ -31,6 +32,14 @@ type alias Model =
     , sessionID : SessionIDAuthentication
     , usersDetails : List UserDetails
     , footerMessageNumber : Int
+
+    -- We use these fields to produce unique IDs
+    -- The startTime field only exists because during
+    -- logout we need a new time value to restart the
+    -- application
+    , generator : Generator SessionID
+    , seed : Seed
+    , startTime : Time
     }
 
 

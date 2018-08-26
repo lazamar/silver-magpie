@@ -1,23 +1,31 @@
 module Main.CredentialsHandler
     exposing
-        ( retrieveSessionID
+        ( idGenerator
+        , retrieveSessionID
         , generateSessionID
         , retrieveUsersDetails
         , storeUsersDetails
         )
 
-import Main.SessionID exposing (SessionID(SessionID))
-import Main.Types exposing (UserDetails)
+import Main.Types exposing (UserDetails, SessionID)
 import Twitter.Types exposing (Credential)
 import Generic.LocalStorage as LocalStorage
 import Generic.Utils exposing (toCmd)
-import Generic.UniqueID as UniqueID
 import Json.Encode
 import Json.Decode
 import Json.Decode.Pipeline exposing (decode, required)
+import Time exposing (Time)
+import Random exposing (Generator, Seed)
 
 
 -- SESSION ID
+
+
+idGenerator : Time -> Generator SessionID
+idGenerator time =
+    Random.int 0 Random.maxInt
+        |> Random.map toString
+        |> Random.map (\v -> toString time ++ "." ++ v)
 
 
 retrieveSessionID : () -> Maybe String
@@ -25,10 +33,10 @@ retrieveSessionID _ =
     LocalStorage.getItem "sessionID"
 
 
-generateSessionID : () -> String
-generateSessionID _ =
-    UniqueID.generate "seed"
-        |> LocalStorage.setItem "sessionID"
+generateSessionID : Generator SessionID -> Seed -> ( String, Seed )
+generateSessionID generator seed =
+    Random.step generator seed
+        |> Tuple.mapFirst (LocalStorage.setItem "sessionID")
         |> Debug.log "Generated session id"
 
 
