@@ -3,6 +3,7 @@ module Main.Types exposing (..)
 import Timelines.Types as TimelinesT
 import Twitter.Types exposing (Credential)
 import Http
+import Main.SessionID
 
 
 type Msg

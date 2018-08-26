@@ -14,6 +14,15 @@ const detachWindow = ({ width, height }) => {
     window.close();
 };
 
+const localStorageSet = ({ key, value }) => {
+    window.localStorage.setItem(key, value);
+};
+
+const localStorageGet = ports => key => {
+    const value = window.localStorage.getItem(key);
+    ports.localStorageReceive.send({ key, value });
+};
+
 // Runs a function asynchronously.
 // This has the advantage of not breaking the invoking thread
 // on error.
@@ -23,6 +32,8 @@ const async = func => (...params) => setTimeout(() => func.apply(null, params), 
 const registerPort = (ports, func, name) => ports[name].subscribe(async(func));
 
 const setupPorts = ports => {
+    // registerPort(ports, localStorageSet, "localStorageSet");
+    // registerPort(ports, localStorageGet(ports), "localStorageGet");
     registerPort(ports, detachWindow, "detachWindow");
     return;
 };

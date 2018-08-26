@@ -6,6 +6,7 @@ module Main.CredentialsHandler
         , storeUsersDetails
         )
 
+import Main.SessionID exposing (SessionID(SessionID))
 import Main.Types exposing (UserDetails)
 import Twitter.Types exposing (Credential)
 import Generic.LocalStorage as LocalStorage
