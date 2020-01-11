@@ -62,7 +62,7 @@ timeInfo clock tweet =
         a
             [ class "Tweet-timeInfo"
             , target "blank"
-            , href <| "https://twitter.com/statuses/" ++ tweet.id
+            , href <| "https://twitter.com/" ++ tweet.user.name ++ "/status/" ++ tweet.id
             ]
             [ text info ]
 
