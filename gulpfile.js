@@ -11,7 +11,7 @@ organiser.registerAll("./tasks", {
         dest: "dist/styles"
     },
     "copy-static": {
-        src: ["src/**/*", "!src/styles/**/*", "!**/*.elm"],
+        src: ["src/**/*", "!src/styles/**/*", "!**/*.elm", "./src/manifest.json",],
         dest: "dist"
     },
     "build-elm": {

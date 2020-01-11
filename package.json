@@ -20,7 +20,7 @@
         "gulp-organiser": "^1.0.6",
         "gulp-postcss": "^6.2.0",
         "gulp-rollup": "^2.3.0",
-        "gulp-sass": "^2.3.2",
+        "gulp-sass": "^4.0.2",
         "gulp-shell": "^0.5.2",
         "gulp-sourcemaps": "^1.6.0",
         "require-dir-all": "^0.4.9",
