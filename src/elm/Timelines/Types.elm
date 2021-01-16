@@ -1,9 +1,9 @@
 module Timelines.Types exposing (..)
 
+import Time exposing (Time)
 import Timelines.Timeline.Types as TimelineT
 import Timelines.TweetBar.Types as TweetBarT
-import Twitter.Types exposing (Tweet, Credential)
-import Time exposing (Time)
+import Twitter.Types exposing (Credential, Tweet)
 
 
 type Msg

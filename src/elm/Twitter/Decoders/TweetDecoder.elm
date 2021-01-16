@@ -1,31 +1,31 @@
-module Twitter.Decoders.TweetDecoder
-    exposing
-        ( tweetDecoder
-        , userMentionsDecoder
-        , urlDecoder
-        , hashtagDecoder
-        )
+module Twitter.Decoders.TweetDecoder exposing
+    ( hashtagDecoder
+    , tweetDecoder
+    , urlDecoder
+    , userMentionsDecoder
+    )
 
+import Date exposing (Date)
+import Generic.Utils
+import Json.Decode exposing (Decoder, andThen, at, bool, dict, fail, field, int, list, nullable, oneOf, string)
+import Json.Decode.Pipeline exposing (custom, decode, hardcoded, optional, required, requiredAt)
+import List.Extra
+import Twitter.Decoders.UserDecoder exposing (userDecoder)
 import Twitter.Types
     exposing
-        ( Tweet
-        , Retweet(..)
-        , QuotedTweet(..)
-        , User
-        , TweetEntitiesRecord
-        , UserMentionsRecord
-        , MediaRecord(MultiPhotoMedia, VideoMedia)
-        , Video
+        ( HashtagRecord
+        , MediaRecord(..)
         , MultiPhoto
-        , HashtagRecord
+        , QuotedTweet(..)
+        , Retweet(..)
+        , Tweet
+        , TweetEntitiesRecord
         , UrlRecord
+        , User
+        , UserMentionsRecord
+        , Video
         )
-import Twitter.Decoders.UserDecoder exposing (userDecoder)
-import Generic.Utils
-import Json.Decode exposing (Decoder, string, int, bool, list, dict, at, andThen, fail, field, nullable, oneOf)
-import Json.Decode.Pipeline exposing (decode, required, optional, requiredAt, hardcoded, custom)
-import List.Extra
-import Date exposing (Date)
+
 
 
 -- Types
@@ -81,13 +81,16 @@ type ExtendedMedia
 type alias ExtendedPhoto =
     { url :
         String
-        -- what is in the tweet
+
+    -- what is in the tweet
     , display_url :
         String
-        -- what should be shown in the tweet
+
+    -- what should be shown in the tweet
     , media_url_https :
         String
-        -- the actuall address of the content
+
+    -- the actuall address of the content
     }
 
 
@@ -144,8 +147,7 @@ shallowRawTweetDecoder =
     rawTweetDecoderFirstPart
         |> hardcoded Nothing
         -- retweeted_status
-        |>
-            hardcoded Nothing
+        |> hardcoded Nothing
 
 
 
@@ -200,11 +202,9 @@ rawMediaRecordDecoder =
     decode RawMediaRecord
         |> required "url" string
         -- this is the url contained in the tweet
-        |>
-            required "display_url" string
+        |> required "display_url" string
         -- this is the url contained in the tweet
-        |>
-            required "media_url_https" string
+        |> required "media_url_https" string
 
 
 hashtagDecoder : Decoder HashtagRecord
@@ -228,16 +228,18 @@ extendedEntitiesDecoder =
 
 extendedMediaDecoder : Decoder ExtendedMedia
 extendedMediaDecoder =
-    (field "type" string)
+    field "type" string
         |> andThen
             (\mtype ->
                 if mtype == "video" || mtype == "animated_gif" then
                     extendedVideoRecordDecoder
                         |> andThen (\x -> decode (ExtendedVideoMedia x))
+
                 else if mtype == "photo" then
                     extendedPhotoRecordDecoder
                         |> andThen (\x -> decode (ExtendedPhotoMedia x))
                     -- TODO: Multi-photo parse
+
                 else
                     -- FIXME: This mustbe an appropriate
                     -- parser for an undefined option
@@ -307,7 +309,7 @@ mergeMediaLists extendedMedia media =
         videos =
             getVideos extendedMedia
     in
-        List.concat [ photos, videos ]
+    List.concat [ photos, videos ]
 
 
 getPhotos : List ExtendedMedia -> List MediaRecord
@@ -352,10 +354,11 @@ toExtendedPhoto extendedMedia =
 groupByUrl : List ExtendedPhoto -> List (List ExtendedPhoto)
 groupByUrl mediaList =
     mediaList
-        |> (flip List.foldr) []
+        |> (\b a -> List.foldr a b) []
             (\m uniqueUrls ->
                 if List.member m.url uniqueUrls then
                     uniqueUrls
+
                 else
                     m.url :: uniqueUrls
             )
@@ -398,8 +401,8 @@ extendedVideoToVideo extendedVideo =
                 Just variant ->
                     variant
     in
-        Video
-            extendedVideo.url
-            extendedVideo.display_url
-            videoVariant.url
-            videoVariant.content_type
+    Video
+        extendedVideo.url
+        extendedVideo.display_url
+        videoVariant.url
+        videoVariant.content_type

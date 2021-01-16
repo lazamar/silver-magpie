@@ -1,17 +1,16 @@
-module Timelines.TweetBar.Types
-    exposing
-        ( Model
-        , TweetPostedResponse
-        , Msg(..)
-        , KeyboardNavigation(..)
-        , Config
-        )
+module Timelines.TweetBar.Types exposing
+    ( Config
+    , KeyboardNavigation(..)
+    , Model
+    , Msg(..)
+    , TweetPostedResponse
+    )
 
-import Timelines.TweetBar.Handler exposing (Handler, HandlerMatch)
 import Generic.Types exposing (SubmissionData)
-import Twitter.Types exposing (Tweet, User)
-import RemoteData exposing (WebData)
 import Http
+import RemoteData exposing (WebData)
+import Timelines.TweetBar.Handler exposing (Handler, HandlerMatch)
+import Twitter.Types exposing (Tweet, User)
 
 
 type alias Model =

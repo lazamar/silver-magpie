@@ -1,30 +1,30 @@
 module Timelines.Timeline.TweetView exposing (tweetView)
 
-import Timelines.Timeline.Types exposing (..)
-import Twitter.Types
-    exposing
-        ( Tweet
-        , Retweet(..)
-        , QuotedTweet(..)
-        , User
-        , UrlRecord
-        , UserMentionsRecord
-        , HashtagRecord
-        , MediaRecord(VideoMedia, MultiPhotoMedia)
-        , MultiPhoto
-        , Video
-        )
+import Array
+import Date exposing (Date)
+import Generic.Utils exposing (timeDifference, tooltip)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Generic.Utils exposing (tooltip, timeDifference)
-import List.Extra
-import Array
-import Regex
 import Json.Encode
+import List.Extra
 import Maybe
+import Regex
 import Time exposing (Time)
-import Date exposing (Date)
+import Timelines.Timeline.Types exposing (..)
+import Twitter.Types
+    exposing
+        ( HashtagRecord
+        , MediaRecord(..)
+        , MultiPhoto
+        , QuotedTweet(..)
+        , Retweet(..)
+        , Tweet
+        , UrlRecord
+        , User
+        , UserMentionsRecord
+        , Video
+        )
 
 
 tweetView : Time -> Int -> Tweet -> Html Msg
@@ -33,16 +33,16 @@ tweetView clock index mainTweet =
         tweet =
             getMainContent mainTweet
     in
-        div
-            [ class "Tweet"
+    div
+        [ class "Tweet"
 
-            -- , style [ ( "borderColor", (getColor index) ) ]
-            ]
-            [ retweetInfo mainTweet
-            , tweetContent clock tweet
-            , quotedContent clock tweet
-            , tweetActions tweet
-            ]
+        -- , style [ ( "borderColor", (getColor index) ) ]
+        ]
+        [ retweetInfo mainTweet
+        , tweetContent clock tweet
+        , quotedContent clock tweet
+        , tweetActions tweet
+        ]
 
 
 getMainContent : Tweet -> Tweet
@@ -59,12 +59,12 @@ timeInfo clock tweet =
         info =
             timeDifference (Date.fromTime clock) tweet.created_at
     in
-        a
-            [ class "Tweet-timeInfo"
-            , target "blank"
-            , href <| "https://twitter.com/" ++ tweet.user.name ++ "/status/" ++ tweet.id
-            ]
-            [ text info ]
+    a
+        [ class "Tweet-timeInfo"
+        , target "blank"
+        , href <| "https://twitter.com/" ++ tweet.user.name ++ "/status/" ++ tweet.id
+        ]
+        [ text info ]
 
 
 retweetInfo : Tweet -> Html Msg
@@ -157,6 +157,7 @@ tweetActions tweet =
                 , onClick <| Favorite (not tweet.favorited) tweet.id
                 , tooltip "Undo like"
                 ]
+
              else
                 [ class "Tweet-actions-favourite"
                 , onClick <| Favorite (not tweet.favorited) tweet.id
@@ -172,6 +173,7 @@ tweetActions tweet =
                 , onClick <| DoRetweet (not tweet.retweeted) tweet.id
                 , tooltip "Undo retweet"
                 ]
+
              else
                 [ class "Tweet-actions-retweet"
                 , onClick <| DoRetweet (not tweet.retweeted) tweet.id
@@ -188,17 +190,17 @@ getColor : Int -> String
 getColor index =
     let
         colorNum =
-            index % Array.length colors
+            modBy (Array.length colors) index
 
         defaultColor =
             "#F44336"
     in
-        case Array.get colorNum colors of
-            Just color ->
-                color
+    case Array.get colorNum colors of
+        Just color ->
+            color
 
-            Nothing ->
-                defaultColor
+        Nothing ->
+            defaultColor
 
 
 colors : Array.Array String
@@ -232,6 +234,7 @@ toStringNotZero : Int -> String
 toStringNotZero num =
     if num > 0 then
         toString num
+
     else
         ""
 
@@ -239,11 +242,11 @@ toStringNotZero num =
 tweetTextView : Tweet -> String
 tweetTextView { text, entities, quoted_status } =
     text
-        |> (flip <| List.foldl linkUrl) entities.urls
-        |> (flip <| List.foldl removeMediaUrl) entities.media
+        |> ((\f b a -> f a b) <| List.foldl linkUrl) entities.urls
+        |> ((\f b a -> f a b) <| List.foldl removeMediaUrl) entities.media
         |> removeQuotedTweetUrl quoted_status entities.urls
-        |> (flip <| List.foldl linkHashtags) entities.hashtags
-        |> (flip <| List.foldl linkUserMentions) entities.user_mentions
+        |> ((\f b a -> f a b) <| List.foldl linkHashtags) entities.hashtags
+        |> ((\f b a -> f a b) <| List.foldl linkUserMentions) entities.user_mentions
         |> Regex.replace Regex.All (Regex.regex "\\n") (\_ -> "<br/>")
 
 
@@ -257,7 +260,7 @@ linkUrl url tweetText =
                 ++ url.display_url
                 ++ "</a>"
     in
-        replace url.url linkText tweetText
+    replace url.url linkText tweetText
 
 
 linkUserMentions : UserMentionsRecord -> String -> String
@@ -273,7 +276,7 @@ linkUserMentions { screen_name } tweetText =
                 ++ handler
                 ++ "</a>"
     in
-        replace handler linkText tweetText
+    replace handler linkText tweetText
 
 
 linkHashtags : HashtagRecord -> String -> String
@@ -289,7 +292,7 @@ linkHashtags { text } tweetText =
                 ++ hash
                 ++ "</a>"
     in
-        replace hash hashLink tweetText
+    replace hash hashLink tweetText
 
 
 removeMediaUrl : MediaRecord -> String -> String
@@ -315,7 +318,7 @@ removeQuotedTweetUrl maybeQuoted urls tweetText =
                         |> Maybe.map .display_url
                         |> Maybe.withDefault ""
             in
-                replace lastUrl "" tweetText
+            replace lastUrl "" tweetText
 
 
 replace : String -> String -> String -> String

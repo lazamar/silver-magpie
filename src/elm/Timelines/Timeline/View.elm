@@ -1,27 +1,27 @@
 module Timelines.Timeline.View exposing (root)
 
-import Timelines.Timeline.Types exposing (..)
-import Twitter.Types
-    exposing
-        ( Tweet
-        , Retweet(..)
-        , UrlRecord
-        , UserMentionsRecord
-        , HashtagRecord
-        , MediaRecord(VideoMedia, MultiPhotoMedia)
-        , MultiPhoto
-        , Video
-        )
-import Http
 import Generic.Utils exposing (errorMessage, tooltip)
-import Html.Lazy
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Timelines.Timeline.TweetView exposing (tweetView)
-import RemoteData exposing (..)
+import Html.Lazy
+import Http
 import List.Extra
+import RemoteData exposing (..)
 import Time exposing (Time)
+import Timelines.Timeline.TweetView exposing (tweetView)
+import Timelines.Timeline.Types exposing (..)
+import Twitter.Types
+    exposing
+        ( HashtagRecord
+        , MediaRecord(..)
+        , MultiPhoto
+        , Retweet(..)
+        , Tweet
+        , UrlRecord
+        , UserMentionsRecord
+        , Video
+        )
 
 
 root : Time -> Model -> Html Msg
@@ -41,27 +41,27 @@ view time model =
                 MentionsTab ->
                     ( model.mentionsTab.newTweets, "-100%" )
     in
-        div [ class "Timeline" ]
-            [ div
-                [ class "Tweets" ]
-                [ loadingBar newTweets
-                , div
-                    [ class "Timeline-home"
-                    , style [ ( "transform", "translateX(" ++ translation ++ ")" ) ]
-                    ]
-                    [ div [] (List.indexedMap (tweetView time) model.homeTab.tweets)
-                    , loadMoreBtn model.tab model.homeTab.tweets model.homeTab.newTweets
-                    ]
-                , div
-                    [ class "Timeline-mentions"
-                    , style [ ( "transform", "translateX(" ++ translation ++ ")" ) ]
-                    ]
-                    [ div [] (List.indexedMap (tweetView time) model.mentionsTab.tweets)
-                    , loadMoreBtn model.tab model.mentionsTab.tweets model.mentionsTab.newTweets
-                    ]
+    div [ class "Timeline" ]
+        [ div
+            [ class "Tweets" ]
+            [ loadingBar newTweets
+            , div
+                [ class "Timeline-home"
+                , style "transform" ("translateX(" ++ translation ++ ")")
                 ]
-            , actionBar model.tab
+                [ div [] (List.indexedMap (tweetView time) model.homeTab.tweets)
+                , loadMoreBtn model.tab model.homeTab.tweets model.homeTab.newTweets
+                ]
+            , div
+                [ class "Timeline-mentions"
+                , style "transform" ("translateX(" ++ translation ++ ")")
+                ]
+                [ div [] (List.indexedMap (tweetView time) model.mentionsTab.tweets)
+                , loadMoreBtn model.tab model.mentionsTab.tweets model.mentionsTab.newTweets
+                ]
             ]
+        , actionBar model.tab
+        ]
 
 
 loadingBar : WebData (List Tweet) -> Html Msg
@@ -115,7 +115,7 @@ loadMoreBtn route currentTweets newTweets =
                 , [ class "btn btn-default Tweets-loadMore" ]
                 ]
     in
-        button attr [ text "Load more" ]
+    button attr [ text "Load more" ]
 
 
 actionBar : TabName -> Html Msg

@@ -1,18 +1,16 @@
 module Main.View exposing (..)
 
-import Main.State exposing (credentialInUse)
-import Main.Types exposing (..)
-import Main.LoginView
-import Twitter.Types exposing (Credential)
-import Timelines.View
 import Generic.Http
 import Generic.Utils exposing (tooltip)
-import List.Extra
-import Html exposing (Html, div, button, text, span, img, a)
-import Html.Attributes exposing (class, tabindex, src, href, target, title)
+import Html exposing (Html, a, button, div, img, span, text)
+import Html.Attributes exposing (class, href, src, tabindex, target, title)
 import Html.Events exposing (onClick)
+import List.Extra
+import Main.LoginView
+import Main.State exposing (credentialInUse)
+import Main.Types exposing (..)
+import Timelines.View
 import Twitter.Types exposing (Credential)
-import Html
 
 
 view : Model -> Html Msg
@@ -47,26 +45,26 @@ footerView footerMessageNumber sessionID usersDetails =
             credentialInUse usersDetails
                 |> Maybe.withDefault ""
     in
-        div [ class "Main-footer" ]
-            [ button
-                [ class "zmdi zmdi-collection-item btn btn-default btn-icon"
-                , title "Detach window"
-                , tabindex -1
-                , onClick Detach
-                ]
-                []
-            , span
-                [ class "Main-footer-cues animated fadeInUp" ]
-                [ text <| footerMessage footerMessageNumber ]
-            , accountsView sessionID usersDetails
-            , button
-                [ class "zmdi zmdi-power btn btn-default btn-icon"
-                , tabindex -1
-                , title "Logout"
-                , onClick <| Logout currentCredential
-                ]
-                []
+    div [ class "Main-footer" ]
+        [ button
+            [ class "zmdi zmdi-collection-item btn btn-default btn-icon"
+            , title "Detach window"
+            , tabindex -1
+            , onClick Detach
             ]
+            []
+        , span
+            [ class "Main-footer-cues animated fadeInUp" ]
+            [ text <| footerMessage footerMessageNumber ]
+        , accountsView sessionID usersDetails
+        , button
+            [ class "zmdi zmdi-power btn btn-default btn-icon"
+            , tabindex -1
+            , title "Logout"
+            , onClick <| Logout currentCredential
+            ]
+            []
+        ]
 
 
 footerMessage : Int -> String
@@ -76,10 +74,10 @@ footerMessage seed =
             List.length footerMessages
 
         msgNumber =
-            seed % messagesLength
+            modBy messagesLength seed
     in
-        List.Extra.getAt msgNumber footerMessages
-            |> Maybe.withDefault ""
+    List.Extra.getAt msgNumber footerMessages
+        |> Maybe.withDefault ""
 
 
 footerMessages =
@@ -97,6 +95,7 @@ accountsView sessionID usersDetails =
         avatarClass idx =
             if idx == 0 then
                 "Main-footer-accounts-img--selected"
+
             else
                 "Main-footer-accounts-img"
 
@@ -126,11 +125,11 @@ accountsView sessionID usersDetails =
                 ]
                 []
     in
-        div [ class "Main-footer-accounts-wrapper" ]
-            [ span
-                [ class "Main-footer-accounts" ]
-                (addAccountButton :: accountsAvatars)
-            ]
+    div [ class "Main-footer-accounts-wrapper" ]
+        [ span
+            [ class "Main-footer-accounts" ]
+            (addAccountButton :: accountsAvatars)
+        ]
 
 
 getSessionID : SessionIDAuthentication -> SessionID

@@ -1,9 +1,9 @@
 module Generic.Animations exposing (..)
 
-import Svg exposing (node, svg)
-import Svg.Attributes exposing (class, viewBox, fill)
-import Html.Attributes exposing (attribute)
 import Html exposing (Html)
+import Html.Attributes exposing (attribute)
+import Svg exposing (node, svg)
+import Svg.Attributes exposing (class, fill, viewBox)
 
 
 twistingCircle =

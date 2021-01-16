@@ -1,12 +1,11 @@
-module Timelines.TweetBar.Handler
-    exposing
-        ( Handler
-        , HandlerMatch
-        , findChanged
-        , replaceMatch
-        , matchedName
-        , handlerRegex
-        )
+module Timelines.TweetBar.Handler exposing
+    ( Handler
+    , HandlerMatch
+    , findChanged
+    , handlerRegex
+    , matchedName
+    , replaceMatch
+    )
 
 import Regex
 
@@ -40,9 +39,9 @@ findChanged oldText newText =
         newMatches =
             find newText
     in
-        newMatches
-            |> List.filter (\h -> not <| List.any (sameMatch h) oldMatches)
-            |> List.head
+    newMatches
+        |> List.filter (\h -> not <| List.any (sameMatch h) oldMatches)
+        |> List.head
 
 
 replaceMatch : String -> HandlerMatch -> Handler -> String
@@ -59,6 +58,7 @@ replaceMatch text match replacement =
                     (Regex.regex "[^\\s@]+")
                     (\_ -> replacement ++ " ")
                     m.match
+
             else
                 m.match
         )
@@ -79,5 +79,4 @@ matchedName : HandlerMatch -> Maybe String
 matchedName match =
     List.head match.submatches
         -- This joins the Maybe(Maybe(val)) making it Maybe(val)
-        |>
-            Maybe.withDefault Nothing
+        |> Maybe.withDefault Nothing

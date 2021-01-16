@@ -1,8 +1,8 @@
 module Main.Types exposing (..)
 
+import Http
 import Timelines.Types as TimelinesT
 import Twitter.Types exposing (Credential)
-import Http
 
 
 type Msg

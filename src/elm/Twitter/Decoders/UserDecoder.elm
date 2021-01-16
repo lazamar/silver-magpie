@@ -1,8 +1,8 @@
 module Twitter.Decoders.UserDecoder exposing (userDecoder)
 
-import Twitter.Types exposing (User)
 import Json.Decode exposing (Decoder, string)
 import Json.Decode.Pipeline exposing (decode, required)
+import Twitter.Types exposing (User)
 
 
 userDecoder : Decoder User

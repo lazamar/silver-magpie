@@ -30,7 +30,8 @@ type alias Tweet =
     , in_reply_to_status_id : Maybe String
     , entities :
         TweetEntitiesRecord
-        -- TODO: inline this
+
+    -- TODO: inline this
     , retweeted_status : Maybe Retweet
     , quoted_status : Maybe QuotedTweet
     }
@@ -65,26 +66,32 @@ type MediaRecord
 type alias MultiPhoto =
     { url :
         String
-        -- what is in the tweet
+
+    -- what is in the tweet
     , display_url :
         String
-        -- what should be shown in the tweet
+
+    -- what should be shown in the tweet
     , media_url_list :
         List String
-        -- the actuall addresses of the contents
+
+    -- the actuall addresses of the contents
     }
 
 
 type alias Video =
     { url :
         String
-        -- what is in the tweet
+
+    -- what is in the tweet
     , display_url :
         String
-        -- what should be shown in the tweet
+
+    -- what should be shown in the tweet
     , media_url :
         String
-        -- the actuall addresses of the contents
+
+    -- the actuall addresses of the contents
     , content_type : String
     }
 

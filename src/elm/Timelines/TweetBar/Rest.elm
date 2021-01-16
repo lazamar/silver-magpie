@@ -1,17 +1,17 @@
-module Timelines.TweetBar.Rest exposing (sendTweet, fetchHandlerSuggestion)
+module Timelines.TweetBar.Rest exposing (fetchHandlerSuggestion, sendTweet)
 
-import Generic.Types as SubmissionData
 import Generic.Http
+import Generic.Types as SubmissionData
 import Generic.Utils
-import Timelines.TweetBar.Types exposing (Msg(TweetSend, SuggestedHandlersFetch, DoNothing), TweetPostedResponse)
-import Twitter.Decoders exposing (userDecoder)
-import Twitter.Types exposing (Tweet, User, Credential)
-import RemoteData exposing (RemoteData)
 import Http
-import Task
-import Json.Decode exposing (Decoder, string, list)
-import Json.Decode.Pipeline exposing (decode, required, hardcoded)
+import Json.Decode exposing (Decoder, list, string)
+import Json.Decode.Pipeline exposing (decode, hardcoded, required)
 import Json.Encode
+import RemoteData exposing (RemoteData)
+import Task
+import Timelines.TweetBar.Types exposing (Msg(..), TweetPostedResponse)
+import Twitter.Decoders exposing (userDecoder)
+import Twitter.Types exposing (Credential, Tweet, User)
 
 
 tweetPostedDecoder : Decoder TweetPostedResponse
@@ -42,7 +42,7 @@ createSendBody tweetText replyTweet =
                     , ( "in_reply_to_status_id", Json.Encode.string tweetBeingReplied.id )
                     ]
     in
-        Generic.Http.toJsonBody bodyFields
+    Generic.Http.toJsonBody bodyFields
 
 
 sendTweet : Credential -> Maybe Tweet -> String -> Cmd Msg

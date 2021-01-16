@@ -1,13 +1,13 @@
 module Main.Rest exposing (fetchCredential)
 
-import Main.Types exposing (..)
 import Generic.Http
 import Generic.Utils exposing (mapResult)
-import Twitter.Types exposing (Credential)
 import Http
 import Json.Decode exposing (Decoder, string)
 import Json.Decode.Pipeline exposing (decode, required, requiredAt)
+import Main.Types exposing (..)
 import Task
+import Twitter.Types exposing (Credential)
 
 
 fetchCredential : SessionID -> Cmd Msg

@@ -1,16 +1,17 @@
-module Main.State exposing (init, update, subscriptions, credentialInUse)
+module Main.State exposing (credentialInUse, init, subscriptions, update)
 
-import Main.Types exposing (..)
-import Main.Rest exposing (fetchCredential)
-import Main.CredentialsHandler as CredentialsHandler
-import Timelines.Types as TimelinesT
-import Timelines.State as TimelinesS
-import Generic.Utils exposing (toCmd)
-import Generic.LocalStorage as LocalStorage
-import Twitter.Types exposing (Credential)
-import RemoteData
 import Generic.Detach
+import Generic.LocalStorage as LocalStorage
+import Generic.Utils exposing (toCmd)
 import List.Extra
+import Main.CredentialsHandler as CredentialsHandler
+import Main.Rest exposing (fetchCredential)
+import Main.Types exposing (..)
+import RemoteData
+import Timelines.State as TimelinesS
+import Timelines.Types as TimelinesT
+import Twitter.Types exposing (Credential)
+
 
 
 -- INITIALISATION
@@ -48,12 +49,12 @@ init _ =
                 |> Maybe.map (\msg -> update msg (emptyModel sessionID storedUsersDetails))
                 |> Maybe.withDefault ( emptyModel sessionID [], Cmd.none )
     in
-        ( initialModel
-        , Cmd.batch
-            [ fetchCredential sessionID
-            , initialCmd
-            ]
-        )
+    ( initialModel
+    , Cmd.batch
+        [ fetchCredential sessionID
+        , initialCmd
+        ]
+    )
 
 
 timelinesConfig : TimelinesT.Config Msg
@@ -100,14 +101,14 @@ update msg model =
                                     , usersDetails = model.usersDetails ++ [ userDetails ]
                                 }
                     in
-                        ( newModel
-                        , Cmd.batch
-                            [ newCmd
-                            , CredentialsHandler.storeUsersDetails
-                                (\_ -> DoNothing)
-                                newModel.usersDetails
-                            ]
-                        )
+                    ( newModel
+                    , Cmd.batch
+                        [ newCmd
+                        , CredentialsHandler.storeUsersDetails
+                            (\_ -> DoNothing)
+                            newModel.usersDetails
+                        ]
+                    )
 
                 NotAttempted anID ->
                     ( { model | sessionID = Authenticating anID }
@@ -126,37 +127,37 @@ update msg model =
                         (\d -> d.credential == credential)
                         model.usersDetails
             in
-                case selectedUserDetails of
-                    Nothing ->
-                        ( model, Cmd.none )
+            case selectedUserDetails of
+                Nothing ->
+                    ( model, Cmd.none )
 
-                    Just details ->
-                        let
-                            newUsersDetails =
-                                model.usersDetails
-                                    |> List.filter ((/=) details)
-                                    |> (::) details
+                Just details ->
+                    let
+                        newUsersDetails =
+                            model.usersDetails
+                                |> List.filter ((/=) details)
+                                |> (::) details
 
-                            ( timelinesModel, timelinesCmd ) =
-                                TimelinesS.init timelinesConfig details.credential
-                        in
-                            ( { model
-                                | timelinesModel = Just timelinesModel
-                                , usersDetails = newUsersDetails
-                              }
-                            , Cmd.batch
-                                [ timelinesCmd
-                                , CredentialsHandler.storeUsersDetails
-                                    (\_ -> DoNothing)
-                                    newUsersDetails
-                                ]
-                            )
+                        ( timelinesModel, timelinesCmd ) =
+                            TimelinesS.init timelinesConfig details.credential
+                    in
+                    ( { model
+                        | timelinesModel = Just timelinesModel
+                        , usersDetails = newUsersDetails
+                      }
+                    , Cmd.batch
+                        [ timelinesCmd
+                        , CredentialsHandler.storeUsersDetails
+                            (\_ -> DoNothing)
+                            newUsersDetails
+                        ]
+                    )
 
         Logout credential ->
             model.usersDetails
                 |> List.filter (\d -> d.credential /= credential)
                 |> CredentialsHandler.storeUsersDetails (\_ -> DoNothing)
-                |> \_ -> init ()
+                |> (\_ -> init ())
 
         Detach ->
             ( model
@@ -173,14 +174,14 @@ updateTimelinesModel model subMsg =
                 (credentialInUse model.usersDetails)
                 model.timelinesModel
     in
-        case maybeTuple of
-            Nothing ->
-                ( model, Cmd.none )
+    case maybeTuple of
+        Nothing ->
+            ( model, Cmd.none )
 
-            Just ( timelinesModel, cmd ) ->
-                ( { model | timelinesModel = Just timelinesModel }
-                , cmd
-                )
+        Just ( timelinesModel, cmd ) ->
+            ( { model | timelinesModel = Just timelinesModel }
+            , cmd
+            )
 
 
 credentialInUse : List UserDetails -> Maybe Credential
@@ -205,4 +206,4 @@ generateFooterMsgNumber _ =
             toString generated
                 |> LocalStorage.setItem "footerMsgNumber"
     in
-        generated
+    generated

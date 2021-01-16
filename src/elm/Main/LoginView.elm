@@ -1,12 +1,12 @@
 module Main.LoginView exposing (root)
 
-import Main.Types exposing (..)
 import Generic.Animations
 import Generic.Http
-import RemoteData exposing (RemoteData)
-import Http
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Http
+import Main.Types exposing (..)
+import RemoteData exposing (RemoteData)
 
 
 root : Model -> Html Msg
@@ -82,6 +82,7 @@ loginContent model =
                             ]
                             [ text "Sign in with Twitter "
                             ]
+
                     else
                         p [ class "Loading-content-info" ]
                             [ text "There was an error loading your credential. Please retry." ]

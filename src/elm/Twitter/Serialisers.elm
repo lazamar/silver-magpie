@@ -1,8 +1,9 @@
 module Twitter.Serialisers exposing (serialiseTweet)
 
-import Twitter.Types exposing (..)
-import Json.Encode exposing (string, int, bool, list, object)
 import Date
+import Json.Encode exposing (bool, int, list, object, string)
+import Twitter.Types exposing (..)
+
 
 
 --

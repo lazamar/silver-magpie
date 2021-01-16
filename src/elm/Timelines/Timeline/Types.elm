@@ -2,7 +2,7 @@ module Timelines.Timeline.Types exposing (..)
 
 import Http
 import RemoteData exposing (WebData)
-import Twitter.Types exposing (Tweet, TweetId, Credential)
+import Twitter.Types exposing (Credential, Tweet, TweetId)
 
 
 type alias Model =

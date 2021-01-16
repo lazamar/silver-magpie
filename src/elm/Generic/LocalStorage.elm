@@ -1,35 +1,40 @@
-module Generic.LocalStorage exposing (setItem, getItem, clear, removeItem)
+module Generic.LocalStorage exposing (clear, getItem, removeItem, setItem)
 
-import Native.LocalStorage
-import Json.Decode exposing (Decoder, null, decodeString, string, oneOf)
+import Debug
+import Json.Decode exposing (Decoder, decodeString, null, oneOf, string)
 import Result
 
 
 clear : () -> Bool
 clear _ =
-    let
-        void =
-            Native.LocalStorage.clear ()
-    in
-        True
+    {- let
+           void =
+               Native.LocalStorage.clear ()
+       in
+       True
+    -}
+    Debug.todo "Native.LocalStorage.clear"
 
 
 setItem : String -> String -> String
 setItem key value =
-    Native.LocalStorage.setItem { key = key, value = value }
+    -- Native.LocalStorage.setItem { key = key, value = value }
+    Debug.todo "Native.LocalStorage.setItem"
 
 
 getItem : String -> Maybe String
 getItem key =
-    Native.LocalStorage.getItem key
-        |> decodeString (nullOr string)
-        |> Result.withDefault Nothing
+    -- Native.LocalStorage.getItem key
+    --     |> decodeString (nullOr string)
+    --     |> Result.withDefault Nothing
+    Debug.todo "Native.LocalStorage.getItem"
 
 
 removeItem : String -> String
 removeItem key =
-    Native.LocalStorage.removeItem key
-        |> \_ -> key
+    -- Native.LocalStorage.removeItem key
+    --     |> (\_ -> key)
+    Debug.todo "Native.LocalStorage.removeItem"
 
 
 nullOr : Decoder a -> Decoder (Maybe a)

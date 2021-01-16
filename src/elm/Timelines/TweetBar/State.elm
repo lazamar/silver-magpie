@@ -1,27 +1,22 @@
-module Timelines.TweetBar.State exposing (init, update, submitTweet, setReplyTweet)
+module Timelines.TweetBar.State exposing (init, setReplyTweet, submitTweet, update)
 
-import Timelines.TweetBar.Types exposing (..)
-import Timelines.TweetBar.Rest exposing (sendTweet, fetchHandlerSuggestion)
-import Timelines.TweetBar.Handler as TwHandler exposing (Handler, HandlerMatch)
-import Timelines.TweetBar.View exposing (inputFieldId)
-import Twitter.Types exposing (Credential, User, Tweet)
-import Generic.Utils exposing (toCmd)
+import Dom
 import Generic.LocalStorage
 import Generic.Types
     exposing
-        ( SubmissionData
-            ( Success
-            , Failure
-            , Sending
-            , NotSent
-            )
+        ( SubmissionData(..)
         )
-import RemoteData exposing (RemoteData)
-import Dom
-import Task
+import Generic.Utils exposing (toCmd)
 import Process
 import Regex
+import RemoteData exposing (RemoteData)
 import String
+import Task
+import Timelines.TweetBar.Handler as TwHandler exposing (Handler, HandlerMatch)
+import Timelines.TweetBar.Rest exposing (fetchHandlerSuggestion, sendTweet)
+import Timelines.TweetBar.Types exposing (..)
+import Timelines.TweetBar.View exposing (inputFieldId)
+import Twitter.Types exposing (Credential, Tweet, User)
 
 
 emptySuggestions =
@@ -46,7 +41,7 @@ init _ =
         model =
             { emptyModel | tweetText = getPersistedTweetText () }
     in
-        ( model, Cmd.none )
+    ( model, Cmd.none )
 
 
 update : Msg -> Config msg -> Credential -> Model -> ( Model, Cmd msg )
@@ -79,20 +74,20 @@ update msg conf credential model =
                         Just handler ->
                             RemoteData.Loading
             in
-                ( { model
-                    | tweetText = text
-                    , handlerSuggestions =
-                        { handler = handlerMatch
-                        , users = usersStatus
-                        , userSelected = Nothing
-                        }
-                  }
-                , Cmd.batch
-                    [ fetchCommand
-                    , persistTweetText text
-                    ]
-                    |> Cmd.map conf.onUpdate
-                )
+            ( { model
+                | tweetText = text
+                , handlerSuggestions =
+                    { handler = handlerMatch
+                    , users = usersStatus
+                    , userSelected = Nothing
+                    }
+              }
+            , Cmd.batch
+                [ fetchCommand
+                , persistTweetText text
+                ]
+                |> Cmd.map conf.onUpdate
+            )
 
         SuggestedHandlersFetch handler fetchStatus ->
             let
@@ -103,19 +98,20 @@ update msg conf credential model =
                     handlerSuggestions.handler
                         |> Maybe.andThen TwHandler.matchedName
             in
-                -- If the users that arrived are for the handlers we are waiting for
-                if Just handler == currentHandlerText then
-                    ( { model
-                        | handlerSuggestions =
-                            { handlerSuggestions
-                                | users = fetchStatus
-                                , userSelected = Just 0
-                            }
-                      }
-                    , Cmd.none
-                    )
-                else
-                    ( model, Cmd.none )
+            -- If the users that arrived are for the handlers we are waiting for
+            if Just handler == currentHandlerText then
+                ( { model
+                    | handlerSuggestions =
+                        { handlerSuggestions
+                            | users = fetchStatus
+                            , userSelected = Just 0
+                        }
+                  }
+                , Cmd.none
+                )
+
+            else
+                ( model, Cmd.none )
 
         SuggestedHandlerSelected user ->
             ( selectUserSuggestion model user, Cmd.none )
@@ -144,39 +140,39 @@ update msg conf credential model =
                 newUserSelected =
                     handlerSuggestions.userSelected
                         |> Maybe.map (\x -> x + userShift)
-                        |> Maybe.map2 (\x y -> y % x) suggestionsCount
+                        |> Maybe.map2 (\x y -> modBy x y) suggestionsCount
                         |> Maybe.withDefault 0
                         |> Just
 
                 newHandlerSuggestions =
                     { handlerSuggestions | userSelected = newUserSelected }
             in
-                case keyPressed of
-                    EnterKey ->
-                        let
-                            userSelected =
-                                Maybe.map2
-                                    (\users selected ->
-                                        users
-                                            |> List.drop selected
-                                            |> List.head
-                                    )
-                                    (RemoteData.toMaybe handlerSuggestions.users)
-                                    handlerSuggestions.userSelected
-                                    |> Maybe.withDefault Nothing
+            case keyPressed of
+                EnterKey ->
+                    let
+                        userSelected =
+                            Maybe.map2
+                                (\users selected ->
+                                    users
+                                        |> List.drop selected
+                                        |> List.head
+                                )
+                                (RemoteData.toMaybe handlerSuggestions.users)
+                                handlerSuggestions.userSelected
+                                |> Maybe.withDefault Nothing
 
-                            newModel =
-                                userSelected
-                                    |> Maybe.map (selectUserSuggestion model)
-                                    |> Maybe.withDefault model
-                        in
-                            ( newModel, Cmd.none )
+                        newModel =
+                            userSelected
+                                |> Maybe.map (selectUserSuggestion model)
+                                |> Maybe.withDefault model
+                    in
+                    ( newModel, Cmd.none )
 
-                    EscKey ->
-                        ( { model | handlerSuggestions = emptySuggestions }, Cmd.none )
+                EscKey ->
+                    ( { model | handlerSuggestions = emptySuggestions }, Cmd.none )
 
-                    _ ->
-                        ( { model | handlerSuggestions = newHandlerSuggestions }, Cmd.none )
+                _ ->
+                    ( { model | handlerSuggestions = newHandlerSuggestions }, Cmd.none )
 
         SetReplyTweet tweet ->
             ( { model
@@ -231,11 +227,12 @@ selectUserSuggestion model user =
                 model.tweetText
                 handlerMatch
                 user.screen_name
-                |> \newTweetText ->
-                    { model
-                        | tweetText = newTweetText
-                        , handlerSuggestions = emptySuggestions
-                    }
+                |> (\newTweetText ->
+                        { model
+                            | tweetText = newTweetText
+                            , handlerSuggestions = emptySuggestions
+                        }
+                   )
 
 
 
@@ -250,7 +247,7 @@ resetTweetText time =
 persistTweetText : String -> Cmd Msg
 persistTweetText text =
     Generic.LocalStorage.setItem "TweetText" text
-        |> \_ -> Cmd.none
+        |> (\_ -> Cmd.none)
 
 
 getPersistedTweetText : () -> String

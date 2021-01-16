@@ -1,19 +1,19 @@
-module Main.CredentialsHandler
-    exposing
-        ( retrieveSessionID
-        , generateSessionID
-        , retrieveUsersDetails
-        , storeUsersDetails
-        )
+module Main.CredentialsHandler exposing
+    ( generateSessionID
+    , retrieveSessionID
+    , retrieveUsersDetails
+    , storeUsersDetails
+    )
 
-import Main.Types exposing (UserDetails)
-import Twitter.Types exposing (Credential)
 import Generic.LocalStorage as LocalStorage
-import Generic.Utils exposing (toCmd)
 import Generic.UniqueID as UniqueID
-import Json.Encode
+import Generic.Utils exposing (toCmd)
 import Json.Decode
 import Json.Decode.Pipeline exposing (decode, required)
+import Json.Encode
+import Main.Types exposing (UserDetails)
+import Twitter.Types exposing (Credential)
+
 
 
 -- SESSION ID
@@ -46,7 +46,7 @@ storeUsersDetails : (List UserDetails -> msg) -> List UserDetails -> Cmd msg
 storeUsersDetails msg usersDetails =
     serialiseUsersDetails usersDetails
         |> LocalStorage.setItem "usersDetails"
-        |> \_ -> toCmd (msg usersDetails)
+        |> (\_ -> toCmd (msg usersDetails))
 
 
 

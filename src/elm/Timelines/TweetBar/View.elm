@@ -1,29 +1,24 @@
-module Timelines.TweetBar.View exposing (root, inputFieldId)
+module Timelines.TweetBar.View exposing (inputFieldId, root)
 
-import Timelines.TweetBar.Types exposing (..)
-import Timelines.TweetBar.Handler as TwHandler
-import Twitter.Types exposing (User)
-import Main.Types exposing (UserDetails)
-import Generic.Utils exposing (errorMessage)
 import Generic.Animations
 import Generic.Types
     exposing
-        ( SubmissionData
-            ( NotSent
-            , Sending
-            , Success
-            , Failure
-            )
+        ( SubmissionData(..)
         )
-import RemoteData exposing (RemoteData, WebData)
-import Json.Encode
-import Json.Decode
-import Json.Decode.Pipeline
-import String
-import Regex
+import Generic.Utils exposing (errorMessage)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Json.Decode
+import Json.Decode.Pipeline
+import Json.Encode
+import Main.Types exposing (UserDetails)
+import Regex
+import RemoteData exposing (RemoteData, WebData)
+import String
+import Timelines.TweetBar.Handler as TwHandler
+import Timelines.TweetBar.Types exposing (..)
+import Twitter.Types exposing (User)
 
 
 root : UserDetails -> Model -> Html Msg
@@ -69,25 +64,26 @@ userSuggestion user selected =
         optionClass =
             if selected then
                 "TweetBar-suggestions-option--selected"
+
             else
                 "TweetBar-suggestions-option"
     in
-        div
-            [ class optionClass
-            , onClick (SuggestedHandlerSelected user)
+    div
+        [ class optionClass
+        , onClick (SuggestedHandlerSelected user)
+        ]
+        [ img
+            [ src user.profile_image_url_https
+            , class "TweetBar-suggestions-option-image"
             ]
-            [ img
-                [ src user.profile_image_url_https
-                , class "TweetBar-suggestions-option-image"
-                ]
-                []
-            , span
-                [ class "TweetBar-suggestions-option-screenName" ]
-                [ text ("@" ++ user.screen_name) ]
-            , span
-                [ class "TweetBar-suggestions-option-name" ]
-                [ text user.name ]
-            ]
+            []
+        , span
+            [ class "TweetBar-suggestions-option-screenName" ]
+            [ text ("@" ++ user.screen_name) ]
+        , span
+            [ class "TweetBar-suggestions-option-name" ]
+            [ text user.name ]
+        ]
 
 
 suggestions : WebData (List User) -> Maybe Int -> Html Msg
@@ -96,20 +92,19 @@ suggestions users userSelected =
         RemoteData.Success users ->
             let
                 isSelected =
-                    (\n ->
+                    \n ->
                         case userSelected of
                             Nothing ->
                                 False
 
                             Just num ->
                                 num == n
-                    )
             in
-                div [ class "TweetBar-suggestions" ]
-                    (List.indexedMap
-                        (\index user -> userSuggestion user <| isSelected index)
-                        users
-                    )
+            div [ class "TweetBar-suggestions" ]
+                (List.indexedMap
+                    (\index user -> userSuggestion user <| isSelected index)
+                    users
+                )
 
         RemoteData.Loading ->
             div [ class "TweetBar-suggestions--loading" ]
@@ -134,31 +129,31 @@ inputBoxView tweetText suggestions userDetails =
                 Just _ ->
                     arrowNavigation SuggestedHandlersNavigation
     in
-        div [ class "TweetBar-textBox" ]
-            [ span
-                [ class "TweetBar-textBox-leftColumn" ]
-                [ img
-                    [ src userDetails.profile_image
-                    , class "TweetBar-userImage"
-                    ]
-                    []
-                , remainingCharacters tweetText
+    div [ class "TweetBar-textBox" ]
+        [ span
+            [ class "TweetBar-textBox-leftColumn" ]
+            [ img
+                [ src userDetails.profile_image
+                , class "TweetBar-userImage"
                 ]
-            , div
-                [ class "TweetBar-textBox-inputContainer" ]
-                [ colouredTweetView tweetText
-                , textarea
-                    [ class "TweetBar-textBox-input"
-                    , id inputFieldId
-                    , placeholder "Write your tweet here ..."
-                    , autofocus True
-                    , keyListener
-                    , onInput LetterInput
-                    , value tweetText
-                    ]
-                    []
-                ]
+                []
+            , remainingCharacters tweetText
             ]
+        , div
+            [ class "TweetBar-textBox-inputContainer" ]
+            [ colouredTweetView tweetText
+            , textarea
+                [ class "TweetBar-textBox-input"
+                , id inputFieldId
+                , placeholder "Write your tweet here ..."
+                , autofocus True
+                , keyListener
+                , onInput LetterInput
+                , value tweetText
+                ]
+                []
+            ]
+        ]
 
 
 hashtagRegex : Regex.Regex
@@ -178,15 +173,15 @@ colouredTweetView tweetText =
                 |> highlightMatches urlRegex
                 |> highlightMatches hashtagRegex
                 |> replaceLineBreaks
-                |> (flip (++)) "&zwnj;"
+                |> (\b a -> (++) a b) "&zwnj;"
 
         -- invisible character to allow line-breaks at the end of sentences
     in
-        div
-            [ class "TweetBar-textBox-display"
-            , property "innerHTML" <| Json.Encode.string styledText
-            ]
-            []
+    div
+        [ class "TweetBar-textBox-display"
+        , property "innerHTML" <| Json.Encode.string styledText
+        ]
+        []
 
 
 urlRegex : Regex.Regex
@@ -231,7 +226,7 @@ arrowNavigation msg =
                     )
                 |> Json.Decode.map msg
     in
-        onWithOptions "keydown" options navigationDecoder
+    onWithOptions "keydown" options navigationDecoder
 
 
 onKeyDown : (KeyDownEvent -> msg) -> Attribute msg
@@ -256,6 +251,7 @@ submitOnCtrlEnter : KeyDownEvent -> Msg
 submitOnCtrlEnter { keyCode, ctrlKey } =
     if keyCode == 13 && ctrlKey then
         SubmitTweet
+
     else
         DoNothing
 
@@ -275,7 +271,7 @@ remainingCharacters tweetText =
 
         remaining =
             280
-                - (String.length tweetText)
+                - String.length tweetText
                 + urlOverflow
 
         remainingText =
@@ -283,11 +279,14 @@ remainingCharacters tweetText =
                 |> toString
                 |> text
     in
-        if remaining >= 50 then
-            span [ class "TweetBar-textBox-charCount enough" ] [ remainingText ]
-        else if remaining > 10 then
-            span [ class "TweetBar-textBox-charCount quite-a-few" ] [ remainingText ]
-        else if remaining >= 0 then
-            span [ class "TweetBar-textBox-charCount few-left" ] [ remainingText ]
-        else
-            span [ class "TweetBar-textBox-charCount too-much" ] [ remainingText ]
+    if remaining >= 50 then
+        span [ class "TweetBar-textBox-charCount enough" ] [ remainingText ]
+
+    else if remaining > 10 then
+        span [ class "TweetBar-textBox-charCount quite-a-few" ] [ remainingText ]
+
+    else if remaining >= 0 then
+        span [ class "TweetBar-textBox-charCount few-left" ] [ remainingText ]
+
+    else
+        span [ class "TweetBar-textBox-charCount too-much" ] [ remainingText ]

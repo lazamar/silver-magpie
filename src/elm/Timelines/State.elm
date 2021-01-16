@@ -1,14 +1,14 @@
-module Timelines.State exposing (init, update, subscriptions)
+module Timelines.State exposing (init, subscriptions, update)
 
-import Timelines.Types exposing (..)
-import Timelines.Timeline.Types as TimelineT
-import Timelines.Timeline.State as TimelineS
-import Timelines.TweetBar.Types as TweetBarT
-import Timelines.TweetBar.State as TweetBarS
-import Twitter.Types exposing (Credential)
 import Generic.Utils exposing (toCmd)
-import Time exposing (Time)
 import Task
+import Time exposing (Time)
+import Timelines.Timeline.State as TimelineS
+import Timelines.Timeline.Types as TimelineT
+import Timelines.TweetBar.State as TweetBarS
+import Timelines.TweetBar.Types as TweetBarT
+import Timelines.Types exposing (..)
+import Twitter.Types exposing (Credential)
 
 
 init : Config msg -> Credential -> ( Model, Cmd msg )
@@ -26,14 +26,14 @@ init conf credential =
             , time = 0.0
             }
     in
-        ( initialModel
-        , Cmd.batch
-            [ timelineMsg
-            , tweetBarMsg
-            , Task.perform UpdateTime Time.now
-            ]
-            |> Cmd.map conf.onUpdate
-        )
+    ( initialModel
+    , Cmd.batch
+        [ timelineMsg
+        , tweetBarMsg
+        , Task.perform UpdateTime Time.now
+        ]
+        |> Cmd.map conf.onUpdate
+    )
 
 
 tweetBarConfig : TweetBarT.Config Msg
@@ -56,8 +56,9 @@ subscriptions : Sub Msg
 subscriptions =
     Sub.batch
         [ Time.every Time.minute UpdateTime
-          -- The refresh has to be every one and a half minute
-          -- because of Twitter's rest API restrictions
+
+        -- The refresh has to be every one and a half minute
+        -- because of Twitter's rest API restrictions
         , Time.every (1.5 * Time.minute) (\_ -> RefreshTweets)
         ]
 

@@ -1,10 +1,10 @@
-module Generic.Http exposing (get, post, delete, sameDomain, toJsonBody)
+module Generic.Http exposing (delete, get, post, sameDomain, toJsonBody)
 
-import Twitter.Types exposing (Credential)
 import Http
-import Task exposing (Task)
-import Json.Encode
 import Json.Decode exposing (Decoder)
+import Json.Encode
+import Task exposing (Task)
+import Twitter.Types exposing (Credential)
 
 
 type alias Endpoint =
@@ -48,7 +48,7 @@ makeRequest method body credential decoder endpoint =
             , withCredentials = False
             }
     in
-        Http.request options
+    Http.request options
 
 
 headers : Credential -> List Http.Header

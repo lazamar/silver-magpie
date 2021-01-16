@@ -1,11 +1,11 @@
 module Timelines.View exposing (root)
 
-import Timelines.Types exposing (..)
-import Timelines.TweetBar.View
-import Timelines.Timeline.View
-import Main.Types exposing (UserDetails)
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
+import Main.Types exposing (UserDetails)
+import Timelines.Timeline.View
+import Timelines.TweetBar.View
+import Timelines.Types exposing (..)
 
 
 root : UserDetails -> Model -> Html Msg

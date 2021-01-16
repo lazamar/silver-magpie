@@ -1,16 +1,17 @@
-module Timelines.Timeline.Rest exposing (getTweets, favoriteTweet, doRetweet, sendLogoutMessasge)
+module Timelines.Timeline.Rest exposing (doRetweet, favoriteTweet, getTweets, sendLogoutMessasge)
 
-import Timelines.Timeline.Types exposing (..)
-import Twitter.Decoders exposing (tweetDecoder)
-import Twitter.Types exposing (Tweet, Credential)
 import Generic.Http
 import Generic.Utils exposing (mapResult)
 import Http
+import Json.Decode exposing (Decoder, at, bool, dict, int, list, string)
+import Json.Decode.Pipeline exposing (decode, optional, required)
 import Json.Encode
-import Json.Decode exposing (Decoder, string, int, bool, list, dict, at)
-import Json.Decode.Pipeline exposing (decode, required, optional)
-import RemoteData exposing (RemoteData(Success, Failure))
+import RemoteData exposing (RemoteData(..))
 import Task
+import Timelines.Timeline.Types exposing (..)
+import Twitter.Decoders exposing (tweetDecoder)
+import Twitter.Types exposing (Credential, Tweet)
+
 
 
 -- DECODERS
@@ -45,11 +46,11 @@ getTweets credential fetchType route =
                     ""
 
                 BottomTweets tweetId ->
-                    (Debug.log "Tweet id" tweetId)
+                    Debug.log "Tweet id" tweetId
     in
-        Generic.Http.get credential serverMsgDecoder ("/" ++ section ++ "?maxId=" ++ maxId)
-            |> Task.attempt (mapResult Failure Success)
-            |> Cmd.map (TweetFetch route fetchType)
+    Generic.Http.get credential serverMsgDecoder ("/" ++ section ++ "?maxId=" ++ maxId)
+        |> Task.attempt (mapResult Failure Success)
+        |> Cmd.map (TweetFetch route fetchType)
 
 
 
@@ -66,10 +67,11 @@ favoriteTweet credential shouldFavorite tweetId =
         request =
             if shouldFavorite then
                 Generic.Http.post credential string endpoint Http.emptyBody
+
             else
                 Generic.Http.delete credential string endpoint
     in
-        Task.attempt ignoreResult request
+    Task.attempt ignoreResult request
 
 
 
@@ -81,15 +83,16 @@ doRetweet : Credential -> Bool -> String -> Cmd Msg
 doRetweet credential shouldRetweet tweetId =
     let
         endpoint =
-            ("/retweet?id=" ++ tweetId)
+            "/retweet?id=" ++ tweetId
 
         request =
             if shouldRetweet then
                 Generic.Http.post credential string endpoint Http.emptyBody
+
             else
                 Generic.Http.delete credential string endpoint
     in
-        Task.attempt ignoreResult request
+    Task.attempt ignoreResult request
 
 
 sendLogoutMessasge : Credential -> Cmd Msg
