@@ -236,103 +236,100 @@ stringToMonth str =
             Err <| "Invalid month: " ++ str
 
 
-aproxHour =
-    1000 * 60 * 50
+monthName : Time.Month -> String
+monthName month =
+    case month of
+        Time.Jan ->
+            "Jan"
+
+        Time.Feb ->
+            "Feb"
+
+        Time.Mar ->
+            "Mar"
+
+        Time.Apr ->
+            "Apr"
+
+        Time.May ->
+            "May"
+
+        Time.Jun ->
+            "Jun"
+
+        Time.Jul ->
+            "Jul"
+
+        Time.Aug ->
+            "Aug"
+
+        Time.Sep ->
+            "Sep"
+
+        Time.Oct ->
+            "Oct"
+
+        Time.Nov ->
+            "Nov"
+
+        Time.Dec ->
+            "Dec"
 
 
-day =
-    hour * 24
+timeDifference : Time.Zone -> Posix -> Posix -> String
+timeDifference zone dateFrom dateTo =
+    let
+        minuteMilli =
+            1000 * 60
 
+        hourMilli =
+            60 * minuteMilli
 
-minute =
-    1000 * 60
+        dayMilli =
+            hourMilli * 24
 
+        aproxHour =
+            minuteMilli * 50
 
-hour =
-    60 * minute
+        diff =
+            Time.posixToMillis dateTo
+                - Time.posixToMillis dateFrom
+                |> abs
+                |> toFloat
+    in
+    if diff < aproxHour then
+        floor (diff / minuteMilli)
+            |> max 1
+            |> String.fromInt
+            |> (\b a -> (++) a b) "m"
 
+    else if diff < dayMilli then
+        floor (diff / hourMilli)
+            |> max 1
+            |> String.fromInt
+            |> (\b a -> (++) a b) "h"
 
-timeDifference : Posix -> Posix -> String
-timeDifference dateFrom dateTo =
-    Debug.todo "timeDifference"
+    else
+        let
+            theYear =
+                if Time.toYear zone dateFrom /= Time.toYear zone dateTo then
+                    Time.toYear zone dateTo
+                        |> String.fromInt
+                        |> Just
 
+                else
+                    Nothing
 
+            theMonth =
+                monthName <| Time.toMonth zone dateTo
 
-{- let
-       diff =
-           Date.toTime dateTo
-               - Date.toTime dateFrom
-               |> abs
-   in
-   if diff < aproxHour then
-       floor (diff / minute)
-           |> max 1
-           |> toString
-           |> (\b a -> (++) a b) "m"
+            theDay =
+                Time.toDay zone dateTo
+                    |> String.fromInt
+        in
+        case theYear of
+            Just aYear ->
+                theMonth ++ " " ++ theDay ++ " " ++ aYear
 
-   else if diff < day then
-       floor (diff / hour)
-           |> max 1
-           |> toString
-           |> (\b a -> (++) a b) "h"
-
-   else
-       let
-           year =
-               if Date.year dateFrom /= Date.year dateTo then
-                   Date.year dateTo
-                       |> toString
-                       |> Just
-
-               else
-                   Nothing
-
-           month =
-               case Date.month dateTo of
-                   Date.Jan ->
-                       "Jan"
-
-                   Date.Feb ->
-                       "Feb"
-
-                   Date.Mar ->
-                       "Mar"
-
-                   Date.Apr ->
-                       "Apr"
-
-                   Date.May ->
-                       "May"
-
-                   Date.Jun ->
-                       "Jun"
-
-                   Date.Jul ->
-                       "Jul"
-
-                   Date.Aug ->
-                       "Aug"
-
-                   Date.Sep ->
-                       "Sep"
-
-                   Date.Oct ->
-                       "Oct"
-
-                   Date.Nov ->
-                       "Nov"
-
-                   Date.Dec ->
-                       "Dec"
-
-           day =
-               Date.day dateTo
-                   |> toString
-       in
-       case year of
-           Just aYear ->
-               month ++ " " ++ day ++ " " ++ aYear
-
-           Nothing ->
-               month ++ " " ++ day
--}
+            Nothing ->
+                theMonth ++ " " ++ theDay
