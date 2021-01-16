@@ -1,12 +1,14 @@
 module Main.Types exposing (..)
 
 import Http
+import Time
 import Timelines.Types as TimelinesT
 import Twitter.Types exposing (Credential)
 
 
 type Msg
     = DoNothing
+    | TimeZone Time.Zone
     | TimelinesMsg TimelinesT.Msg
     | UserCredentialFetch SessionIDAuthentication
     | SelectAccount Credential
@@ -30,6 +32,7 @@ type alias Model =
     , sessionID : SessionIDAuthentication
     , usersDetails : List UserDetails
     , footerMessageNumber : Int
+    , zone : Maybe Time.Zone
     }
 
 

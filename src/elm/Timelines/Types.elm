@@ -1,6 +1,6 @@
 module Timelines.Types exposing (..)
 
-import Time exposing (Time)
+import Time exposing (Posix)
 import Timelines.Timeline.Types as TimelineT
 import Timelines.TweetBar.Types as TweetBarT
 import Twitter.Types exposing (Credential, Tweet)
@@ -13,13 +13,13 @@ type Msg
     | RefreshTweets
     | SubmitTweet
     | SetReplyTweet Tweet
-    | UpdateTime Time
+    | UpdateTime Posix
 
 
 type alias Model =
     { timelineModel : TimelineT.Model
     , tweetBarModel : TweetBarT.Model
-    , time : Time
+    , now : Posix
     }
 
 

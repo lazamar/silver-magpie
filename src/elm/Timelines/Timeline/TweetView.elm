@@ -1,7 +1,6 @@
 module Timelines.Timeline.TweetView exposing (tweetView)
 
 import Array
-import Date exposing (Date)
 import Generic.Utils exposing (timeDifference, tooltip)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -10,7 +9,7 @@ import Json.Encode
 import List.Extra
 import Maybe
 import Regex
-import Time exposing (Time)
+import Time exposing (Posix, Time)
 import Timelines.Timeline.Types exposing (..)
 import Twitter.Types
     exposing

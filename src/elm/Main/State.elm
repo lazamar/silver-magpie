@@ -23,6 +23,7 @@ emptyModel sessionID usersDetails =
     , sessionID = NotAttempted sessionID
     , usersDetails = usersDetails
     , footerMessageNumber = generateFooterMsgNumber ()
+    , zone = Nothing
     }
 
 
@@ -53,6 +54,7 @@ init _ =
     , Cmd.batch
         [ fetchCredential sessionID
         , initialCmd
+        , Task.perform TimeZone Time.here
         ]
     )
 
@@ -82,6 +84,9 @@ update msg model =
     case msg of
         DoNothing ->
             ( model, Cmd.none )
+
+        TimeZone zone ->
+            ( model { zone = zone }, Cmd.none )
 
         TimelinesMsg subMsg ->
             updateTimelinesModel model subMsg
