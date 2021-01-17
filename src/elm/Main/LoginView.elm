@@ -70,35 +70,44 @@ root model =
 
 loginContent : Model -> Html Msg
 loginContent model =
-    case model.sessionID of
-        AuthenticationFailed sessionID error ->
-            case error of
-                Http.BadStatus { status } ->
-                    if status.code == 401 then
-                        a
-                            [ href <| Generic.Http.sameDomain <| "/sign-in/?app_session_id=" ++ sessionID
-                            , target "blank"
-                            , class "Login-signinBtn"
-                            ]
-                            [ text "Sign in with Twitter "
-                            ]
-
-                    else
-                        p [ class "Loading-content-info" ]
-                            [ text "There was an error loading your credential. Please retry." ]
-
-                -- TODO: Handle other HTTP errors properly
-                _ ->
-                    p [ class "Loading-content-info" ]
-                        [ text "There was an error loading your credential. Please retry." ]
-
-        Authenticating _ ->
-            Generic.Animations.twistingCircle
-
-        Authenticated _ _ ->
-            p [ class "Loading-content-info" ]
-                [ text "You are logged in." ]
-
-        NotAttempted _ ->
+    let
+        stuck =
             p [ class "Loading-content-info" ]
                 [ text "Uh, I'm stuck. Something went wrong." ]
+    in
+    case model.sessionID of
+        Nothing ->
+            stuck
+
+        Just session ->
+            case session of
+                AuthenticationFailed sessionID error ->
+                    case error of
+                        Http.BadStatus { status } ->
+                            if status.code == 401 then
+                                a
+                                    [ href <| Generic.Http.sameDomain <| "/sign-in/?app_session_id=" ++ sessionID
+                                    , target "blank"
+                                    , class "Login-signinBtn"
+                                    ]
+                                    [ text "Sign in with Twitter "
+                                    ]
+
+                            else
+                                p [ class "Loading-content-info" ]
+                                    [ text "There was an error loading your credential. Please retry." ]
+
+                        -- TODO: Handle other HTTP errors properly
+                        _ ->
+                            p [ class "Loading-content-info" ]
+                                [ text "There was an error loading your credential. Please retry." ]
+
+                Authenticating _ ->
+                    Generic.Animations.twistingCircle
+
+                Authenticated _ _ ->
+                    p [ class "Loading-content-info" ]
+                        [ text "You are logged in." ]
+
+                NotAttempted _ ->
+                    stuck

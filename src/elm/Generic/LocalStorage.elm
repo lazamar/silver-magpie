@@ -5,7 +5,7 @@ import Json.Decode exposing (Decoder, decodeString, null, oneOf, string)
 import Result
 
 
-clear : () -> Bool
+clear : () -> Cmd Bool
 clear _ =
     {- let
            void =

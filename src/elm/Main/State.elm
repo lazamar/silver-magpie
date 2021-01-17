@@ -20,11 +20,11 @@ import Twitter.Types exposing (Credential)
 -- INITIALISATION
 
 
-emptyModel : SessionID -> List UserDetails -> Model
-emptyModel sessionID usersDetails =
+emptyModel : Model
+emptyModel =
     { timelinesModel = Nothing
-    , sessionID = NotAttempted sessionID
-    , usersDetails = usersDetails
+    , sessionID = Nothing
+    , usersDetails = []
     , footerMessageNumber = generateFooterMsgNumber ()
 
     -- UTC temporarily while we fetch the local timezone
@@ -52,8 +52,8 @@ init _ =
                 |> List.map .credential
                 |> List.head
                 |> Maybe.map SelectAccount
-                |> Maybe.map (\msg -> update msg (emptyModel sessionID storedUsersDetails))
-                |> Maybe.withDefault ( emptyModel sessionID [], Cmd.none )
+                |> Maybe.map (\msg -> update msg emptyModel)
+                |> Maybe.withDefault ( emptyModel, Cmd.none )
     in
     ( initialModel
     , Cmd.batch
@@ -107,7 +107,7 @@ update msg model =
                             update
                                 (SelectAccount userDetails.credential)
                                 { model
-                                    | sessionID = NotAttempted newId
+                                    | sessionID = Just <| NotAttempted newId
                                     , usersDetails = model.usersDetails ++ [ userDetails ]
                                 }
                     in
@@ -121,12 +121,12 @@ update msg model =
                     )
 
                 NotAttempted anID ->
-                    ( { model | sessionID = Authenticating anID }
+                    ( { model | sessionID = Just <| Authenticating anID }
                     , fetchCredential anID
                     )
 
                 _ ->
-                    ( { model | sessionID = authentication }
+                    ( { model | sessionID = Just <| authentication }
                     , Cmd.none
                     )
 

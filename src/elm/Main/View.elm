@@ -26,10 +26,9 @@ view model =
                 Just aView ->
                     div [ class "Main" ]
                         [ aView
-                        , footerView
-                            model.footerMessageNumber
-                            (getSessionID model.sessionID)
-                            model.usersDetails
+                        , model.sessionID
+                            |> Maybe.map (footerView model.footerMessageNumber model.usersDetails << getSessionID)
+                            |> Maybe.withDefault (div [] [])
                         ]
     }
 
@@ -43,8 +42,8 @@ timelinesView model =
         |> Maybe.map (Html.map TimelinesMsg)
 
 
-footerView : Int -> SessionID -> List UserDetails -> Html Msg
-footerView footerMessageNumber sessionID usersDetails =
+footerView : Int -> List UserDetails -> SessionID -> Html Msg
+footerView footerMessageNumber usersDetails sessionID =
     let
         currentCredential =
             credentialInUse usersDetails

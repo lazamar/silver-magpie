@@ -29,7 +29,7 @@ type alias SessionID =
 
 type alias Model =
     { timelinesModel : Maybe TimelinesT.Model
-    , sessionID : SessionIDAuthentication
+    , sessionID : Maybe SessionIDAuthentication
     , usersDetails : List UserDetails
     , footerMessageNumber : Int
     , zone : Time.Zone
