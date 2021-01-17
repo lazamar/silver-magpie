@@ -7,7 +7,8 @@ module Timelines.TweetBar.Handler exposing
     , replaceMatch
     )
 
-import Regex
+import Exts.Maybe exposing (maybe)
+import Regex exposing (Regex)
 
 
 type alias Handler =
@@ -18,16 +19,21 @@ type alias HandlerMatch =
     Regex.Match
 
 
+regex : String -> Regex
+regex =
+    maybe Regex.never identity << Regex.fromString
+
+
 handlerRegex : Regex.Regex
 handlerRegex =
     -- matches @asdfasfd and has just one submatch which
     -- which is the handler part without the @
-    Regex.regex "(?:^@|\\s@)(\\w{1,15})"
+    regex "(?:^@|\\s@)(\\w{1,15})"
 
 
 find : String -> List HandlerMatch
 find txt =
-    Regex.find Regex.All handlerRegex txt
+    Regex.find handlerRegex txt
 
 
 findChanged : String -> String -> Maybe HandlerMatch
@@ -47,15 +53,13 @@ findChanged oldText newText =
 replaceMatch : String -> HandlerMatch -> Handler -> String
 replaceMatch text match replacement =
     Regex.replace
-        Regex.All
         handlerRegex
         (\m ->
             if sameMatch m match then
                 -- Replace just the handler from the match, not any
                 -- spaces that my or may not exist before it
                 Regex.replace
-                    Regex.All
-                    (Regex.regex "[^\\s@]+")
+                    (regex "[^\\s@]+")
                     (\_ -> replacement ++ " ")
                     m.match
 

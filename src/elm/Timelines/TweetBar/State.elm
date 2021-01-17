@@ -1,6 +1,6 @@
 module Timelines.TweetBar.State exposing (init, setReplyTweet, submitTweet, update)
 
-import Dom
+import Browser.Dom
 import Generic.LocalStorage
 import Generic.Types
     exposing
@@ -180,7 +180,7 @@ update msg conf credential model =
                 , inReplyTo = Just tweet
                 , handlerSuggestions = emptySuggestions
               }
-            , Dom.focus inputFieldId
+            , Browser.Dom.focus inputFieldId
                 |> Task.attempt (\_ -> conf.onUpdate DoNothing)
             )
 
