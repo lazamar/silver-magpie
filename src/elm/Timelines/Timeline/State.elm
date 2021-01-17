@@ -22,15 +22,15 @@ import Twitter.Types exposing (Credential, Retweet, Tweet)
 -- INITIALISATION
 
 
-initialModel : () -> Model
-initialModel _ =
+initialModel : Model
+initialModel =
     { tab = HomeTab
     , homeTab =
-        { tweets = getPersistedTimeline HomeTab
+        { tweets = []
         , newTweets = NotAsked
         }
     , mentionsTab =
-        { tweets = getPersistedTimeline MentionsTab
+        { tweets = []
         , newTweets = NotAsked
         }
     }
@@ -38,10 +38,17 @@ initialModel _ =
 
 init : Config msg -> ( Model, Cmd msg )
 init conf =
-    ( initialModel ()
+    let
+        getTagSavedData tab =
+            getPersistedTimeline tab
+                |> Cmd.map (TweetFetch tab Refresh << Success)
+    in
+    ( initialModel
     , Cmd.batch
         [ toCmd (FetchTweets HomeTab ClearFetch)
         , toCmd (FetchTweets MentionsTab ClearFetch)
+        , getTagSavedData HomeTab
+        , getTagSavedData MentionsTab
         ]
         |> Cmd.map conf.onUpdate
     )
@@ -302,14 +309,14 @@ refreshTweets conf credential model =
 -- Saves timeline to local storage
 
 
-tabNameToString : TabName -> String
-tabNameToString t =
+storageName : TabName -> String
+storageName t =
     case t of
         HomeTab ->
-            "HomeTab"
+            "Timeline-HomeTab"
 
         MentionsTab ->
-            "MentionsTab"
+            "Timeline-MentionsTab"
 
 
 persistTimeline : TabName -> List Tweet -> Cmd Msg
@@ -317,22 +324,18 @@ persistTimeline route tweetList =
     tweetList
         |> Encode.list Twitter.Serialisers.serialiseTweet
         |> Encode.encode 2
-        |> Generic.LocalStorage.setItem ("Timeline-" ++ tabNameToString route)
-        |> (\_ -> Cmd.none)
+        |> Generic.LocalStorage.setItem (storageName route)
+        |> Cmd.map (always DoNothing)
 
 
-getPersistedTimeline : TabName -> List Tweet
+getPersistedTimeline : TabName -> Cmd (List Tweet)
 getPersistedTimeline route =
     let
-        storageContent =
-            Generic.LocalStorage.getItem ("Timeline-" ++ tabNameToString route)
-                |> Maybe.withDefault ""
-                |> Decode.decodeString
+        deserialise =
+            Maybe.withDefault ""
+                >> Decode.decodeString
                     (Decode.list Twitter.Deserialisers.deserialiseTweet)
     in
-    case storageContent of
-        Ok tweets ->
-            tweets
-
-        Err _ ->
-            []
+    Generic.LocalStorage.getItem (storageName route)
+        |> Cmd.map deserialise
+        |> Cmd.map (Result.withDefault [])

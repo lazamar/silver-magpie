@@ -10,7 +10,7 @@ import Main.View exposing (view)
 -- APP
 
 
-main : Program () Model Msg
+main : Program ( Int, Int ) Model Msg
 main =
     Browser.document
         { init = init

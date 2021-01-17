@@ -7,10 +7,11 @@ import List.Extra
 import Main.CredentialsHandler as CredentialsHandler
 import Main.Rest exposing (fetchCredential)
 import Main.Types exposing (..)
+import Random
 import RemoteData
 import String
 import Task
-import Time
+import Time exposing (Posix)
 import Timelines.State as TimelinesS
 import Timelines.Types as TimelinesT
 import Twitter.Types exposing (Credential)
@@ -20,46 +21,31 @@ import Twitter.Types exposing (Credential)
 -- INITIALISATION
 
 
-emptyModel : Model
-emptyModel =
+emptyModel : Posix -> Random.Seed -> Model
+emptyModel now seed =
     { timelinesModel = Nothing
     , sessionID = Nothing
     , usersDetails = []
-    , footerMessageNumber = generateFooterMsgNumber ()
+    , footerMessageNumber = FooterMsg 0
+    , randomSeed = seed
+    , now = now
 
     -- UTC temporarily while we fetch the local timezone
     , zone = Time.utc
     }
 
 
-init : () -> ( Model, Cmd Msg )
-init _ =
-    let
-        -- TODO : Clean all of this impurity by using flags
-        storedUsersDetails =
-            CredentialsHandler.retrieveUsersDetails ()
-
-        sessionID =
-            case CredentialsHandler.retrieveSessionID () of
-                Just anID ->
-                    anID
-
-                Nothing ->
-                    CredentialsHandler.generateSessionID ()
-
-        ( initialModel, initialCmd ) =
-            storedUsersDetails
-                |> List.map .credential
-                |> List.head
-                |> Maybe.map SelectAccount
-                |> Maybe.map (\msg -> update msg emptyModel)
-                |> Maybe.withDefault ( emptyModel, Cmd.none )
-    in
-    ( initialModel
+init : ( Int, Int ) -> ( Model, Cmd Msg )
+init ( nowMillis, randomVal ) =
+    ( emptyModel (Time.millisToPosix nowMillis) (Random.initialSeed randomVal)
     , Cmd.batch
-        [ fetchCredential sessionID
-        , initialCmd
+        [ CredentialsHandler.retrieveUsersDetails
+            |> Cmd.map LoadedUsersDetails
+        , CredentialsHandler.retrieveSessionID
+            |> Cmd.map SessionIdLoaded
         , Task.perform TimeZone Time.here
+        , generateFooterMsgNumber
+            |> Cmd.map CurrentFooterMsg
         ]
     )
 
@@ -93,6 +79,24 @@ update msg model =
         TimeZone zone ->
             ( { model | zone = zone }, Cmd.none )
 
+        SessionIdLoaded msid ->
+            case msid of
+                Just sid ->
+                    ( { model | sessionID = Just (NotAttempted sid) }, fetchCredential sid )
+
+                Nothing ->
+                    newSessionID model
+
+        LoadedUsersDetails usersDetails ->
+            case usersDetails of
+                [] ->
+                    ( model, Cmd.none )
+
+                x :: _ ->
+                    update
+                        (SelectAccount x.credential)
+                        { model | usersDetails = usersDetails }
+
         TimelinesMsg subMsg ->
             updateTimelinesModel model subMsg
 
@@ -100,8 +104,10 @@ update msg model =
             case authentication of
                 Authenticated sessionID userDetails ->
                     let
-                        newId =
-                            CredentialsHandler.generateSessionID ()
+                        ( newSeed, newId ) =
+                            CredentialsHandler.generateSessionID
+                                model.now
+                                model.randomSeed
 
                         ( newModel, newCmd ) =
                             update
@@ -109,14 +115,13 @@ update msg model =
                                 { model
                                     | sessionID = Just <| NotAttempted newId
                                     , usersDetails = model.usersDetails ++ [ userDetails ]
+                                    , randomSeed = newSeed
                                 }
                     in
                     ( newModel
                     , Cmd.batch
                         [ newCmd
-                        , CredentialsHandler.storeUsersDetails
-                            (\_ -> DoNothing)
-                            newModel.usersDetails
+                        , CredentialsHandler.storeUsersDetails newModel.usersDetails
                         ]
                     )
 
@@ -131,48 +136,91 @@ update msg model =
                     )
 
         SelectAccount credential ->
-            let
-                selectedUserDetails =
-                    List.Extra.find
-                        (\d -> d.credential == credential)
-                        model.usersDetails
-            in
-            case selectedUserDetails of
-                Nothing ->
-                    ( model, Cmd.none )
+            selectAccount model credential
 
-                Just details ->
-                    let
-                        newUsersDetails =
-                            model.usersDetails
-                                |> List.filter ((/=) details)
-                                |> (::) details
-
-                        ( timelinesModel, timelinesCmd ) =
-                            TimelinesS.init timelinesConfig details.credential
-                    in
-                    ( { model
-                        | timelinesModel = Just timelinesModel
-                        , usersDetails = newUsersDetails
-                      }
-                    , Cmd.batch
-                        [ timelinesCmd
-                        , CredentialsHandler.storeUsersDetails
-                            (\_ -> DoNothing)
-                            newUsersDetails
-                        ]
-                    )
+        CurrentFooterMsg fmsg ->
+            ( { model | footerMessageNumber = fmsg }
+            , saveFooterMsg fmsg
+            )
 
         Logout credential ->
-            model.usersDetails
-                |> List.filter (\d -> d.credential /= credential)
-                |> CredentialsHandler.storeUsersDetails (\_ -> DoNothing)
-                |> (\_ -> init ())
+            let
+                newDetails =
+                    List.filter
+                        (\d -> d.credential /= credential)
+                        model.usersDetails
+
+                newModel =
+                    { model | usersDetails = newDetails }
+
+                ( m, cmd ) =
+                    case newDetails of
+                        [] ->
+                            newSessionID newModel
+
+                        x :: _ ->
+                            selectAccount newModel x.credential
+            in
+            ( m
+            , Cmd.batch [ cmd, CredentialsHandler.storeUsersDetails newDetails ]
+            )
 
         Detach ->
             ( model
             , Generic.Detach.detach 400 600
             )
+
+
+selectAccount : Model -> Credential -> ( Model, Cmd Msg )
+selectAccount model credential =
+    let
+        selectedUserDetails =
+            List.Extra.find
+                (\d -> d.credential == credential)
+                model.usersDetails
+    in
+    case selectedUserDetails of
+        Nothing ->
+            ( model, Cmd.none )
+
+        Just details ->
+            let
+                newUsersDetails =
+                    model.usersDetails
+                        |> List.filter ((/=) details)
+                        |> (::) details
+
+                ( timelinesModel, timelinesCmd ) =
+                    TimelinesS.init timelinesConfig details.credential
+            in
+            ( { model
+                | timelinesModel = Just timelinesModel
+                , usersDetails = newUsersDetails
+              }
+            , Cmd.batch
+                [ timelinesCmd
+                , CredentialsHandler.storeUsersDetails newUsersDetails
+                ]
+            )
+
+
+newSessionID : Model -> ( Model, Cmd Msg )
+newSessionID model =
+    let
+        ( newSeed, sessionID ) =
+            CredentialsHandler.generateSessionID
+                model.now
+                model.randomSeed
+    in
+    ( { model
+        | randomSeed = newSeed
+        , sessionID = Just (NotAttempted sessionID)
+      }
+    , Cmd.batch
+        [ CredentialsHandler.saveSessionID sessionID
+        , fetchCredential sessionID
+        ]
+    )
 
 
 updateTimelinesModel : Model -> TimelinesT.Msg -> ( Model, Cmd Msg )
@@ -200,19 +248,26 @@ credentialInUse =
         >> Maybe.map .credential
 
 
-generateFooterMsgNumber : () -> Int
-generateFooterMsgNumber _ =
-    let
-        -- get last saved number
-        generated =
-            LocalStorage.getItem "footerMsgNumber"
-                |> Maybe.andThen String.toInt
-                |> Maybe.withDefault 0
-                |> (+) 1
+footerMsgNumber : String
+footerMsgNumber =
+    "footerMsgNumber"
 
-        -- save the one we have
-        save =
-            String.fromInt generated
-                |> LocalStorage.setItem "footerMsgNumber"
+
+generateFooterMsgNumber : Cmd FooterMsg
+generateFooterMsgNumber =
+    let
+        withDefault =
+            Maybe.andThen String.toInt
+                >> Maybe.withDefault 0
+                >> (+) 1
+                >> FooterMsg
     in
-    generated
+    -- get last saved number
+    LocalStorage.getItem footerMsgNumber
+        |> Cmd.map withDefault
+
+
+saveFooterMsg : FooterMsg -> Cmd a
+saveFooterMsg (FooterMsg n) =
+    String.fromInt n
+        |> LocalStorage.setItem footerMsgNumber

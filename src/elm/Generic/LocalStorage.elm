@@ -16,13 +16,13 @@ clear _ =
     Debug.todo "Native.LocalStorage.clear"
 
 
-setItem : String -> String -> String
+setItem : String -> String -> Cmd a
 setItem key value =
     -- Native.LocalStorage.setItem { key = key, value = value }
     Debug.todo "Native.LocalStorage.setItem"
 
 
-getItem : String -> Maybe String
+getItem : String -> Cmd (Maybe String)
 getItem key =
     -- Native.LocalStorage.getItem key
     --     |> decodeString (nullOr string)

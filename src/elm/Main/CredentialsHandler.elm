@@ -2,6 +2,7 @@ module Main.CredentialsHandler exposing
     ( generateSessionID
     , retrieveSessionID
     , retrieveUsersDetails
+    , saveSessionID
     , storeUsersDetails
     )
 
@@ -11,7 +12,9 @@ import Generic.Utils exposing (toCmd)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Extra exposing (required)
 import Json.Encode as Encode
-import Main.Types exposing (UserDetails)
+import Main.Types exposing (SessionID, UserDetails)
+import Random
+import Time exposing (Posix)
 import Twitter.Types exposing (Credential)
 
 
@@ -19,34 +22,46 @@ import Twitter.Types exposing (Credential)
 -- SESSION ID
 
 
-retrieveSessionID : () -> Maybe String
-retrieveSessionID _ =
+retrieveSessionID : Cmd (Maybe SessionID)
+retrieveSessionID =
     LocalStorage.getItem "sessionID"
 
 
-generateSessionID : () -> String
-generateSessionID _ =
-    UniqueID.generate "seed"
-        |> LocalStorage.setItem "sessionID"
-        |> Debug.log "Generated session id"
+saveSessionID : SessionID -> Cmd a
+saveSessionID =
+    LocalStorage.setItem "sessionID"
+
+
+generateSessionID : Posix -> Random.Seed -> ( Random.Seed, SessionID )
+generateSessionID now seed =
+    let
+        ( rand, newSeed ) =
+            Random.step (Random.int -10000 10000) seed
+
+        uuid =
+            String.fromInt (Time.posixToMillis now)
+                ++ String.fromInt rand
+    in
+    ( newSeed, uuid )
 
 
 
 -- USER DETAILS
 
 
-retrieveUsersDetails : () -> List UserDetails
-retrieveUsersDetails _ =
+retrieveUsersDetails : Cmd (List UserDetails)
+retrieveUsersDetails =
     LocalStorage.getItem "usersDetails"
-        |> Maybe.andThen deserialiseUserDetails
-        |> Maybe.withDefault []
+        |> Cmd.map
+            (Maybe.andThen deserialiseUserDetails
+                >> Maybe.withDefault []
+            )
 
 
-storeUsersDetails : (List UserDetails -> msg) -> List UserDetails -> Cmd msg
-storeUsersDetails msg usersDetails =
+storeUsersDetails : List UserDetails -> Cmd a
+storeUsersDetails usersDetails =
     serialiseUsersDetails usersDetails
         |> LocalStorage.setItem "usersDetails"
-        |> (\_ -> toCmd (msg usersDetails))
 
 
 

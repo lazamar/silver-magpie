@@ -1,9 +1,10 @@
 module Generic.UniqueID exposing (generate)
 
 import Debug
+import Random
 
 
-generate : String -> String
+generate : Random.Seed -> String
 generate seed =
     -- Native.UniqueID.generate seed
     Debug.todo "UniqueID"

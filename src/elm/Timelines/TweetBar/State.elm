@@ -36,12 +36,12 @@ emptyModel =
 
 
 init : Config msg -> ( Model, Cmd msg )
-init _ =
-    let
-        model =
-            { emptyModel | tweetText = getPersistedTweetText () }
-    in
-    ( model, Cmd.none )
+init config =
+    ( emptyModel
+    , getPersistedTweetText
+        |> Cmd.map LetterInput
+        |> Cmd.map config.onUpdate
+    )
 
 
 update : Msg -> Config msg -> Credential -> Model -> ( Model, Cmd msg )
@@ -250,10 +250,10 @@ persistTweetText text =
         |> (\_ -> Cmd.none)
 
 
-getPersistedTweetText : () -> String
-getPersistedTweetText _ =
+getPersistedTweetText : Cmd String
+getPersistedTweetText =
     Generic.LocalStorage.getItem "TweetText"
-        |> Maybe.withDefault ""
+        |> Cmd.map (Maybe.withDefault "")
 
 
 

@@ -1,6 +1,7 @@
 module Main.Types exposing (..)
 
 import Http
+import Random
 import Time
 import Timelines.Types as TimelinesT
 import Twitter.Types exposing (Credential)
@@ -9,10 +10,13 @@ import Twitter.Types exposing (Credential)
 type Msg
     = DoNothing
     | TimeZone Time.Zone
+    | SessionIdLoaded (Maybe SessionID)
+    | LoadedUsersDetails (List UserDetails)
     | TimelinesMsg TimelinesT.Msg
     | UserCredentialFetch SessionIDAuthentication
     | SelectAccount Credential
     | Logout Credential
+    | CurrentFooterMsg FooterMsg
     | Detach
 
 
@@ -23,6 +27,10 @@ type SessionIDAuthentication
     | AuthenticationFailed SessionID Http.Error
 
 
+type FooterMsg
+    = FooterMsg Int
+
+
 type alias SessionID =
     String
 
@@ -31,8 +39,10 @@ type alias Model =
     { timelinesModel : Maybe TimelinesT.Model
     , sessionID : Maybe SessionIDAuthentication
     , usersDetails : List UserDetails
-    , footerMessageNumber : Int
+    , footerMessageNumber : FooterMsg
     , zone : Time.Zone
+    , now : Time.Posix
+    , randomSeed : Random.Seed
     }
 
 

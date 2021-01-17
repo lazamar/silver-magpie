@@ -42,8 +42,8 @@ timelinesView model =
         |> Maybe.map (Html.map TimelinesMsg)
 
 
-footerView : Int -> List UserDetails -> SessionID -> Html Msg
-footerView footerMessageNumber usersDetails sessionID =
+footerView : FooterMsg -> List UserDetails -> SessionID -> Html Msg
+footerView footerMsg usersDetails sessionID =
     let
         currentCredential =
             credentialInUse usersDetails
@@ -59,7 +59,7 @@ footerView footerMessageNumber usersDetails sessionID =
             []
         , span
             [ class "Main-footer-cues animated fadeInUp" ]
-            [ text <| footerMessage footerMessageNumber ]
+            [ text <| footerMessage footerMsg ]
         , accountsView sessionID usersDetails
         , button
             [ class "zmdi zmdi-power btn btn-default btn-icon"
@@ -71,8 +71,8 @@ footerView footerMessageNumber usersDetails sessionID =
         ]
 
 
-footerMessage : Int -> String
-footerMessage seed =
+footerMessage : FooterMsg -> String
+footerMessage (FooterMsg seed) =
     let
         messagesLength =
             List.length footerMessages
