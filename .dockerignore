@@ -1,0 +1,5 @@
+Dockerfile
+.git
+.gitignore
+build-in-docker.sh
+node_modules
