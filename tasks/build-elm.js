@@ -12,5 +12,5 @@ module.exports = organiser.register((task) => {
   } = task;
 
   const output = path.join(dest, `${moduleName}.${ext}`);
-  gulp.task(task.name, shell.task(`elm-make ${src} --output=${output}`));
+  gulp.task(task.name, shell.task(`elm make ${src} --output=${output}`));
 });
