@@ -1,5 +1,6 @@
 module Main.View exposing (..)
 
+import Browser
 import Generic.Http
 import Generic.Utils exposing (tooltip)
 import Html exposing (Html, a, button, div, img, span, text)
@@ -13,26 +14,30 @@ import Timelines.View
 import Twitter.Types exposing (Credential)
 
 
-view : Model -> Html Msg
+view : Model -> Browser.Document Msg
 view model =
-    case timelinesView model of
-        Nothing ->
-            Main.LoginView.root model
+    { title = "Silver Magpie"
+    , body =
+        List.singleton <|
+            case timelinesView model of
+                Nothing ->
+                    Main.LoginView.root model
 
-        Just aView ->
-            div [ class "Main" ]
-                [ aView
-                , footerView
-                    model.footerMessageNumber
-                    (getSessionID model.sessionID)
-                    model.usersDetails
-                ]
+                Just aView ->
+                    div [ class "Main" ]
+                        [ aView
+                        , footerView
+                            model.footerMessageNumber
+                            (getSessionID model.sessionID)
+                            model.usersDetails
+                        ]
+    }
 
 
 timelinesView : Model -> Maybe (Html Msg)
 timelinesView model =
     Maybe.map2
-        (\userDetails model -> Timelines.View.root userDetails model)
+        (Timelines.View.root model.zone)
         (List.head model.usersDetails)
         model.timelinesModel
         |> Maybe.map (Html.map TimelinesMsg)

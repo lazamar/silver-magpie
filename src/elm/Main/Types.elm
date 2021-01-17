@@ -32,7 +32,7 @@ type alias Model =
     , sessionID : SessionIDAuthentication
     , usersDetails : List UserDetails
     , footerMessageNumber : Int
-    , zone : Maybe Time.Zone
+    , zone : Time.Zone
     }
 
 

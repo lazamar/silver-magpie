@@ -9,7 +9,9 @@ import Json.Encode
 import List.Extra
 import Maybe
 import Regex
-import Time exposing (Posix, Time)
+import Regex.Extra exposing (regex)
+import String
+import Time exposing (Posix)
 import Timelines.Timeline.Types exposing (..)
 import Twitter.Types
     exposing
@@ -26,8 +28,8 @@ import Twitter.Types
         )
 
 
-tweetView : Time -> Int -> Tweet -> Html Msg
-tweetView clock index mainTweet =
+tweetView : Time.Zone -> Posix -> Int -> Tweet -> Html Msg
+tweetView zone now index mainTweet =
     let
         tweet =
             getMainContent mainTweet
@@ -38,8 +40,8 @@ tweetView clock index mainTweet =
         -- , style [ ( "borderColor", (getColor index) ) ]
         ]
         [ retweetInfo mainTweet
-        , tweetContent clock tweet
-        , quotedContent clock tweet
+        , tweetContent zone now tweet
+        , quotedContent zone now tweet
         , tweetActions tweet
         ]
 
@@ -52,11 +54,11 @@ getMainContent tweet =
         |> Maybe.withDefault tweet
 
 
-timeInfo : Time -> Tweet -> Html Msg
-timeInfo clock tweet =
+timeInfo : Time.Zone -> Posix -> Tweet -> Html Msg
+timeInfo zone now tweet =
     let
         info =
-            timeDifference (Date.fromTime clock) tweet.created_at
+            timeDifference zone now tweet.created_at
     in
     a
         [ class "Tweet-timeInfo"
@@ -84,8 +86,8 @@ retweetInfo topTweet =
                 ]
 
 
-tweetContent : Time -> Tweet -> Html Msg
-tweetContent clock tweet =
+tweetContent : Time.Zone -> Posix -> Tweet -> Html Msg
+tweetContent zone now tweet =
     div [ class "Tweet-body" ]
         [ img
             [ class "Tweet-userImage"
@@ -110,7 +112,7 @@ tweetContent clock tweet =
                         ]
                         [ text ("@" ++ tweet.user.screen_name) ]
                     ]
-                , timeInfo clock tweet
+                , timeInfo zone now tweet
                 ]
             , p
                 [ class "Tweet-text"
@@ -124,15 +126,15 @@ tweetContent clock tweet =
         ]
 
 
-quotedContent : Time -> Tweet -> Html Msg
-quotedContent clock mainTweet =
+quotedContent : Time.Zone -> Posix -> Tweet -> Html Msg
+quotedContent zone now mainTweet =
     case mainTweet.quoted_status of
         Nothing ->
             text ""
 
         Just (QuotedTweet tweet) ->
             div [ class "Tweet-quoted" ]
-                [ tweetContent clock tweet
+                [ tweetContent zone now tweet
                 ]
 
 
@@ -232,7 +234,7 @@ colors =
 toStringNotZero : Int -> String
 toStringNotZero num =
     if num > 0 then
-        toString num
+        String.fromInt num
 
     else
         ""
@@ -246,7 +248,7 @@ tweetTextView { text, entities, quoted_status } =
         |> removeQuotedTweetUrl quoted_status entities.urls
         |> ((\f b a -> f a b) <| List.foldl linkHashtags) entities.hashtags
         |> ((\f b a -> f a b) <| List.foldl linkUserMentions) entities.user_mentions
-        |> Regex.replace Regex.All (Regex.regex "\\n") (\_ -> "<br/>")
+        |> Regex.replace (regex "\\n") (\_ -> "<br/>")
 
 
 linkUrl : UrlRecord -> String -> String
@@ -259,7 +261,7 @@ linkUrl url tweetText =
                 ++ url.display_url
                 ++ "</a>"
     in
-    replace url.url linkText tweetText
+    String.replace url.url linkText tweetText
 
 
 linkUserMentions : UserMentionsRecord -> String -> String
@@ -275,7 +277,7 @@ linkUserMentions { screen_name } tweetText =
                 ++ handler
                 ++ "</a>"
     in
-    replace handler linkText tweetText
+    String.replace handler linkText tweetText
 
 
 linkHashtags : HashtagRecord -> String -> String
@@ -291,17 +293,17 @@ linkHashtags { text } tweetText =
                 ++ hash
                 ++ "</a>"
     in
-    replace hash hashLink tweetText
+    String.replace hash hashLink tweetText
 
 
 removeMediaUrl : MediaRecord -> String -> String
 removeMediaUrl record tweetText =
     case record of
         VideoMedia video ->
-            replace video.url "" tweetText
+            String.replace video.url "" tweetText
 
         MultiPhotoMedia photo ->
-            replace photo.url "" tweetText
+            String.replace photo.url "" tweetText
 
 
 removeQuotedTweetUrl : Maybe QuotedTweet -> List UrlRecord -> String -> String
@@ -317,12 +319,7 @@ removeQuotedTweetUrl maybeQuoted urls tweetText =
                         |> Maybe.map .display_url
                         |> Maybe.withDefault ""
             in
-            replace lastUrl "" tweetText
-
-
-replace : String -> String -> String -> String
-replace replaced replacement sentence =
-    Regex.replace Regex.All (Regex.regex (Regex.escape replaced)) (\_ -> replacement) sentence
+            String.replace lastUrl "" tweetText
 
 
 mediaView : Tweet -> Html Msg

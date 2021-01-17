@@ -9,6 +9,7 @@ module Timelines.TweetBar.Handler exposing
 
 import Exts.Maybe exposing (maybe)
 import Regex exposing (Regex)
+import Regex.Extra exposing (regex)
 
 
 type alias Handler =
@@ -17,11 +18,6 @@ type alias Handler =
 
 type alias HandlerMatch =
     Regex.Match
-
-
-regex : String -> Regex
-regex =
-    maybe Regex.never identity << Regex.fromString
 
 
 handlerRegex : Regex.Regex

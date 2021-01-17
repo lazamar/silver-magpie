@@ -1,7 +1,7 @@
 module Twitter.Serialisers exposing (serialiseTweet)
 
-import Date
-import Json.Encode exposing (bool, int, list, object, string)
+import Json.Encode as Encode exposing (bool, int, list, object, string)
+import Time
 import Twitter.Types exposing (..)
 
 
@@ -12,12 +12,12 @@ import Twitter.Types exposing (..)
 --
 
 
-serialiseTweet : Tweet -> Json.Encode.Value
+serialiseTweet : Tweet -> Encode.Value
 serialiseTweet tweet =
     object
         [ ( "id", string tweet.id )
         , ( "user", serialiseUser tweet.user )
-        , ( "created_at", string <| toString tweet.created_at )
+        , ( "created_at", posix tweet.created_at )
         , ( "text", string tweet.text )
         , ( "retweet_count", int tweet.retweet_count )
         , ( "favorite_count", int tweet.favorite_count )
@@ -30,17 +30,22 @@ serialiseTweet tweet =
         ]
 
 
-serialiseRetweet : Retweet -> Json.Encode.Value
+posix : Time.Posix -> Encode.Value
+posix =
+    Encode.int << Time.posixToMillis
+
+
+serialiseRetweet : Retweet -> Encode.Value
 serialiseRetweet (Retweet retweet) =
     serialiseTweet retweet
 
 
-serialiseQuotedTweet : QuotedTweet -> Json.Encode.Value
+serialiseQuotedTweet : QuotedTweet -> Encode.Value
 serialiseQuotedTweet (QuotedTweet quotedTweet) =
     serialiseTweet quotedTweet
 
 
-serialiseUser : User -> Json.Encode.Value
+serialiseUser : User -> Encode.Value
 serialiseUser { name, screen_name, profile_image_url_https } =
     object
         [ ( "name", string name )
@@ -49,24 +54,24 @@ serialiseUser { name, screen_name, profile_image_url_https } =
         ]
 
 
-serialiseTweetEntitiesRecord : TweetEntitiesRecord -> Json.Encode.Value
+serialiseTweetEntitiesRecord : TweetEntitiesRecord -> Encode.Value
 serialiseTweetEntitiesRecord { hashtags, media, urls, user_mentions } =
     object
-        [ ( "hashtags", list <| List.map serialiseHashtagRecord hashtags )
-        , ( "media", list <| List.map serialiseMediaRecord media )
-        , ( "urls", list <| List.map serialiseUrlRecord urls )
-        , ( "user_mentions", list <| List.map serialiseUserMentionsRecord user_mentions )
+        [ ( "hashtags", list serialiseHashtagRecord hashtags )
+        , ( "media", list serialiseMediaRecord media )
+        , ( "urls", list serialiseUrlRecord urls )
+        , ( "user_mentions", list serialiseUserMentionsRecord user_mentions )
         ]
 
 
-serialiseHashtagRecord : HashtagRecord -> Json.Encode.Value
+serialiseHashtagRecord : HashtagRecord -> Encode.Value
 serialiseHashtagRecord { text } =
     object
         [ ( "text", string text )
         ]
 
 
-serialiseUrlRecord : UrlRecord -> Json.Encode.Value
+serialiseUrlRecord : UrlRecord -> Encode.Value
 serialiseUrlRecord { display_url, url } =
     object
         [ ( "display_url", string display_url )
@@ -74,14 +79,14 @@ serialiseUrlRecord { display_url, url } =
         ]
 
 
-serialiseUserMentionsRecord : UserMentionsRecord -> Json.Encode.Value
+serialiseUserMentionsRecord : UserMentionsRecord -> Encode.Value
 serialiseUserMentionsRecord { screen_name } =
     object
         [ ( "screen_name", string screen_name )
         ]
 
 
-serialiseMediaRecord : MediaRecord -> Json.Encode.Value
+serialiseMediaRecord : MediaRecord -> Encode.Value
 serialiseMediaRecord mediaRecord =
     case mediaRecord of
         MultiPhotoMedia multiPhoto ->
@@ -95,16 +100,16 @@ serialiseMediaRecord mediaRecord =
                 ]
 
 
-serialiseMultiPhoto : MultiPhoto -> Json.Encode.Value
+serialiseMultiPhoto : MultiPhoto -> Encode.Value
 serialiseMultiPhoto { url, display_url, media_url_list } =
     object
         [ ( "url", string url )
         , ( "display_url", string display_url )
-        , ( "media_url_list", list <| List.map string media_url_list )
+        , ( "media_url_list", list string media_url_list )
         ]
 
 
-serialiseVideoMedia : Video -> Json.Encode.Value
+serialiseVideoMedia : Video -> Encode.Value
 serialiseVideoMedia { url, display_url, media_url, content_type } =
     object
         [ ( "url", string url )
@@ -114,7 +119,7 @@ serialiseVideoMedia { url, display_url, media_url, content_type } =
         ]
 
 
-serialiseMaybe : (a -> Json.Encode.Value) -> Maybe a -> Json.Encode.Value
+serialiseMaybe : (a -> Encode.Value) -> Maybe a -> Encode.Value
 serialiseMaybe subSerialiser value =
     case value of
         Nothing ->

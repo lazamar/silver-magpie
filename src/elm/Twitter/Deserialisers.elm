@@ -1,9 +1,8 @@
 module Twitter.Deserialisers exposing (..)
 
-import Date
 import Generic.Utils
-import Json.Decode exposing (Decoder, at, bool, field, int, list, oneOf, string)
-import Json.Decode.Pipeline exposing (custom, decode, hardcoded, required)
+import Json.Decode as Decode exposing (Decoder, at, bool, field, int, list, oneOf, string)
+import Json.Decode.Extra exposing (custom, hardcoded, required)
 import Twitter.Decoders.TweetDecoder exposing (..)
 import Twitter.Types exposing (..)
 
@@ -18,13 +17,13 @@ deserialiseTweet =
 deserialiseRetweet : Decoder Retweet
 deserialiseRetweet =
     deserialiseShallowTweet
-        |> Json.Decode.map Retweet
+        |> Decode.map Retweet
 
 
 deserialiseQuotedTweet : Decoder QuotedTweet
 deserialiseQuotedTweet =
     deserialiseShallowTweet
-        |> Json.Decode.map QuotedTweet
+        |> Decode.map QuotedTweet
 
 
 deserialiseShallowTweet : Decoder Tweet
@@ -35,7 +34,7 @@ deserialiseShallowTweet =
 
 
 deserialiseFirstPartOfTweet =
-    decode Tweet
+    Decode.succeed Tweet
         |> required "id" string
         |> required "user" deserialiseUser
         |> required "created_at" Generic.Utils.dateDecoder
@@ -50,7 +49,7 @@ deserialiseFirstPartOfTweet =
 
 deserialiseUser : Decoder User
 deserialiseUser =
-    decode User
+    Decode.succeed User
         |> required "name" string
         |> required "screen_name" string
         |> required "profile_image_url_https" string
@@ -58,7 +57,7 @@ deserialiseUser =
 
 deserialiseTweetEntitiesRecord : Decoder TweetEntitiesRecord
 deserialiseTweetEntitiesRecord =
-    decode TweetEntitiesRecord
+    Decode.succeed TweetEntitiesRecord
         |> required "hashtags" (list hashtagDecoder)
         |> required "media" (list deserialiseMediaRecord)
         |> required "urls" (list urlDecoder)
@@ -69,15 +68,15 @@ deserialiseMediaRecord : Decoder MediaRecord
 deserialiseMediaRecord =
     oneOf
         [ at [ "MultiPhotoMedia" ] deserialiseMultiPhoto
-            |> Json.Decode.map MultiPhotoMedia
+            |> Decode.map MultiPhotoMedia
         , at [ "VideoMedia" ] deserialiseVideo
-            |> Json.Decode.map VideoMedia
+            |> Decode.map VideoMedia
         ]
 
 
 deserialiseMultiPhoto : Decoder MultiPhoto
 deserialiseMultiPhoto =
-    decode MultiPhoto
+    Decode.succeed MultiPhoto
         |> required "url" string
         |> required "display_url" string
         |> required "media_url_list" (list string)
@@ -85,7 +84,7 @@ deserialiseMultiPhoto =
 
 deserialiseVideo : Decoder Video
 deserialiseVideo =
-    decode Video
+    Decode.succeed Video
         |> required "url" string
         |> required "display_url" string
         |> required "media_url" string
@@ -95,6 +94,6 @@ deserialiseVideo =
 deserialiseMaybe : Decoder a -> Decoder (Maybe a)
 deserialiseMaybe decoder =
     oneOf
-        [ at [ "Nothing" ] (decode Nothing)
-        , at [ "Just" ] decoder |> Json.Decode.map Just
+        [ at [ "Nothing" ] (Decode.succeed Nothing)
+        , at [ "Just" ] decoder |> Decode.map Just
         ]

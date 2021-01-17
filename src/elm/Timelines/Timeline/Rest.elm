@@ -4,7 +4,7 @@ import Generic.Http
 import Generic.Utils exposing (mapResult)
 import Http
 import Json.Decode exposing (Decoder, at, bool, dict, int, list, string)
-import Json.Decode.Pipeline exposing (decode, optional, required)
+import Json.Decode.Extra exposing (optional, required)
 import Json.Encode
 import RemoteData exposing (RemoteData(..))
 import Task

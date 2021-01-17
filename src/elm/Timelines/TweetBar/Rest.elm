@@ -5,18 +5,19 @@ import Generic.Types as SubmissionData
 import Generic.Utils
 import Http
 import Json.Decode exposing (Decoder, list, string)
-import Json.Decode.Pipeline exposing (decode, hardcoded, required)
+import Json.Decode.Extra exposing (hardcoded, required)
 import Json.Encode
 import RemoteData exposing (RemoteData)
 import Task
 import Timelines.TweetBar.Types exposing (Msg(..), TweetPostedResponse)
 import Twitter.Decoders exposing (userDecoder)
 import Twitter.Types exposing (Credential, Tweet, User)
+import Url
 
 
 tweetPostedDecoder : Decoder TweetPostedResponse
 tweetPostedDecoder =
-    decode TweetPostedResponse
+    Json.Decode.succeed TweetPostedResponse
         |> required "created_at" string
 
 
@@ -56,7 +57,7 @@ sendTweet credential replyTweet tweetText =
 
 fetchHandlerSuggestion : Credential -> String -> Cmd Msg
 fetchHandlerSuggestion credential handler =
-    Http.encodeUri handler
+    Url.percentEncode handler
         |> (++) "/user-search?q="
         |> Generic.Http.get credential userListDecoder
         |> Task.attempt

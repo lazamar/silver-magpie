@@ -3,8 +3,8 @@ module Timelines.Timeline.State exposing (init, refreshTweets, update)
 import Generic.LocalStorage
 import Generic.Utils exposing (toCmd)
 import Http
-import Json.Decode
-import Json.Encode
+import Json.Decode as Decode
+import Json.Encode as Encode
 import List.Extra
 import Main.Types
 import Process
@@ -302,13 +302,22 @@ refreshTweets conf credential model =
 -- Saves timeline to local storage
 
 
+tabNameToString : TabName -> String
+tabNameToString t =
+    case t of
+        HomeTab ->
+            "HomeTab"
+
+        MentionsTab ->
+            "MentionsTab"
+
+
 persistTimeline : TabName -> List Tweet -> Cmd Msg
 persistTimeline route tweetList =
     tweetList
-        |> List.map Twitter.Serialisers.serialiseTweet
-        |> Json.Encode.list
-        |> Json.Encode.encode 2
-        |> Generic.LocalStorage.setItem ("Timeline-" ++ toString route)
+        |> Encode.list Twitter.Serialisers.serialiseTweet
+        |> Encode.encode 2
+        |> Generic.LocalStorage.setItem ("Timeline-" ++ tabNameToString route)
         |> (\_ -> Cmd.none)
 
 
@@ -316,10 +325,10 @@ getPersistedTimeline : TabName -> List Tweet
 getPersistedTimeline route =
     let
         storageContent =
-            Generic.LocalStorage.getItem ("Timeline-" ++ toString route)
+            Generic.LocalStorage.getItem ("Timeline-" ++ tabNameToString route)
                 |> Maybe.withDefault ""
-                |> Json.Decode.decodeString
-                    (Json.Decode.list Twitter.Deserialisers.deserialiseTweet)
+                |> Decode.decodeString
+                    (Decode.list Twitter.Deserialisers.deserialiseTweet)
     in
     case storageContent of
         Ok tweets ->

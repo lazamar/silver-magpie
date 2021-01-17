@@ -5,11 +5,32 @@ module Twitter.Decoders.TweetDecoder exposing
     , userMentionsDecoder
     )
 
-import Date exposing (Date)
 import Generic.Utils
-import Json.Decode exposing (Decoder, andThen, at, bool, dict, fail, field, int, list, nullable, oneOf, string)
-import Json.Decode.Pipeline exposing (custom, decode, hardcoded, optional, required, requiredAt)
+import Json.Decode as Decode
+    exposing
+        ( Decoder
+        , andThen
+        , at
+        , bool
+        , dict
+        , fail
+        , field
+        , int
+        , list
+        , nullable
+        , oneOf
+        , string
+        )
+import Json.Decode.Extra
+    exposing
+        ( custom
+        , hardcoded
+        , optional
+        , required
+        , requiredAt
+        )
 import List.Extra
+import Time exposing (Posix)
 import Twitter.Decoders.UserDecoder exposing (userDecoder)
 import Twitter.Types
     exposing
@@ -35,7 +56,7 @@ import Twitter.Types
 type alias RawTweet =
     { id : String
     , user : User
-    , created_at : Date
+    , created_at : Posix
     , text : String
     , retweet_count : Int
     , favorite_count : Int
@@ -114,7 +135,7 @@ type alias VariantRecord =
 tweetDecoder : Decoder Tweet
 tweetDecoder =
     rawTweetDecoder
-        |> Json.Decode.map preprocessTweet
+        |> Decode.map preprocessTweet
 
 
 rawTweetDecoder : Decoder RawTweet
@@ -127,15 +148,15 @@ rawTweetDecoder =
 retweetDecoder : Decoder Retweet
 retweetDecoder =
     shallowRawTweetDecoder
-        |> Json.Decode.map preprocessTweet
-        |> Json.Decode.map Retweet
+        |> Decode.map preprocessTweet
+        |> Decode.map Retweet
 
 
 quotedTweetDecoder : Decoder QuotedTweet
 quotedTweetDecoder =
     shallowRawTweetDecoder
-        |> Json.Decode.map preprocessTweet
-        |> Json.Decode.map QuotedTweet
+        |> Decode.map preprocessTweet
+        |> Decode.map QuotedTweet
 
 
 
@@ -160,7 +181,7 @@ shallowRawTweetDecoder =
 
 
 rawTweetDecoderFirstPart =
-    decode RawTweet
+    Decode.succeed RawTweet
         |> required "id_str" string
         |> required "user" userDecoder
         |> required "created_at" Generic.Utils.dateDecoder
@@ -184,7 +205,7 @@ rawTweetDecoderFirstPart =
 
 rawTweetEntitiesDecoder : Decoder RawTweetEntitiesRecord
 rawTweetEntitiesDecoder =
-    decode RawTweetEntitiesRecord
+    Decode.succeed RawTweetEntitiesRecord
         |> required "hashtags" (list hashtagDecoder)
         |> required "urls" (list urlDecoder)
         |> required "user_mentions" (list userMentionsDecoder)
@@ -193,13 +214,13 @@ rawTweetEntitiesDecoder =
 
 userMentionsDecoder : Decoder UserMentionsRecord
 userMentionsDecoder =
-    decode UserMentionsRecord
+    Decode.succeed UserMentionsRecord
         |> required "screen_name" string
 
 
 rawMediaRecordDecoder : Decoder RawMediaRecord
 rawMediaRecordDecoder =
-    decode RawMediaRecord
+    Decode.succeed RawMediaRecord
         |> required "url" string
         -- this is the url contained in the tweet
         |> required "display_url" string
@@ -209,20 +230,20 @@ rawMediaRecordDecoder =
 
 hashtagDecoder : Decoder HashtagRecord
 hashtagDecoder =
-    decode HashtagRecord
+    Decode.succeed HashtagRecord
         |> required "text" string
 
 
 urlDecoder : Decoder UrlRecord
 urlDecoder =
-    decode UrlRecord
+    Decode.succeed UrlRecord
         |> required "display_url" string
         |> required "url" string
 
 
 extendedEntitiesDecoder : Decoder ExtendedEntitiesRecord
 extendedEntitiesDecoder =
-    decode ExtendedEntitiesRecord
+    Decode.succeed ExtendedEntitiesRecord
         |> optional "media" (list extendedMediaDecoder) []
 
 
@@ -233,11 +254,11 @@ extendedMediaDecoder =
             (\mtype ->
                 if mtype == "video" || mtype == "animated_gif" then
                     extendedVideoRecordDecoder
-                        |> andThen (\x -> decode (ExtendedVideoMedia x))
+                        |> andThen (\x -> Decode.succeed (ExtendedVideoMedia x))
 
                 else if mtype == "photo" then
                     extendedPhotoRecordDecoder
-                        |> andThen (\x -> decode (ExtendedPhotoMedia x))
+                        |> andThen (\x -> Decode.succeed (ExtendedPhotoMedia x))
                     -- TODO: Multi-photo parse
 
                 else
@@ -249,7 +270,7 @@ extendedMediaDecoder =
 
 extendedPhotoRecordDecoder : Decoder ExtendedPhoto
 extendedPhotoRecordDecoder =
-    decode ExtendedPhoto
+    Decode.succeed ExtendedPhoto
         |> required "url" string
         |> required "display_url" string
         |> required "media_url_https" string
@@ -257,7 +278,7 @@ extendedPhotoRecordDecoder =
 
 extendedVideoRecordDecoder : Decoder ExtendedVideo
 extendedVideoRecordDecoder =
-    decode ExtendedVideo
+    Decode.succeed ExtendedVideo
         |> required "url" string
         |> required "display_url" string
         |> requiredAt [ "video_info", "variants" ] (list variantRecordDecoder)
@@ -265,7 +286,7 @@ extendedVideoRecordDecoder =
 
 variantRecordDecoder : Decoder VariantRecord
 variantRecordDecoder =
-    decode VariantRecord
+    Decode.succeed VariantRecord
         |> required "content_type" string
         |> required "url" string
 

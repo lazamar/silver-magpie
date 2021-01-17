@@ -1,6 +1,6 @@
 module Twitter.Types exposing (..)
 
-import Date exposing (Date)
+import Time exposing (Posix)
 
 
 type alias Credential =
@@ -21,7 +21,7 @@ type alias User =
 type alias Tweet =
     { id : String
     , user : User
-    , created_at : Date
+    , created_at : Posix
     , text : String
     , retweet_count : Int
     , favorite_count : Int

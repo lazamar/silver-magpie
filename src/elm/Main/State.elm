@@ -8,6 +8,9 @@ import Main.CredentialsHandler as CredentialsHandler
 import Main.Rest exposing (fetchCredential)
 import Main.Types exposing (..)
 import RemoteData
+import String
+import Task
+import Time
 import Timelines.State as TimelinesS
 import Timelines.Types as TimelinesT
 import Twitter.Types exposing (Credential)
@@ -23,7 +26,9 @@ emptyModel sessionID usersDetails =
     , sessionID = NotAttempted sessionID
     , usersDetails = usersDetails
     , footerMessageNumber = generateFooterMsgNumber ()
-    , zone = Nothing
+
+    -- UTC temporarily while we fetch the local timezone
+    , zone = Time.utc
     }
 
 
@@ -86,7 +91,7 @@ update msg model =
             ( model, Cmd.none )
 
         TimeZone zone ->
-            ( model { zone = zone }, Cmd.none )
+            ( { model | zone = zone }, Cmd.none )
 
         TimelinesMsg subMsg ->
             updateTimelinesModel model subMsg
@@ -201,14 +206,13 @@ generateFooterMsgNumber _ =
         -- get last saved number
         generated =
             LocalStorage.getItem "footerMsgNumber"
-                |> Maybe.map String.toInt
-                |> Maybe.withDefault (Ok 0)
-                |> Result.withDefault 0
+                |> Maybe.andThen String.toInt
+                |> Maybe.withDefault 0
                 |> (+) 1
 
         -- save the one we have
         save =
-            toString generated
+            String.fromInt generated
                 |> LocalStorage.setItem "footerMsgNumber"
     in
     generated

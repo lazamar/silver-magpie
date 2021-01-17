@@ -2,7 +2,7 @@ module Timelines.State exposing (init, subscriptions, update)
 
 import Generic.Utils exposing (toCmd)
 import Task
-import Time exposing (Time)
+import Time
 import Timelines.Timeline.State as TimelineS
 import Timelines.Timeline.Types as TimelineT
 import Timelines.TweetBar.State as TweetBarS
@@ -14,6 +14,9 @@ import Twitter.Types exposing (Credential)
 init : Config msg -> Credential -> ( Model, Cmd msg )
 init conf credential =
     let
+        placeholderTime =
+            Time.millisToPosix 0
+
         ( timelineModel, timelineMsg ) =
             TimelineS.init timelineConfig
 
@@ -23,7 +26,7 @@ init conf credential =
         initialModel =
             { timelineModel = timelineModel
             , tweetBarModel = tweetBarModel
-            , time = 0.0
+            , now = placeholderTime
             }
     in
     ( initialModel
@@ -52,14 +55,18 @@ timelineConfig =
     }
 
 
+minute =
+    1000 * 60
+
+
 subscriptions : Sub Msg
 subscriptions =
     Sub.batch
-        [ Time.every Time.minute UpdateTime
+        [ Time.every minute UpdateTime
 
         -- The refresh has to be every one and a half minute
         -- because of Twitter's rest API restrictions
-        , Time.every (1.5 * Time.minute) (\_ -> RefreshTweets)
+        , Time.every (1.5 * minute) (\_ -> RefreshTweets)
         ]
 
 
@@ -75,7 +82,7 @@ update msg conf credential model =
                 |> tweetBarUpdate conf.onUpdate model
 
         UpdateTime time ->
-            ( { model | time = time }, Cmd.none )
+            ( { model | now = time }, Cmd.none )
 
         SubmitTweet ->
             TweetBarS.submitTweet tweetBarConfig credential model.tweetBarModel
@@ -89,8 +96,8 @@ update msg conf credential model =
             TimelineS.refreshTweets timelineConfig credential model.timelineModel
                 |> timelineUpdate conf.onUpdate model
 
-        Logout credential ->
-            ( model, toCmd (conf.onLogout credential) )
+        Logout creds ->
+            ( model, toCmd (conf.onLogout creds) )
 
 
 timelineUpdate : (Msg -> msg) -> Model -> ( TimelineT.Model, Cmd Msg ) -> ( Model, Cmd msg )

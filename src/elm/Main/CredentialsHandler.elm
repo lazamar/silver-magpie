@@ -8,9 +8,9 @@ module Main.CredentialsHandler exposing
 import Generic.LocalStorage as LocalStorage
 import Generic.UniqueID as UniqueID
 import Generic.Utils exposing (toCmd)
-import Json.Decode
-import Json.Decode.Pipeline exposing (decode, required)
-import Json.Encode
+import Json.Decode as Decode exposing (Decoder, Value)
+import Json.Decode.Extra exposing (required)
+import Json.Encode as Encode
 import Main.Types exposing (UserDetails)
 import Twitter.Types exposing (Credential)
 
@@ -55,29 +55,28 @@ storeUsersDetails msg usersDetails =
 
 serialiseUsersDetails : List UserDetails -> String
 serialiseUsersDetails =
-    List.map userDetailsSerialiser
-        >> Json.Encode.list
-        >> Json.Encode.encode 2
+    Encode.list userDetailsSerialiser
+        >> Encode.encode 2
 
 
-userDetailsSerialiser : UserDetails -> Json.Encode.Value
+userDetailsSerialiser : UserDetails -> Value
 userDetailsSerialiser { credential, handler, profile_image } =
-    Json.Encode.object
-        [ ( "credential", Json.Encode.string credential )
-        , ( "handler", Json.Encode.string handler )
-        , ( "profile_image", Json.Encode.string profile_image )
+    Encode.object
+        [ ( "credential", Encode.string credential )
+        , ( "handler", Encode.string handler )
+        , ( "profile_image", Encode.string profile_image )
         ]
 
 
-userDetailsDeserialiser : Json.Decode.Decoder UserDetails
+userDetailsDeserialiser : Decoder UserDetails
 userDetailsDeserialiser =
-    decode UserDetails
-        |> required "credential" Json.Decode.string
-        |> required "handler" Json.Decode.string
-        |> required "profile_image" Json.Decode.string
+    Decode.succeed UserDetails
+        |> required "credential" Decode.string
+        |> required "handler" Decode.string
+        |> required "profile_image" Decode.string
 
 
 deserialiseUserDetails : String -> Maybe (List UserDetails)
 deserialiseUserDetails =
-    Json.Decode.decodeString (Json.Decode.list userDetailsDeserialiser)
+    Decode.decodeString (Decode.list userDetailsDeserialiser)
         >> Result.toMaybe

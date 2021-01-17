@@ -3,8 +3,7 @@ module Main.Rest exposing (fetchCredential)
 import Generic.Http
 import Generic.Utils exposing (mapResult)
 import Http
-import Json.Decode exposing (Decoder, string)
-import Json.Decode.Pipeline exposing (decode, required, requiredAt)
+import Json.Decode as Decode exposing (Decoder, at, field, string)
 import Main.Types exposing (..)
 import Task
 import Twitter.Types exposing (Credential)
@@ -23,7 +22,7 @@ fetchCredential sessionID =
 
 detailsDecoder : Decoder UserDetails
 detailsDecoder =
-    decode UserDetails
-        |> requiredAt [ "app_access_token" ] string
-        |> requiredAt [ "screen_name" ] string
-        |> requiredAt [ "profile_image_url_https" ] string
+    Decode.map3 UserDetails
+        (field "app_access_token" string)
+        (field "screen_name" string)
+        (field "profile_image_url_https" string)

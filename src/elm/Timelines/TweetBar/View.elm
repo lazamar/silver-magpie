@@ -9,11 +9,11 @@ import Generic.Utils exposing (errorMessage)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Json.Decode
-import Json.Decode.Pipeline
+import Json.Decode as Decode
 import Json.Encode
 import Main.Types exposing (UserDetails)
 import Regex
+import Regex.Extra exposing (regex)
 import RemoteData exposing (RemoteData, WebData)
 import String
 import Timelines.TweetBar.Handler as TwHandler
@@ -87,8 +87,8 @@ userSuggestion user selected =
 
 
 suggestions : WebData (List User) -> Maybe Int -> Html Msg
-suggestions users userSelected =
-    case users of
+suggestions wusers userSelected =
+    case wusers of
         RemoteData.Success users ->
             let
                 isSelected =
@@ -119,10 +119,10 @@ inputFieldId =
 
 
 inputBoxView : String -> Maybe (List User) -> UserDetails -> Html Msg
-inputBoxView tweetText suggestions userDetails =
+inputBoxView tweetText msuggestions userDetails =
     let
         keyListener =
-            case suggestions of
+            case msuggestions of
                 Nothing ->
                     onKeyDown submitOnCtrlEnter
 
@@ -158,14 +158,14 @@ inputBoxView tweetText suggestions userDetails =
 
 hashtagRegex : Regex.Regex
 hashtagRegex =
-    Regex.regex "(^|\\s)#[\\w]+"
+    regex "(^|\\s)#[\\w]+"
 
 
 colouredTweetView : String -> Html Msg
 colouredTweetView tweetText =
     let
         replaceLineBreaks =
-            Regex.replace Regex.All (Regex.regex "\\n") (\_ -> "<br/>")
+            String.replace "\\n" "<br/>"
 
         styledText =
             tweetText
@@ -186,13 +186,12 @@ colouredTweetView tweetText =
 
 urlRegex : Regex.Regex
 urlRegex =
-    Regex.regex "(https?:\\/\\/(?:www\\.|(?!www))[^\\s\\.]+\\.[^\\s]{2,}|www\\.[^\\s]+\\.[^\\s]{2,})"
+    regex "(https?:\\/\\/(?:www\\.|(?!www))[^\\s\\.]+\\.[^\\s]{2,}|www\\.[^\\s]+\\.[^\\s]{2,})"
 
 
 highlightMatches : Regex.Regex -> String -> String
 highlightMatches reg txt =
     Regex.replace
-        Regex.All
         reg
         (\m -> "<span class='TweetBar-textBox-display-highlight'>" ++ m.match ++ "</span>")
         txt
@@ -201,37 +200,39 @@ highlightMatches reg txt =
 arrowNavigation : (KeyboardNavigation -> msg) -> Attribute msg
 arrowNavigation msg =
     let
-        options =
-            { preventDefault = True, stopPropagation = False }
+        alwaysPrventDefaultOn event decoder =
+            decoder
+                |> Decode.map (\v -> ( v, True ))
+                |> preventDefaultOn event
 
         navigationDecoder =
             keyCode
-                |> Json.Decode.andThen
+                |> Decode.andThen
                     (\code ->
                         case code of
                             13 ->
-                                Json.Decode.succeed EnterKey
+                                Decode.succeed EnterKey
 
                             38 ->
-                                Json.Decode.succeed ArrowUp
+                                Decode.succeed ArrowUp
 
                             40 ->
-                                Json.Decode.succeed ArrowDown
+                                Decode.succeed ArrowDown
 
                             27 ->
-                                Json.Decode.succeed EscKey
+                                Decode.succeed EscKey
 
                             _ ->
-                                Json.Decode.fail "Not handling that key"
+                                Decode.fail "Not handling that key"
                     )
-                |> Json.Decode.map msg
+                |> Decode.map msg
     in
-    onWithOptions "keydown" options navigationDecoder
+    alwaysPrventDefaultOn "keydown" navigationDecoder
 
 
 onKeyDown : (KeyDownEvent -> msg) -> Attribute msg
 onKeyDown tagger =
-    on "keydown" (Json.Decode.map tagger keyEventDecoder)
+    on "keydown" (Decode.map tagger keyEventDecoder)
 
 
 type alias KeyDownEvent =
@@ -240,11 +241,11 @@ type alias KeyDownEvent =
     }
 
 
-keyEventDecoder : Json.Decode.Decoder KeyDownEvent
+keyEventDecoder : Decode.Decoder KeyDownEvent
 keyEventDecoder =
-    Json.Decode.Pipeline.decode KeyDownEvent
-        |> Json.Decode.Pipeline.required "keyCode" Json.Decode.int
-        |> Json.Decode.Pipeline.required "ctrlKey" Json.Decode.bool
+    Decode.map2 KeyDownEvent
+        (Decode.field "keyCode" Decode.int)
+        (Decode.field "ctrlKey" Decode.bool)
 
 
 submitOnCtrlEnter : KeyDownEvent -> Msg
@@ -263,7 +264,7 @@ remainingCharacters tweetText =
         -- that should not be accounted for and should come out of
         -- the total number
         urlOverflow =
-            Regex.find Regex.All urlRegex tweetText
+            Regex.find urlRegex tweetText
                 |> List.map .match
                 |> List.map String.length
                 |> List.map (\v -> v - 25 |> Basics.max 0)
@@ -276,7 +277,7 @@ remainingCharacters tweetText =
 
         remainingText =
             remaining
-                |> toString
+                |> String.fromInt
                 |> text
     in
     if remaining >= 50 then
