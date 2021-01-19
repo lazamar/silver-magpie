@@ -1,4 +1,10 @@
-module Main.State exposing (credentialInUse, init, subscriptions, update)
+module Main.State exposing
+    ( Flags
+    , credentialInUse
+    , init
+    , subscriptions
+    , update
+    )
 
 import Dict
 import Generic.Detach
@@ -52,17 +58,24 @@ initSessionID msid model =
             newSessionID model
 
 
-init : ( Value, Int, Int ) -> ( Model, Cmd Msg )
-init ( localStorageValue, nowMillis, randomVal ) =
+type alias Flags =
+    { localStorage : Value
+    , timeNow : Int
+    , randomInt : Int
+    }
+
+
+init : Flags -> ( Model, Cmd Msg )
+init flags =
     let
         mLocalStorage =
-            Decode.decodeValue localStorageDecoder localStorageValue
+            Decode.decodeValue localStorageDecoder flags.localStorage
                 |> Result.toMaybe
 
         modelRaw =
             emptyModel
-                (Time.millisToPosix nowMillis)
-                (Random.initialSeed randomVal)
+                (Time.millisToPosix flags.timeNow)
+                (Random.initialSeed flags.randomInt)
 
         ( modelWithSessionID, cmd ) =
             initSessionID (Maybe.andThen .sessionID mLocalStorage) modelRaw
@@ -99,16 +112,7 @@ timelinesConfig =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    let
-        onLocalStorageLoaded value =
-            Decode.decodeValue localStorageDecoder value
-                |> Result.map LocalStorageLoaded
-                |> Result.withDefault DoNothing
-    in
-    Sub.batch
-        [ Sub.map TimelinesMsg TimelinesS.subscriptions
-        , LocalStorage.listen onLocalStorageLoaded
-        ]
+    Sub.map TimelinesMsg TimelinesS.subscriptions
 
 
 
