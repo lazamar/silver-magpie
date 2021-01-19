@@ -1,45 +1,46 @@
-module Generic.LocalStorage exposing (clear, getItem, removeItem, setItem)
+port module Generic.LocalStorage exposing (clear, listen, set)
 
 import Debug
-import Json.Decode exposing (Decoder, decodeString, null, oneOf, string)
+import Json.Decode exposing (Decoder, Error, decodeString, null, oneOf, string, value)
+import Json.Encode exposing (Value, encode)
 import Result
 
 
-clear : () -> Cmd Bool
-clear _ =
-    {- let
-           void =
-               Native.LocalStorage.clear ()
-       in
-       True
-    -}
-    Debug.todo "Native.LocalStorage.clear"
+
+{-
+   Keeping a full DB in Elm is a pain because there can be no communication
+   between sending info and getting it back. It makes things like getting a value
+   extremely convoluted.
+
+   To simplify it we treat local storage as a store that can hold only one
+   single string value.
+
+   Then we keep all local storage state in the model and only update the DB
+   when needed.
+-}
 
 
-setItem : String -> String -> Cmd a
-setItem key value =
-    -- Native.LocalStorage.setItem { key = key, value = value }
-    Debug.todo "Native.LocalStorage.setItem"
+{-| Clears entire local storage database
+-}
+port port_LocalStorage_clear : () -> Cmd a
 
 
-getItem : String -> Cmd (Maybe String)
-getItem key =
-    -- Native.LocalStorage.getItem key
-    --     |> decodeString (nullOr string)
-    --     |> Result.withDefault Nothing
-    Debug.todo "Native.LocalStorage.getItem"
+clear : Cmd Bool
+clear =
+    port_LocalStorage_clear ()
 
 
-removeItem : String -> String
-removeItem key =
-    -- Native.LocalStorage.removeItem key
-    --     |> (\_ -> key)
-    Debug.todo "Native.LocalStorage.removeItem"
+port port_LocalStorage_set : String -> Cmd a
 
 
-nullOr : Decoder a -> Decoder (Maybe a)
-nullOr decoder =
-    oneOf
-        [ null Nothing
-        , Json.Decode.map Just decoder
-        ]
+set : Value -> Cmd a
+set value =
+    port_LocalStorage_set (encode 2 value)
+
+
+port port_LocalStorage_listen : (Value -> a) -> Sub a
+
+
+listen : (Value -> msg) -> Sub msg
+listen f =
+    port_LocalStorage_listen f
