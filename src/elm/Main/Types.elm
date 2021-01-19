@@ -1,16 +1,17 @@
 module Main.Types exposing (..)
 
+import Dict exposing (Dict)
 import Http
 import Random
 import Time
+import Timelines.Timeline.Types exposing (HomeTweets, MentionsTweets, TabName)
 import Timelines.Types as TimelinesT
-import Twitter.Types exposing (Credential)
+import Twitter.Types exposing (Credential, Tweet)
 
 
 type Msg
     = DoNothing
     | TimeZone Time.Zone
-    | SessionIdLoaded (Maybe SessionID)
     | LoadedUsersDetails (List UserDetails)
     | TimelinesMsg TimelinesT.Msg
     | UserCredentialFetch SessionIDAuthentication
@@ -18,6 +19,10 @@ type Msg
     | Logout Credential
     | CurrentFooterMsg FooterMsg
     | Detach
+    | LocalStorageLoaded LocalStorage
+    | StoreHome Credential HomeTweets
+    | StoreMentions Credential MentionsTweets
+    | StoreTweetText Credential String
 
 
 type SessionIDAuthentication
@@ -43,6 +48,11 @@ type alias Model =
     , zone : Time.Zone
     , now : Time.Posix
     , randomSeed : Random.Seed
+
+    -- this duplicates what is in `timelinesModel`
+    -- but serves as a way to access local storage date
+    -- synchronously
+    , timelinesInfo : Dict Credential ( String, HomeTweets, MentionsTweets )
     }
 
 
@@ -50,4 +60,12 @@ type alias UserDetails =
     { credential : Credential
     , handler : String
     , profile_image : String
+    }
+
+
+type alias LocalStorage =
+    { footerMsg : Int
+    , sessionID : Maybe SessionID
+    , usersDetails : List UserDetails
+    , timelinesInfo : Dict Credential ( String, HomeTweets, MentionsTweets )
     }

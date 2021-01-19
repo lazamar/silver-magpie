@@ -1,4 +1,4 @@
-port module Generic.LocalStorage exposing (clear, listen, set)
+port module Generic.LocalStorage exposing (listen, set)
 
 import Debug
 import Json.Decode exposing (Decoder, Error, decodeString, null, oneOf, string, value)
@@ -18,16 +18,6 @@ import Result
    Then we keep all local storage state in the model and only update the DB
    when needed.
 -}
-
-
-{-| Clears entire local storage database
--}
-port port_LocalStorage_clear : () -> Cmd a
-
-
-clear : Cmd Bool
-clear =
-    port_LocalStorage_clear ()
 
 
 port port_LocalStorage_set : String -> Cmd a

@@ -45,4 +45,14 @@ type alias Config msg =
     , onLogout : Credential -> msg
     , onSubmitTweet : msg
     , onSetReplyTweet : Tweet -> msg
+    , storeHome : Credential -> HomeTweets -> msg
+    , storeMentions : Credential -> MentionsTweets -> msg
     }
+
+
+type HomeTweets
+    = HomeTweets (List Tweet)
+
+
+type MentionsTweets
+    = MentionsTweets (List Tweet)

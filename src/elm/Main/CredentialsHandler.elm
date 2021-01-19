@@ -1,10 +1,4 @@
-module Main.CredentialsHandler exposing
-    ( generateSessionID
-    , retrieveSessionID
-    , retrieveUsersDetails
-    , saveSessionID
-    , storeUsersDetails
-    )
+module Main.CredentialsHandler exposing (generateSessionID)
 
 import Generic.LocalStorage as LocalStorage
 import Generic.UniqueID as UniqueID
@@ -22,16 +16,6 @@ import Twitter.Types exposing (Credential)
 -- SESSION ID
 
 
-retrieveSessionID : Cmd (Maybe SessionID)
-retrieveSessionID =
-    LocalStorage.getItem "sessionID"
-
-
-saveSessionID : SessionID -> Cmd a
-saveSessionID =
-    LocalStorage.setItem "sessionID"
-
-
 generateSessionID : Posix -> Random.Seed -> ( Random.Seed, SessionID )
 generateSessionID now seed =
     let
@@ -43,25 +27,6 @@ generateSessionID now seed =
                 ++ String.fromInt rand
     in
     ( newSeed, uuid )
-
-
-
--- USER DETAILS
-
-
-retrieveUsersDetails : Cmd (List UserDetails)
-retrieveUsersDetails =
-    LocalStorage.getItem "usersDetails"
-        |> Cmd.map
-            (Maybe.andThen deserialiseUserDetails
-                >> Maybe.withDefault []
-            )
-
-
-storeUsersDetails : List UserDetails -> Cmd a
-storeUsersDetails usersDetails =
-    serialiseUsersDetails usersDetails
-        |> LocalStorage.setItem "usersDetails"
 
 
 

@@ -4,24 +4,30 @@ import Generic.Utils exposing (toCmd)
 import Task
 import Time
 import Timelines.Timeline.State as TimelineS
-import Timelines.Timeline.Types as TimelineT
+import Timelines.Timeline.Types as TimelineT exposing (HomeTweets, MentionsTweets)
 import Timelines.TweetBar.State as TweetBarS
 import Timelines.TweetBar.Types as TweetBarT
 import Timelines.Types exposing (..)
 import Twitter.Types exposing (Credential)
 
 
-init : Config msg -> Credential -> ( Model, Cmd msg )
-init conf credential =
+init :
+    String
+    -> HomeTweets
+    -> MentionsTweets
+    -> Config msg
+    -> Credential
+    -> ( Model, Cmd msg )
+init t h m conf credential =
     let
         placeholderTime =
             Time.millisToPosix 0
 
         ( timelineModel, timelineMsg ) =
-            TimelineS.init timelineConfig
+            TimelineS.init h m timelineConfig
 
         ( tweetBarModel, tweetBarMsg ) =
-            TweetBarS.init tweetBarConfig
+            TweetBarS.init t tweetBarConfig
 
         initialModel =
             { timelineModel = timelineModel
@@ -43,6 +49,7 @@ tweetBarConfig : TweetBarT.Config Msg
 tweetBarConfig =
     { onRefreshTweets = RefreshTweets
     , onUpdate = TweetBarMsg
+    , storeTweetText = StoreTweetText
     }
 
 
@@ -52,6 +59,8 @@ timelineConfig =
     , onLogout = Logout
     , onSubmitTweet = SubmitTweet
     , onSetReplyTweet = SetReplyTweet
+    , storeHome = StoreHome
+    , storeMentions = StoreMentions
     }
 
 
@@ -95,6 +104,15 @@ update msg conf credential model =
         RefreshTweets ->
             TimelineS.refreshTweets timelineConfig credential model.timelineModel
                 |> timelineUpdate conf.onUpdate model
+
+        StoreHome c h ->
+            ( model, toCmd <| conf.storeHome c h )
+
+        StoreMentions c m ->
+            ( model, toCmd <| conf.storeMentions c m )
+
+        StoreTweetText c t ->
+            ( model, toCmd <| conf.storeTweetText c t )
 
         Logout creds ->
             ( model, toCmd (conf.onLogout creds) )

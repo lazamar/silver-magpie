@@ -10,7 +10,7 @@ import Generic.Types exposing (SubmissionData)
 import Http
 import RemoteData exposing (WebData)
 import Timelines.TweetBar.Handler exposing (Handler, HandlerMatch)
-import Twitter.Types exposing (Tweet, User)
+import Twitter.Types exposing (Credential, Tweet, User)
 
 
 type alias Model =
@@ -28,6 +28,7 @@ type alias Model =
 type alias Config msg =
     { onRefreshTweets : msg
     , onUpdate : Msg -> msg
+    , storeTweetText : Credential -> String -> msg
     }
 
 

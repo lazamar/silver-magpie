@@ -1,4 +1,8 @@
-module Timelines.Timeline.State exposing (init, refreshTweets, update)
+module Timelines.Timeline.State exposing
+    ( init
+    , refreshTweets
+    , update
+    )
 
 import Generic.LocalStorage
 import Generic.Utils exposing (toCmd)
@@ -22,33 +26,26 @@ import Twitter.Types exposing (Credential, Retweet, Tweet)
 -- INITIALISATION
 
 
-initialModel : Model
-initialModel =
+initialModel : HomeTweets -> MentionsTweets -> Model
+initialModel (HomeTweets home) (MentionsTweets mentions) =
     { tab = HomeTab
     , homeTab =
-        { tweets = []
+        { tweets = home
         , newTweets = NotAsked
         }
     , mentionsTab =
-        { tweets = []
+        { tweets = mentions
         , newTweets = NotAsked
         }
     }
 
 
-init : Config msg -> ( Model, Cmd msg )
-init conf =
-    let
-        getTagSavedData tab =
-            getPersistedTimeline tab
-                |> Cmd.map (TweetFetch tab Refresh << Success)
-    in
-    ( initialModel
+init : HomeTweets -> MentionsTweets -> Config msg -> ( Model, Cmd msg )
+init h m conf =
+    ( initialModel h m
     , Cmd.batch
         [ toCmd (FetchTweets HomeTab ClearFetch)
         , toCmd (FetchTweets MentionsTab ClearFetch)
-        , getTagSavedData HomeTab
-        , getTagSavedData MentionsTab
         ]
         |> Cmd.map conf.onUpdate
     )
@@ -92,8 +89,7 @@ update msg conf credential model =
                             | tweets = combineTweets fetchType routeTab.tweets newTweets
                             , newTweets = NotAsked
                         }
-                    , persistTimeline route newTweets
-                        |> Cmd.map conf.onUpdate
+                    , toCmd <| persistTimeline conf credential route newTweets
                     )
 
                 Failure (Http.BadStatus { status }) ->
@@ -319,23 +315,11 @@ storageName t =
             "Timeline-MentionsTab"
 
 
-persistTimeline : TabName -> List Tweet -> Cmd Msg
-persistTimeline route tweetList =
-    tweetList
-        |> Encode.list Twitter.Serialisers.serialiseTweet
-        |> Encode.encode 2
-        |> Generic.LocalStorage.setItem (storageName route)
-        |> Cmd.map (always DoNothing)
+persistTimeline : Config msg -> Credential -> TabName -> List Tweet -> msg
+persistTimeline config cred route tweets =
+    case route of
+        HomeTab ->
+            config.storeHome cred <| HomeTweets tweets
 
-
-getPersistedTimeline : TabName -> Cmd (List Tweet)
-getPersistedTimeline route =
-    let
-        deserialise =
-            Maybe.withDefault ""
-                >> Decode.decodeString
-                    (Decode.list Twitter.Deserialisers.deserialiseTweet)
-    in
-    Generic.LocalStorage.getItem (storageName route)
-        |> Cmd.map deserialise
-        |> Cmd.map (Result.withDefault [])
+        MentionsTab ->
+            config.storeMentions cred <| MentionsTweets tweets

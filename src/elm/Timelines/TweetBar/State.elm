@@ -26,21 +26,19 @@ emptySuggestions =
     }
 
 
-emptyModel : Model
-emptyModel =
+emptyModel : String -> Model
+emptyModel savedText =
     { submission = NotSent
-    , tweetText = ""
+    , tweetText = savedText
     , inReplyTo = Nothing
     , handlerSuggestions = emptySuggestions
     }
 
 
-init : Config msg -> ( Model, Cmd msg )
-init config =
-    ( emptyModel
-    , getPersistedTweetText
-        |> Cmd.map LetterInput
-        |> Cmd.map config.onUpdate
+init : String -> Config msg -> ( Model, Cmd msg )
+init savedText config =
+    ( emptyModel savedText
+    , Cmd.none
     )
 
 
@@ -83,10 +81,9 @@ update msg conf credential model =
                     }
               }
             , Cmd.batch
-                [ fetchCommand
-                , persistTweetText text
+                [ Cmd.map conf.onUpdate fetchCommand
+                , toCmd <| conf.storeTweetText credential text
                 ]
-                |> Cmd.map conf.onUpdate
             )
 
         SuggestedHandlersFetch handler fetchStatus ->
@@ -198,10 +195,14 @@ update msg conf credential model =
         TweetSend status ->
             case status of
                 Success _ ->
-                    ( { emptyModel | submission = status }
+                    let
+                        newModel =
+                            emptyModel ""
+                    in
+                    ( { newModel | submission = status }
                     , Cmd.batch
                         [ resetTweetText 1800 |> Cmd.map conf.onUpdate
-                        , persistTweetText "" |> Cmd.map conf.onUpdate
+                        , toCmd <| conf.storeTweetText credential ""
                         , toCmd conf.onRefreshTweets
                         ]
                     )
@@ -242,18 +243,6 @@ selectUserSuggestion model user =
 resetTweetText : Float -> Cmd Msg
 resetTweetText time =
     Task.attempt (\_ -> TweetSend NotSent) (Process.sleep time)
-
-
-persistTweetText : String -> Cmd Msg
-persistTweetText text =
-    Generic.LocalStorage.setItem "TweetText" text
-        |> (\_ -> Cmd.none)
-
-
-getPersistedTweetText : Cmd String
-getPersistedTweetText =
-    Generic.LocalStorage.getItem "TweetText"
-        |> Cmd.map (Maybe.withDefault "")
 
 
 

@@ -1,8 +1,11 @@
 module Main.State exposing (credentialInUse, init, subscriptions, update)
 
+import Dict
 import Generic.Detach
 import Generic.LocalStorage as LocalStorage
 import Generic.Utils exposing (toCmd)
+import Json.Decode as Decode exposing (Decoder, Value)
+import Json.Encode as Encode
 import List.Extra
 import Main.CredentialsHandler as CredentialsHandler
 import Main.Rest exposing (fetchCredential)
@@ -13,6 +16,7 @@ import String
 import Task
 import Time exposing (Posix)
 import Timelines.State as TimelinesS
+import Timelines.Timeline.Types exposing (HomeTweets(..), MentionsTweets(..))
 import Timelines.Types as TimelinesT
 import Twitter.Types exposing (Credential)
 
@@ -32,20 +36,49 @@ emptyModel now seed =
 
     -- UTC temporarily while we fetch the local timezone
     , zone = Time.utc
+    , timelinesInfo = Dict.empty
     }
 
 
-init : ( Int, Int ) -> ( Model, Cmd Msg )
-init ( nowMillis, randomVal ) =
-    ( emptyModel (Time.millisToPosix nowMillis) (Random.initialSeed randomVal)
+initSessionID : Maybe SessionID -> Model -> ( Model, Cmd Msg )
+initSessionID msid model =
+    case msid of
+        Just sid ->
+            ( { model | sessionID = Just (NotAttempted sid) }
+            , fetchCredential sid
+            )
+
+        Nothing ->
+            newSessionID model
+
+
+init : ( Value, Int, Int ) -> ( Model, Cmd Msg )
+init ( localStorageValue, nowMillis, randomVal ) =
+    let
+        mLocalStorage =
+            Decode.decodeValue localStorageDecoder localStorageValue
+                |> Result.toMaybe
+
+        modelRaw =
+            emptyModel
+                (Time.millisToPosix nowMillis)
+                (Random.initialSeed randomVal)
+
+        ( modelWithSessionID, cmd ) =
+            initSessionID (Maybe.andThen .sessionID mLocalStorage) modelRaw
+
+        modelWithLocalStorage =
+            case mLocalStorage of
+                Nothing ->
+                    modelWithSessionID
+
+                Just ls ->
+                    loadLocalStorage ls modelWithSessionID
+    in
+    ( modelWithLocalStorage
     , Cmd.batch
-        [ CredentialsHandler.retrieveUsersDetails
-            |> Cmd.map LoadedUsersDetails
-        , CredentialsHandler.retrieveSessionID
-            |> Cmd.map SessionIdLoaded
-        , Task.perform TimeZone Time.here
-        , generateFooterMsgNumber
-            |> Cmd.map CurrentFooterMsg
+        [ Task.perform TimeZone Time.here
+        , cmd
         ]
     )
 
@@ -54,6 +87,9 @@ timelinesConfig : TimelinesT.Config Msg
 timelinesConfig =
     { onUpdate = TimelinesMsg
     , onLogout = Logout
+    , storeHome = StoreHome
+    , storeMentions = StoreMentions
+    , storeTweetText = StoreTweetText
     }
 
 
@@ -63,7 +99,16 @@ timelinesConfig =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.map TimelinesMsg TimelinesS.subscriptions
+    let
+        onLocalStorageLoaded value =
+            Decode.decodeValue localStorageDecoder value
+                |> Result.map LocalStorageLoaded
+                |> Result.withDefault DoNothing
+    in
+    Sub.batch
+        [ Sub.map TimelinesMsg TimelinesS.subscriptions
+        , LocalStorage.listen onLocalStorageLoaded
+        ]
 
 
 
@@ -78,14 +123,6 @@ update msg model =
 
         TimeZone zone ->
             ( { model | zone = zone }, Cmd.none )
-
-        SessionIdLoaded msid ->
-            case msid of
-                Just sid ->
-                    ( { model | sessionID = Just (NotAttempted sid) }, fetchCredential sid )
-
-                Nothing ->
-                    newSessionID model
 
         LoadedUsersDetails usersDetails ->
             case usersDetails of
@@ -121,7 +158,7 @@ update msg model =
                     ( newModel
                     , Cmd.batch
                         [ newCmd
-                        , CredentialsHandler.storeUsersDetails newModel.usersDetails
+                        , saveLocalStorage newModel
                         ]
                     )
 
@@ -139,8 +176,12 @@ update msg model =
             selectAccount model credential
 
         CurrentFooterMsg fmsg ->
-            ( { model | footerMessageNumber = fmsg }
-            , saveFooterMsg fmsg
+            let
+                newModel =
+                    { model | footerMessageNumber = fmsg }
+            in
+            ( newModel
+            , saveLocalStorage newModel
             )
 
         Logout credential ->
@@ -162,7 +203,36 @@ update msg model =
                             selectAccount newModel x.credential
             in
             ( m
-            , Cmd.batch [ cmd, CredentialsHandler.storeUsersDetails newDetails ]
+            , Cmd.batch
+                [ cmd
+                , saveLocalStorage m
+                ]
+            )
+
+        StoreHome cred h ->
+            storeTimelineInfo
+                cred
+                ( "", h, MentionsTweets [] )
+                (\( t, _, m ) -> ( t, h, m ))
+                model
+
+        StoreMentions cred m ->
+            storeTimelineInfo
+                cred
+                ( "", HomeTweets [], m )
+                (\( t, h, _ ) -> ( t, h, m ))
+                model
+
+        StoreTweetText cred t ->
+            storeTimelineInfo
+                cred
+                ( t, HomeTweets [], MentionsTweets [] )
+                (\( _, h, m ) -> ( t, h, m ))
+                model
+
+        LocalStorageLoaded ls ->
+            ( loadLocalStorage ls model
+            , Cmd.none
             )
 
         Detach ->
@@ -190,16 +260,37 @@ selectAccount model credential =
                         |> List.filter ((/=) details)
                         |> (::) details
 
+                cred =
+                    details.credential
+
                 ( timelinesModel, timelinesCmd ) =
-                    TimelinesS.init timelinesConfig details.credential
+                    case Dict.get cred model.timelinesInfo of
+                        Nothing ->
+                            TimelinesS.init
+                                ""
+                                (HomeTweets [])
+                                (MentionsTweets [])
+                                timelinesConfig
+                                details.credential
+
+                        Just ( tweet, homeT, mentionsT ) ->
+                            TimelinesS.init
+                                tweet
+                                homeT
+                                mentionsT
+                                timelinesConfig
+                                details.credential
+
+                newModel =
+                    { model
+                        | timelinesModel = Just timelinesModel
+                        , usersDetails = newUsersDetails
+                    }
             in
-            ( { model
-                | timelinesModel = Just timelinesModel
-                , usersDetails = newUsersDetails
-              }
+            ( newModel
             , Cmd.batch
                 [ timelinesCmd
-                , CredentialsHandler.storeUsersDetails newUsersDetails
+                , saveLocalStorage newModel
                 ]
             )
 
@@ -211,13 +302,16 @@ newSessionID model =
             CredentialsHandler.generateSessionID
                 model.now
                 model.randomSeed
+
+        newModel =
+            { model
+                | randomSeed = newSeed
+                , sessionID = Just (NotAttempted sessionID)
+            }
     in
-    ( { model
-        | randomSeed = newSeed
-        , sessionID = Just (NotAttempted sessionID)
-      }
+    ( newModel
     , Cmd.batch
-        [ CredentialsHandler.saveSessionID sessionID
+        [ saveLocalStorage newModel
         , fetchCredential sessionID
         ]
     )
@@ -248,26 +342,50 @@ credentialInUse =
         >> Maybe.map .credential
 
 
-footerMsgNumber : String
-footerMsgNumber =
-    "footerMsgNumber"
+localStorageDecoder : Decoder LocalStorage
+localStorageDecoder =
+    Debug.todo "LocalStorage Decoder"
 
 
-generateFooterMsgNumber : Cmd FooterMsg
-generateFooterMsgNumber =
+encodeLocalStorage : LocalStorage -> Value
+encodeLocalStorage =
+    Debug.todo "LocalStorage Encoder"
+
+
+saveLocalStorage : Model -> Cmd msg
+saveLocalStorage =
+    LocalStorage.set << encodeLocalStorage << toLocalStorage
+
+
+toLocalStorage : Model -> LocalStorage
+toLocalStorage =
+    Debug.todo "toLocalStorage"
+
+
+loadLocalStorage : LocalStorage -> Model -> Model
+loadLocalStorage ls model =
+    Debug.todo "loadLocalStorage"
+
+
+storeTimelineInfo :
+    Credential
+    -> ( String, HomeTweets, MentionsTweets )
+    -> (( String, HomeTweets, MentionsTweets ) -> ( String, HomeTweets, MentionsTweets ))
+    -> Model
+    -> ( Model, Cmd Msg )
+storeTimelineInfo cred def f model =
     let
-        withDefault =
-            Maybe.andThen String.toInt
-                >> Maybe.withDefault 0
-                >> (+) 1
-                >> FooterMsg
+        g minfo =
+            case minfo of
+                Nothing ->
+                    Just def
+
+                Just val ->
+                    Just (f val)
+
+        newModel =
+            { model
+                | timelinesInfo = Dict.update cred g model.timelinesInfo
+            }
     in
-    -- get last saved number
-    LocalStorage.getItem footerMsgNumber
-        |> Cmd.map withDefault
-
-
-saveFooterMsg : FooterMsg -> Cmd a
-saveFooterMsg (FooterMsg n) =
-    String.fromInt n
-        |> LocalStorage.setItem footerMsgNumber
+    ( newModel, saveLocalStorage newModel )
