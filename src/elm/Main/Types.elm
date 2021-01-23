@@ -65,7 +65,7 @@ type alias UserDetails =
 
 
 type alias LocalStorage =
-    { footerMsg : Int
+    { footerMsg : FooterMsg
     , sessionID : Maybe SessionID
     , usersDetails : List UserDetails
     , timelinesInfo : Dict Credential SessionInfo

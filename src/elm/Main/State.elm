@@ -354,13 +354,37 @@ saveLocalStorage =
 
 
 toLocalStorage : Model -> LocalStorage
-toLocalStorage =
-    Debug.todo "toLocalStorage"
+toLocalStorage model =
+    let
+        getSessionId s =
+            case s of
+                NotAttempted id ->
+                    id
+
+                Authenticating id ->
+                    id
+
+                Authenticated id _ ->
+                    id
+
+                AuthenticationFailed id _ ->
+                    id
+    in
+    { footerMsg = model.footerMessageNumber
+    , sessionID = Maybe.map getSessionId model.sessionID
+    , usersDetails = model.usersDetails
+    , timelinesInfo = model.timelinesInfo
+    }
 
 
 loadLocalStorage : LocalStorage -> Model -> Model
 loadLocalStorage ls model =
-    Debug.todo "loadLocalStorage"
+    { model
+        | footerMessageNumber = ls.footerMsg
+        , sessionID = Maybe.map NotAttempted ls.sessionID
+        , usersDetails = ls.usersDetails
+        , timelinesInfo = ls.timelinesInfo
+    }
 
 
 storeTimelineInfo :
@@ -404,9 +428,12 @@ encodeLocalStorage l =
                 , ( "homeTweets", Encode.list Twitter.serialiseTweet h )
                 , ( "mentionsTweets", Encode.list Twitter.serialiseTweet m )
                 ]
+
+        encodeFooterMsg (FooterMsg m) =
+            Encode.int m
     in
     Encode.object
-        [ ( "footerMsg", Encode.int l.footerMsg )
+        [ ( "footerMsg", encodeFooterMsg l.footerMsg )
         , ( "sessionID", E.maybe Encode.string l.sessionID )
         , ( "usersDetails", Encode.list CredentialsHandler.userDetailsSerialiser l.usersDetails )
         , ( "timelinesInfo", Encode.dict identity encodeSessionInfo l.timelinesInfo )
@@ -422,9 +449,12 @@ localStorageDecoder =
                 |> D.required "tweetText" Decode.string
                 |> D.required "homeTweets" (Decode.map HomeTweets <| Decode.list Twitter.deserialiseTweet)
                 |> D.required "mentionsTweets" (Decode.map MentionsTweets <| Decode.list Twitter.deserialiseTweet)
+
+        footerMsgDecoder =
+            Decode.map FooterMsg Decode.int
     in
     Decode.succeed LocalStorage
-        |> D.required "footerMsg" Decode.int
+        |> D.required "footerMsg" footerMsgDecoder
         |> D.optional "sessionID" (Decode.map Just Decode.string) Nothing
         |> D.required "usersDetails" (Decode.list CredentialsHandler.userDetailsDeserialiser)
         |> D.required "timelinesInfo" (Decode.dict sessionInfoDecoder)
