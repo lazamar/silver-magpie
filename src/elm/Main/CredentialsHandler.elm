@@ -1,7 +1,6 @@
 module Main.CredentialsHandler exposing (generateSessionID)
 
 import Generic.LocalStorage as LocalStorage
-import Generic.UniqueID as UniqueID
 import Generic.Utils exposing (toCmd)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Extra exposing (required)
