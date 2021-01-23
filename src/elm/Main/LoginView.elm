@@ -4,6 +4,7 @@ import Generic.Animations
 import Generic.Http
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import Http
 import Main.Types exposing (..)
 import RemoteData exposing (RemoteData)
@@ -86,8 +87,7 @@ loginContent model =
                         Http.BadStatus { status } ->
                             if status.code == 401 then
                                 a
-                                    [ href <| Generic.Http.sameDomain <| "/sign-in/?app_session_id=" ++ sessionID
-                                    , target "blank"
+                                    [ onClick SignIn
                                     , class "Login-signinBtn"
                                     ]
                                     [ text "Sign in with Twitter "

@@ -1,4 +1,4 @@
-module Main.State exposing
+port module Main.State exposing
     ( Flags
     , credentialInUse
     , init
@@ -8,6 +8,7 @@ module Main.State exposing
 
 import Dict
 import Generic.Detach
+import Generic.Http
 import Generic.LocalStorage as LocalStorage
 import Generic.Utils exposing (toCmd)
 import Json.Decode as Decode exposing (Decoder, Value)
@@ -18,6 +19,7 @@ import List.Extra
 import Main.CredentialsHandler as CredentialsHandler
 import Main.Rest exposing (fetchCredential)
 import Main.Types exposing (..)
+import Process
 import Random
 import RemoteData
 import String
@@ -57,7 +59,7 @@ initSessionID model =
             ( model, fetchCredential sid )
 
         _ ->
-            newSessionID model
+            Tuple.second <| newSessionID model
 
 
 type alias Flags =
@@ -223,7 +225,7 @@ update msg model =
                 ( m, cmd ) =
                     case newDetails of
                         [] ->
-                            newSessionID newModel
+                            Tuple.second <| newSessionID newModel
 
                         x :: _ ->
                             selectAccount newModel x.credential
@@ -259,6 +261,30 @@ update msg model =
         Detach ->
             ( model
             , Generic.Detach.detach 400 600
+            )
+
+        SignIn ->
+            let
+                ( sid, ( newModel, cmd ) ) =
+                    newSessionID model
+            in
+            ( newModel
+            , Cmd.batch
+                [ cmd
+
+                -- We redirect to twitter after a delay to make sure that
+                -- the new session ID will have time to be saved.
+                , Process.sleep 50
+                    |> Task.perform (always <| RedirectToTwitter sid)
+                ]
+            )
+
+        RedirectToTwitter sid ->
+            ( model
+            , "/sign-in/?app_session_id="
+                ++ sid
+                |> Generic.Http.sameDomain
+                |> port_Main_openInNewTab
             )
 
 
@@ -306,7 +332,7 @@ selectAccount model credential =
             )
 
 
-newSessionID : Model -> ( Model, Cmd Msg )
+newSessionID : Model -> ( SessionID, ( Model, Cmd Msg ) )
 newSessionID model =
     let
         ( newSeed, sessionID ) =
@@ -320,11 +346,13 @@ newSessionID model =
                 , sessionID = Just (Authenticating sessionID)
             }
     in
-    ( newModel
-    , Cmd.batch
-        [ saveLocalStorage newModel
-        , fetchCredential sessionID
-        ]
+    ( sessionID
+    , ( newModel
+      , Cmd.batch
+            [ saveLocalStorage newModel
+            , fetchCredential sessionID
+            ]
+      )
     )
 
 
@@ -362,16 +390,8 @@ credentialInUse =
 
 
 saveLocalStorage : Model -> Cmd msg
-saveLocalStorage model =
-    let
-        (FooterMsg f) =
-            model.footerMessageNumber
-    in
-    if f > 1000 then
-        LocalStorage.set <| encodeLocalStorage <| toLocalStorage model
-
-    else
-        Cmd.none
+saveLocalStorage =
+    LocalStorage.set << encodeLocalStorage << toLocalStorage
 
 
 toLocalStorage : Model -> LocalStorage
@@ -479,3 +499,6 @@ localStorageDecoder =
         |> D.optional "sessionID" (Decode.map Just Decode.string) Nothing
         |> D.required "usersDetails" (Decode.list CredentialsHandler.userDetailsDeserialiser)
         |> D.required "timelinesInfo" (Decode.dict sessionInfoDecoder)
+
+
+port port_Main_openInNewTab : String -> Cmd a

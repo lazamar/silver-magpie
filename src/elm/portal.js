@@ -12,6 +12,12 @@ const app = Elm.Main.init({
     }
 });
 
+// Main
+
+app.ports.port_Main_openInNewTab.subscribe(url => {
+    window.open(url, "_blank");
+});
+
 // LocalStorage
 
 app.ports.port_LocalStorage_set.subscribe(string => {
@@ -20,6 +26,7 @@ app.ports.port_LocalStorage_set.subscribe(string => {
 });
 
 // Detach
+
 app.ports.port_Detatch_detach.subscribe(({ width, height }) => {
     chrome.windows.create(
         {

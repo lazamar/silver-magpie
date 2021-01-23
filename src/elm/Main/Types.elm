@@ -23,6 +23,8 @@ type Msg
     | StoreHome Credential HomeTweets
     | StoreMentions Credential MentionsTweets
     | StoreTweetText Credential TweetText
+    | SignIn
+    | RedirectToTwitter SessionID
 
 
 type SessionIDAuthentication
