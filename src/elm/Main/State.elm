@@ -398,8 +398,19 @@ encodeLocalStorage l =
             CredentialsHandler.userDetailsSerialiser
 
         encodeSessionInfo : SessionInfo -> Value
-        encodeSessionInfo =
-            Debug.todo "TimelineInfo"
+        encodeSessionInfo s =
+            let
+                (HomeTweets h) =
+                    s.homeTweets
+
+                (MentionsTweets m) =
+                    s.mentionsTweets
+            in
+            Encode.object
+                [ ( "tweetText", Encode.string s.tweetText )
+                , ( "homeTweets", Encode.list Twitter.serialiseTweet h )
+                , ( "mentionsTweets", Encode.list Twitter.serialiseTweet m )
+                ]
     in
     Encode.object
         [ ( "footerMsg", Encode.int l.footerMsg )
