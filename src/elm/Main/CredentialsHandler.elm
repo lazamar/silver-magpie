@@ -1,4 +1,8 @@
-module Main.CredentialsHandler exposing (generateSessionID, userDetailsSerialiser)
+module Main.CredentialsHandler exposing
+    ( generateSessionID
+    , userDetailsDeserialiser
+    , userDetailsSerialiser
+    )
 
 import Generic.LocalStorage as LocalStorage
 import Generic.Utils exposing (toCmd)

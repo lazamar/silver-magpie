@@ -11,8 +11,9 @@ import Generic.Detach
 import Generic.LocalStorage as LocalStorage
 import Generic.Utils exposing (toCmd)
 import Json.Decode as Decode exposing (Decoder, Value)
+import Json.Decode.Extra as D
 import Json.Encode as Encode
-import Json.Encode.Extra as Extra
+import Json.Encode.Extra as E
 import List.Extra
 import Main.CredentialsHandler as CredentialsHandler
 import Main.Rest exposing (fetchCredential)
@@ -25,6 +26,7 @@ import Time exposing (Posix)
 import Timelines.State as TimelinesS
 import Timelines.Timeline.Types exposing (HomeTweets(..), MentionsTweets(..))
 import Timelines.Types as TimelinesT exposing (SessionInfo)
+import Twitter.Deserialisers as Twitter
 import Twitter.Serialisers as Twitter
 import Twitter.Types exposing (Credential)
 
@@ -346,11 +348,6 @@ credentialInUse =
         >> Maybe.map .credential
 
 
-localStorageDecoder : Decoder LocalStorage
-localStorageDecoder =
-    Debug.todo "LocalStorage Decoder"
-
-
 saveLocalStorage : Model -> Cmd msg
 saveLocalStorage =
     LocalStorage.set << encodeLocalStorage << toLocalStorage
@@ -393,10 +390,6 @@ storeTimelineInfo cred def f model =
 encodeLocalStorage : LocalStorage -> Value
 encodeLocalStorage l =
     let
-        encodeUserDetails : UserDetails -> Value
-        encodeUserDetails =
-            CredentialsHandler.userDetailsSerialiser
-
         encodeSessionInfo : SessionInfo -> Value
         encodeSessionInfo s =
             let
@@ -414,7 +407,24 @@ encodeLocalStorage l =
     in
     Encode.object
         [ ( "footerMsg", Encode.int l.footerMsg )
-        , ( "sessionID", Extra.maybe Encode.string l.sessionID )
-        , ( "usersDetails", Encode.list encodeUserDetails l.usersDetails )
+        , ( "sessionID", E.maybe Encode.string l.sessionID )
+        , ( "usersDetails", Encode.list CredentialsHandler.userDetailsSerialiser l.usersDetails )
         , ( "timelinesInfo", Encode.dict identity encodeSessionInfo l.timelinesInfo )
         ]
+
+
+localStorageDecoder : Decoder LocalStorage
+localStorageDecoder =
+    let
+        sessionInfoDecoder : Decoder SessionInfo
+        sessionInfoDecoder =
+            Decode.succeed SessionInfo
+                |> D.required "tweetText" Decode.string
+                |> D.required "homeTweets" (Decode.map HomeTweets <| Decode.list Twitter.deserialiseTweet)
+                |> D.required "mentionsTweets" (Decode.map MentionsTweets <| Decode.list Twitter.deserialiseTweet)
+    in
+    Decode.succeed LocalStorage
+        |> D.required "footerMsg" Decode.int
+        |> D.optional "sessionID" (Decode.map Just Decode.string) Nothing
+        |> D.required "usersDetails" (Decode.list CredentialsHandler.userDetailsDeserialiser)
+        |> D.required "timelinesInfo" (Decode.dict sessionInfoDecoder)
