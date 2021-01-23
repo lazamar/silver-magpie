@@ -5,7 +5,8 @@ import Http
 import Random
 import Time
 import Timelines.Timeline.Types exposing (HomeTweets, MentionsTweets, TabName)
-import Timelines.Types as TimelinesT
+import Timelines.TweetBar.Types exposing (TweetText)
+import Timelines.Types as TimelinesT exposing (SessionInfo)
 import Twitter.Types exposing (Credential, Tweet)
 
 
@@ -22,7 +23,7 @@ type Msg
     | LocalStorageLoaded LocalStorage
     | StoreHome Credential HomeTweets
     | StoreMentions Credential MentionsTweets
-    | StoreTweetText Credential String
+    | StoreTweetText Credential TweetText
 
 
 type SessionIDAuthentication
@@ -52,7 +53,7 @@ type alias Model =
     -- this duplicates what is in `timelinesModel`
     -- but serves as a way to access local storage date
     -- synchronously
-    , timelinesInfo : Dict Credential ( String, HomeTweets, MentionsTweets )
+    , timelinesInfo : Dict Credential SessionInfo
     }
 
 
@@ -67,5 +68,5 @@ type alias LocalStorage =
     { footerMsg : Int
     , sessionID : Maybe SessionID
     , usersDetails : List UserDetails
-    , timelinesInfo : Dict Credential ( String, HomeTweets, MentionsTweets )
+    , timelinesInfo : Dict Credential SessionInfo
     }

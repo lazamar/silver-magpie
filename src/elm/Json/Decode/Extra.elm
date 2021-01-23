@@ -26,6 +26,9 @@ requiredAt str path =
     apply <| Decode.at str path
 
 
+{-| Returns Nothing if the field is missing and also if the
+value decoder fails.
+-}
 optional : String -> Decoder a -> a -> Decoder (a -> b) -> Decoder b
 optional str decoder default =
     Decode.maybe (Decode.field str decoder)

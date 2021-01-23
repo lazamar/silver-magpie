@@ -12,6 +12,7 @@ import Generic.LocalStorage as LocalStorage
 import Generic.Utils exposing (toCmd)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
+import Json.Encode.Extra as Extra
 import List.Extra
 import Main.CredentialsHandler as CredentialsHandler
 import Main.Rest exposing (fetchCredential)
@@ -23,7 +24,8 @@ import Task
 import Time exposing (Posix)
 import Timelines.State as TimelinesS
 import Timelines.Timeline.Types exposing (HomeTweets(..), MentionsTweets(..))
-import Timelines.Types as TimelinesT
+import Timelines.Types as TimelinesT exposing (SessionInfo)
+import Twitter.Serialisers as Twitter
 import Twitter.Types exposing (Credential)
 
 
@@ -216,22 +218,22 @@ update msg model =
         StoreHome cred h ->
             storeTimelineInfo
                 cred
-                ( "", h, MentionsTweets [] )
-                (\( t, _, m ) -> ( t, h, m ))
+                { emptySessionInfo | homeTweets = h }
+                (\s -> { s | homeTweets = h })
                 model
 
         StoreMentions cred m ->
             storeTimelineInfo
                 cred
-                ( "", HomeTweets [], m )
-                (\( t, h, _ ) -> ( t, h, m ))
+                { emptySessionInfo | mentionsTweets = m }
+                (\s -> { s | mentionsTweets = m })
                 model
 
         StoreTweetText cred t ->
             storeTimelineInfo
                 cred
-                ( t, HomeTweets [], MentionsTweets [] )
-                (\( _, h, m ) -> ( t, h, m ))
+                { emptySessionInfo | tweetText = t }
+                (\s -> { s | tweetText = t })
                 model
 
         LocalStorageLoaded ls ->
@@ -270,20 +272,10 @@ selectAccount model credential =
                 ( timelinesModel, timelinesCmd ) =
                     case Dict.get cred model.timelinesInfo of
                         Nothing ->
-                            TimelinesS.init
-                                ""
-                                (HomeTweets [])
-                                (MentionsTweets [])
-                                timelinesConfig
-                                details.credential
+                            TimelinesS.init emptySessionInfo timelinesConfig details.credential
 
-                        Just ( tweet, homeT, mentionsT ) ->
-                            TimelinesS.init
-                                tweet
-                                homeT
-                                mentionsT
-                                timelinesConfig
-                                details.credential
+                        Just sessionInfo ->
+                            TimelinesS.init sessionInfo timelinesConfig details.credential
 
                 newModel =
                     { model
@@ -321,6 +313,14 @@ newSessionID model =
     )
 
 
+emptySessionInfo : SessionInfo
+emptySessionInfo =
+    { tweetText = ""
+    , homeTweets = HomeTweets []
+    , mentionsTweets = MentionsTweets []
+    }
+
+
 updateTimelinesModel : Model -> TimelinesT.Msg -> ( Model, Cmd Msg )
 updateTimelinesModel model subMsg =
     let
@@ -351,11 +351,6 @@ localStorageDecoder =
     Debug.todo "LocalStorage Decoder"
 
 
-encodeLocalStorage : LocalStorage -> Value
-encodeLocalStorage =
-    Debug.todo "LocalStorage Encoder"
-
-
 saveLocalStorage : Model -> Cmd msg
 saveLocalStorage =
     LocalStorage.set << encodeLocalStorage << toLocalStorage
@@ -373,8 +368,8 @@ loadLocalStorage ls model =
 
 storeTimelineInfo :
     Credential
-    -> ( String, HomeTweets, MentionsTweets )
-    -> (( String, HomeTweets, MentionsTweets ) -> ( String, HomeTweets, MentionsTweets ))
+    -> SessionInfo
+    -> (SessionInfo -> SessionInfo)
     -> Model
     -> ( Model, Cmd Msg )
 storeTimelineInfo cred def f model =
@@ -393,3 +388,22 @@ storeTimelineInfo cred def f model =
             }
     in
     ( newModel, saveLocalStorage newModel )
+
+
+encodeLocalStorage : LocalStorage -> Value
+encodeLocalStorage l =
+    let
+        encodeUserDetails : UserDetails -> Value
+        encodeUserDetails =
+            CredentialsHandler.userDetailsSerialiser
+
+        encodeSessionInfo : SessionInfo -> Value
+        encodeSessionInfo =
+            Debug.todo "TimelineInfo"
+    in
+    Encode.object
+        [ ( "footerMsg", Encode.int l.footerMsg )
+        , ( "sessionID", Extra.maybe Encode.string l.sessionID )
+        , ( "usersDetails", Encode.list encodeUserDetails l.usersDetails )
+        , ( "timelinesInfo", Encode.dict identity encodeSessionInfo l.timelinesInfo )
+        ]

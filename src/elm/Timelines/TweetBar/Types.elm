@@ -4,6 +4,7 @@ module Timelines.TweetBar.Types exposing
     , Model
     , Msg(..)
     , TweetPostedResponse
+    , TweetText
     )
 
 import Generic.Types exposing (SubmissionData)
@@ -28,13 +29,17 @@ type alias Model =
 type alias Config msg =
     { onRefreshTweets : msg
     , onUpdate : Msg -> msg
-    , storeTweetText : Credential -> String -> msg
+    , storeTweetText : Credential -> TweetText -> msg
     }
 
 
 type alias TweetPostedResponse =
     { created_at : String
     }
+
+
+type alias TweetText =
+    String
 
 
 type KeyboardNavigation

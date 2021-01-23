@@ -1,4 +1,4 @@
-module Main.CredentialsHandler exposing (generateSessionID)
+module Main.CredentialsHandler exposing (generateSessionID, userDetailsSerialiser)
 
 import Generic.LocalStorage as LocalStorage
 import Generic.Utils exposing (toCmd)
@@ -26,16 +26,6 @@ generateSessionID now seed =
                 ++ String.fromInt rand
     in
     ( newSeed, uuid )
-
-
-
--- PRIVATE
-
-
-serialiseUsersDetails : List UserDetails -> String
-serialiseUsersDetails =
-    Encode.list userDetailsSerialiser
-        >> Encode.encode 2
 
 
 userDetailsSerialiser : UserDetails -> Value

@@ -11,23 +11,17 @@ import Timelines.Types exposing (..)
 import Twitter.Types exposing (Credential)
 
 
-init :
-    String
-    -> HomeTweets
-    -> MentionsTweets
-    -> Config msg
-    -> Credential
-    -> ( Model, Cmd msg )
-init t h m conf credential =
+init : SessionInfo -> Config msg -> Credential -> ( Model, Cmd msg )
+init { tweetText, homeTweets, mentionsTweets } conf credential =
     let
         placeholderTime =
             Time.millisToPosix 0
 
         ( timelineModel, timelineMsg ) =
-            TimelineS.init h m timelineConfig
+            TimelineS.init homeTweets mentionsTweets timelineConfig
 
         ( tweetBarModel, tweetBarMsg ) =
-            TweetBarS.init t tweetBarConfig
+            TweetBarS.init tweetText tweetBarConfig
 
         initialModel =
             { timelineModel = timelineModel
