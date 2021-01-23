@@ -18,3 +18,19 @@ app.ports.port_LocalStorage_set.subscribe(value => {
     const appname = "silver-magpie";
     window.localStorage.setItem(appname, stringify(value));
 });
+
+// Detach
+app.ports.port_Detatch_detach.subscribe(({ width, height }) => {
+    chrome.windows.create(
+        {
+            url: window.location.pathname,
+            width,
+            height,
+            type: "popup"
+        },
+        function() {
+            document.body.classList.add("is-detached");
+        }
+    );
+    window.close();
+});
