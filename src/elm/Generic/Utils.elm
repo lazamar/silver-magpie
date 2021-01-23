@@ -85,10 +85,16 @@ dateDecoder =
                 |> either
                     (Decode.fail << Decode.errorToString)
                     Decode.succeed
+
+        twitterDateRepresentation =
+            Decode.string
+                |> Decode.andThen toDateTime
+                |> Decode.andThen toPosix
     in
-    Decode.string
-        |> Decode.andThen toDateTime
-        |> Decode.andThen toPosix
+    Decode.oneOf
+        [ Decode.map Time.millisToPosix Decode.int
+        , twitterDateRepresentation
+        ]
 
 
 type DateTime

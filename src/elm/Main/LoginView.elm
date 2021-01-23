@@ -75,7 +75,7 @@ loginContent model =
             p [ class "Loading-content-info" ]
                 [ text "Uh, I'm stuck. Something went wrong." ]
     in
-    case model.sessionID of
+    case Debug.log "Current session id:" model.sessionID of
         Nothing ->
             stuck
 

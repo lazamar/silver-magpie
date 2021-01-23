@@ -14,9 +14,9 @@ const app = Elm.Main.init({
 
 // LocalStorage
 
-app.ports.port_LocalStorage_set.subscribe(value => {
+app.ports.port_LocalStorage_set.subscribe(string => {
     const appname = "silver-magpie";
-    window.localStorage.setItem(appname, stringify(value));
+    window.localStorage.setItem(appname, string);
 });
 
 // Detach

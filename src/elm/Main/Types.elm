@@ -20,7 +20,6 @@ type Msg
     | Logout Credential
     | CurrentFooterMsg FooterMsg
     | Detach
-    | LocalStorageLoaded LocalStorage
     | StoreHome Credential HomeTweets
     | StoreMentions Credential MentionsTweets
     | StoreTweetText Credential TweetText

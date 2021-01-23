@@ -50,20 +50,18 @@ emptyModel now seed =
     }
 
 
-initSessionID : Maybe SessionID -> Model -> ( Model, Cmd Msg )
-initSessionID msid model =
-    case msid of
-        Just sid ->
-            ( { model | sessionID = Just (NotAttempted sid) }
-            , fetchCredential sid
-            )
+initSessionID : Model -> ( Model, Cmd Msg )
+initSessionID model =
+    case model.sessionID of
+        Just (NotAttempted sid) ->
+            ( model, fetchCredential sid )
 
-        Nothing ->
+        _ ->
             newSessionID model
 
 
 type alias Flags =
-    { localStorage : Value
+    { localStorage : String
     , timeNow : Int
     , randomInt : Int
     }
@@ -73,7 +71,8 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
         mLocalStorage =
-            Decode.decodeValue localStorageDecoder flags.localStorage
+            Decode.decodeString localStorageDecoder flags.localStorage
+                |> Debug.log "decoded local storage"
                 |> Result.toMaybe
 
         modelRaw =
@@ -81,23 +80,42 @@ init flags =
                 (Time.millisToPosix flags.timeNow)
                 (Random.initialSeed flags.randomInt)
 
-        ( modelWithSessionID, cmd ) =
-            initSessionID (Maybe.andThen .sessionID mLocalStorage) modelRaw
-
-        modelWithLocalStorage =
+        addLocalStorage aModel =
             case mLocalStorage of
                 Nothing ->
-                    modelWithSessionID
+                    aModel
 
                 Just ls ->
-                    loadLocalStorage ls modelWithSessionID
+                    loadLocalStorage ls aModel
+
+        selectFirstCredential aModel =
+            case aModel.usersDetails of
+                u :: _ ->
+                    selectAccount aModel u.credential
+
+                _ ->
+                    ( aModel, Cmd.none )
+
+        ( model, cmds ) =
+            ( addLocalStorage modelRaw, Cmd.none )
+                |> andThen initSessionID
+                |> andThen selectFirstCredential
     in
-    ( modelWithLocalStorage
+    ( model
     , Cmd.batch
         [ Task.perform TimeZone Time.here
-        , cmd
+        , cmds
         ]
     )
+
+
+andThen : (model -> ( model, Cmd msg )) -> ( model, Cmd msg ) -> ( model, Cmd msg )
+andThen f ( model, cmd ) =
+    let
+        ( newModel, newCmds ) =
+            f model
+    in
+    ( newModel, Cmd.batch [ cmd, newCmds ] )
 
 
 timelinesConfig : TimelinesT.Config Msg
@@ -238,11 +256,6 @@ update msg model =
                 (\s -> { s | tweetText = t })
                 model
 
-        LocalStorageLoaded ls ->
-            ( loadLocalStorage ls model
-            , Cmd.none
-            )
-
         Detach ->
             ( model
             , Generic.Detach.detach 400 600
@@ -304,7 +317,7 @@ newSessionID model =
         newModel =
             { model
                 | randomSeed = newSeed
-                , sessionID = Just (NotAttempted sessionID)
+                , sessionID = Just (Authenticating sessionID)
             }
     in
     ( newModel
@@ -349,8 +362,16 @@ credentialInUse =
 
 
 saveLocalStorage : Model -> Cmd msg
-saveLocalStorage =
-    LocalStorage.set << encodeLocalStorage << toLocalStorage
+saveLocalStorage model =
+    let
+        (FooterMsg f) =
+            model.footerMessageNumber
+    in
+    if f > 1000 then
+        LocalStorage.set <| encodeLocalStorage <| toLocalStorage model
+
+    else
+        Cmd.none
 
 
 toLocalStorage : Model -> LocalStorage
@@ -381,7 +402,7 @@ loadLocalStorage : LocalStorage -> Model -> Model
 loadLocalStorage ls model =
     { model
         | footerMessageNumber = ls.footerMsg
-        , sessionID = Maybe.map NotAttempted ls.sessionID
+        , sessionID = Debug.log "loaded session id" <| Maybe.map NotAttempted ls.sessionID
         , usersDetails = ls.usersDetails
         , timelinesInfo = ls.timelinesInfo
     }
