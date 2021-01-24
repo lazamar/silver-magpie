@@ -114,16 +114,142 @@ tweetContent zone now tweet =
                     ]
                 , timeInfo zone now tweet
                 ]
-            , p
-                [ class "Tweet-text"
-                , property "innerHTML" <| Json.Encode.string (tweetTextView tweet)
-                ]
-                []
+            , p [ class "Tweet-text" ] (tweetTextView_ tweet)
             , div
                 [ class "Tweet-media" ]
                 [ mediaView tweet ]
             ]
         ]
+
+
+{-| Type used to support the transformation of parts
+of a tweet into HTML incrementally
+-}
+type TweetPart
+    = Text String
+    | Html (Html Msg)
+
+
+tweetTextView_ : Tweet -> List (Html Msg)
+tweetTextView_ { text, entities, quoted_status } =
+    let
+        flip f b a =
+            f a b
+
+        toHtml part =
+            case part of
+                Text t ->
+                    Html.text t
+
+                Html html ->
+                    html
+
+        -- Anamorphism
+        overL f items tweetParts =
+            List.foldl (List.concatMap << overTextL << f) tweetParts items
+
+        overTextL f part =
+            case part of
+                Text t ->
+                    f t
+
+                Html html ->
+                    [ part ]
+
+        overText f part =
+            case part of
+                Text t ->
+                    Text (f t)
+
+                Html html ->
+                    part
+    in
+    [ Text text ]
+        |> overL linkUrl entities.urls
+        |> flip (List.foldl (List.map << overText << removeMediaUrl)) entities.media
+        |> List.map (overText <| removeQuotedTweetUrl quoted_status entities.urls)
+        |> overL linkHashtags entities.hashtags
+        |> overL linkUserMentions entities.user_mentions
+        |> List.concatMap (overTextL addLineBreaks_)
+        |> List.map toHtml
+
+
+linkUrl : UrlRecord -> String -> List TweetPart
+linkUrl url tweetText =
+    case String.split url.url tweetText of
+        [ text ] ->
+            -- Avoid creating the HTML element
+            [ Text text ]
+
+        parts ->
+            let
+                link =
+                    Html.a
+                        [ target "_blank"
+                        , href url.url
+                        ]
+                        [ text url.display_url
+                        ]
+            in
+            List.intersperse (Html link) <| List.map Text parts
+
+
+linkHashtags : HashtagRecord -> String -> List TweetPart
+linkHashtags { text } tweetText =
+    let
+        hash =
+            "#" ++ text
+    in
+    case String.split hash tweetText of
+        [ t ] ->
+            -- Avoid creating the HTML element
+            [ Text t ]
+
+        parts ->
+            let
+                hashLink =
+                    Html.a
+                        [ target "_blank"
+                        , href <| "https://twitter.com/hashtag/" ++ text ++ "?src=hash"
+                        ]
+                        [ Html.text hash
+                        ]
+            in
+            List.intersperse (Html hashLink) <| List.map Text parts
+
+
+linkUserMentions : UserMentionsRecord -> String -> List TweetPart
+linkUserMentions { screen_name } tweetText =
+    let
+        handler =
+            "@" ++ screen_name
+    in
+    case String.split handler tweetText of
+        [ t ] ->
+            -- Avoid creating the HTML element
+            [ Text t ]
+
+        parts ->
+            let
+                link =
+                    Html.a
+                        [ target "_blank"
+                        , href <| "https://twitter.com/" ++ screen_name
+                        ]
+                        [ Html.text handler
+                        ]
+            in
+            List.intersperse (Html link) <| List.map Text parts
+
+
+addLineBreaks_ : String -> List TweetPart
+addLineBreaks_ tweetText =
+    case String.split "\\n" tweetText of
+        [ t ] ->
+            [ Text t ]
+
+        parts ->
+            List.intersperse (Html <| Html.br [] []) <| List.map Text parts
 
 
 quotedContent : Time.Zone -> Posix -> Tweet -> Html Msg
@@ -238,62 +364,6 @@ toStringNotZero num =
 
     else
         ""
-
-
-tweetTextView : Tweet -> String
-tweetTextView { text, entities, quoted_status } =
-    text
-        |> ((\f b a -> f a b) <| List.foldl linkUrl) entities.urls
-        |> ((\f b a -> f a b) <| List.foldl removeMediaUrl) entities.media
-        |> removeQuotedTweetUrl quoted_status entities.urls
-        |> ((\f b a -> f a b) <| List.foldl linkHashtags) entities.hashtags
-        |> ((\f b a -> f a b) <| List.foldl linkUserMentions) entities.user_mentions
-        |> Regex.replace (regex "\\n") (\_ -> "<br/>")
-
-
-linkUrl : UrlRecord -> String -> String
-linkUrl url tweetText =
-    let
-        linkText =
-            "<a target=\"_blank\" href=\""
-                ++ url.url
-                ++ "\">"
-                ++ url.display_url
-                ++ "</a>"
-    in
-    String.replace url.url linkText tweetText
-
-
-linkUserMentions : UserMentionsRecord -> String -> String
-linkUserMentions { screen_name } tweetText =
-    let
-        handler =
-            "@" ++ screen_name
-
-        linkText =
-            "<a target=\"_blank\" href=\"https://twitter.com/"
-                ++ screen_name
-                ++ "\">"
-                ++ handler
-                ++ "</a>"
-    in
-    String.replace handler linkText tweetText
-
-
-linkHashtags : HashtagRecord -> String -> String
-linkHashtags { text } tweetText =
-    let
-        hash =
-            "#" ++ text
-
-        hashLink =
-            "<a target=\"_blank\" href=\"https://twitter.com/hashtag/"
-                ++ text
-                ++ "?src=hash\">"
-                ++ hash
-                ++ "</a>"
-    in
-    String.replace hash hashLink tweetText
 
 
 removeMediaUrl : MediaRecord -> String -> String
