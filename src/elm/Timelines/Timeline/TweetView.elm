@@ -12,6 +12,7 @@ import Regex
 import Regex.Extra exposing (regex)
 import String
 import Time exposing (Posix)
+import Timelines.RichText as RichText
 import Timelines.Timeline.Types exposing (..)
 import Twitter.Types
     exposing
@@ -135,121 +136,94 @@ tweetTextView_ { text, entities, quoted_status } =
     let
         flip f b a =
             f a b
-
-        toHtml part =
-            case part of
-                Text t ->
-                    Html.text t
-
-                Html html ->
-                    html
-
-        -- Anamorphism
-        overL f items tweetParts =
-            List.foldl (List.concatMap << overTextL << f) tweetParts items
-
-        overTextL f part =
-            case part of
-                Text t ->
-                    f t
-
-                Html html ->
-                    [ part ]
-
-        overText f part =
-            case part of
-                Text t ->
-                    Text (f t)
-
-                Html html ->
-                    part
     in
-    [ Text text ]
-        |> overL linkUrl entities.urls
-        |> flip (List.foldl (List.map << overText << removeMediaUrl)) entities.media
-        |> List.map (overText <| removeQuotedTweetUrl quoted_status entities.urls)
-        |> overL linkHashtags entities.hashtags
-        |> overL linkUserMentions entities.user_mentions
-        |> List.concatMap (overTextL addLineBreaks_)
-        |> List.map toHtml
+    [ RichText.Text text ]
+        |> flip (List.foldl linkUrl) entities.urls
+        |> flip (List.foldl removeMediaUrl) entities.media
+        |> removeQuotedTweetUrl quoted_status entities.urls
+        |> flip (List.foldl linkHashtags) entities.hashtags
+        |> flip (List.foldl linkUserMentions) entities.user_mentions
+        |> addLineBreaks
+        |> List.map RichText.toHtml
 
 
-linkUrl : UrlRecord -> String -> List TweetPart
-linkUrl url tweetText =
-    case String.split url.url tweetText of
-        [ text ] ->
-            -- Avoid creating the HTML element
-            [ Text text ]
+linkUrl : UrlRecord -> List (RichText.Part Msg) -> List (RichText.Part Msg)
+linkUrl url parts =
+    let
+        toLink () =
+            Html.a
+                [ target "_blank"
+                , href url.url
+                ]
+                [ text url.display_url
+                ]
+    in
+    RichText.replace url.url toLink parts
 
-        parts ->
+
+removeMediaUrl : MediaRecord -> List (RichText.Part Msg) -> List (RichText.Part Msg)
+removeMediaUrl record tweets =
+    case record of
+        VideoMedia video ->
+            RichText.replace video.url (always <| Html.text "") tweets
+
+        MultiPhotoMedia photo ->
+            RichText.replace photo.url (always <| Html.text "") tweets
+
+
+removeQuotedTweetUrl : Maybe QuotedTweet -> List UrlRecord -> List (RichText.Part Msg) -> List (RichText.Part Msg)
+removeQuotedTweetUrl maybeQuoted urls tweets =
+    case maybeQuoted of
+        Nothing ->
+            tweets
+
+        Just _ ->
             let
-                link =
-                    Html.a
-                        [ target "_blank"
-                        , href url.url
-                        ]
-                        [ text url.display_url
-                        ]
+                lastUrl =
+                    List.Extra.last urls
+                        |> Maybe.map .display_url
+                        |> Maybe.withDefault ""
             in
-            List.intersperse (Html link) <| List.map Text parts
+            RichText.replace lastUrl (always <| Html.text "") tweets
 
 
-linkHashtags : HashtagRecord -> String -> List TweetPart
-linkHashtags { text } tweetText =
+linkHashtags : HashtagRecord -> List (RichText.Part Msg) -> List (RichText.Part Msg)
+linkHashtags { text } tweets =
     let
         hash =
             "#" ++ text
+
+        hashLink () =
+            Html.a
+                [ target "_blank"
+                , href <| "https://twitter.com/hashtag/" ++ text ++ "?src=hash"
+                ]
+                [ Html.text hash
+                ]
     in
-    case String.split hash tweetText of
-        [ t ] ->
-            -- Avoid creating the HTML element
-            [ Text t ]
-
-        parts ->
-            let
-                hashLink =
-                    Html.a
-                        [ target "_blank"
-                        , href <| "https://twitter.com/hashtag/" ++ text ++ "?src=hash"
-                        ]
-                        [ Html.text hash
-                        ]
-            in
-            List.intersperse (Html hashLink) <| List.map Text parts
+    RichText.replace hash hashLink tweets
 
 
-linkUserMentions : UserMentionsRecord -> String -> List TweetPart
-linkUserMentions { screen_name } tweetText =
+linkUserMentions : UserMentionsRecord -> List (RichText.Part Msg) -> List (RichText.Part Msg)
+linkUserMentions { screen_name } tweets =
     let
         handler =
             "@" ++ screen_name
+
+        link () =
+            Html.a
+                [ target "_blank"
+                , href <| "https://twitter.com/" ++ screen_name
+                ]
+                [ Html.text handler
+                ]
     in
-    case String.split handler tweetText of
-        [ t ] ->
-            -- Avoid creating the HTML element
-            [ Text t ]
-
-        parts ->
-            let
-                link =
-                    Html.a
-                        [ target "_blank"
-                        , href <| "https://twitter.com/" ++ screen_name
-                        ]
-                        [ Html.text handler
-                        ]
-            in
-            List.intersperse (Html link) <| List.map Text parts
+    RichText.replace handler link tweets
 
 
-addLineBreaks_ : String -> List TweetPart
-addLineBreaks_ tweetText =
-    case String.split "\\n" tweetText of
-        [ t ] ->
-            [ Text t ]
-
-        parts ->
-            List.intersperse (Html <| Html.br [] []) <| List.map Text parts
+addLineBreaks : List (RichText.Part Msg) -> List (RichText.Part Msg)
+addLineBreaks =
+    RichText.replace "\\n" (\() -> Html.br [] [])
 
 
 quotedContent : Time.Zone -> Posix -> Tweet -> Html Msg
@@ -364,32 +338,6 @@ toStringNotZero num =
 
     else
         ""
-
-
-removeMediaUrl : MediaRecord -> String -> String
-removeMediaUrl record tweetText =
-    case record of
-        VideoMedia video ->
-            String.replace video.url "" tweetText
-
-        MultiPhotoMedia photo ->
-            String.replace photo.url "" tweetText
-
-
-removeQuotedTweetUrl : Maybe QuotedTweet -> List UrlRecord -> String -> String
-removeQuotedTweetUrl maybeQuoted urls tweetText =
-    case maybeQuoted of
-        Nothing ->
-            tweetText
-
-        Just _ ->
-            let
-                lastUrl =
-                    List.Extra.last urls
-                        |> Maybe.map .display_url
-                        |> Maybe.withDefault ""
-            in
-            String.replace lastUrl "" tweetText
 
 
 mediaView : Tweet -> Html Msg

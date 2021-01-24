@@ -16,6 +16,7 @@ import Regex
 import Regex.Extra exposing (regex)
 import RemoteData exposing (RemoteData, WebData)
 import String
+import Timelines.RichText as RichText
 import Timelines.TweetBar.Handler as TwHandler
 import Timelines.TweetBar.Types exposing (..)
 import Twitter.Types exposing (User)
@@ -165,23 +166,19 @@ colouredTweetView : String -> Html Msg
 colouredTweetView tweetText =
     let
         replaceLineBreaks =
-            String.replace "\\n" "<br/>"
+            RichText.replace "\\n" (\() -> Html.br [] [])
 
         styledText =
-            tweetText
+            [ RichText.Text tweetText ]
                 |> highlightMatches TwHandler.handlerRegex
                 |> highlightMatches urlRegex
                 |> highlightMatches hashtagRegex
                 |> replaceLineBreaks
-                |> (\b a -> (++) a b) "&zwnj;"
-
-        -- invisible character to allow line-breaks at the end of sentences
+                -- invisible character to allow line-breaks at the end of sentences
+                |> (\parts -> parts ++ [ RichText.Text "\u{200C}" ])
+                |> List.map RichText.toHtml
     in
-    div
-        [ class "TweetBar-textBox-display"
-        , property "innerHTML" <| Json.Encode.string styledText
-        ]
-        []
+    div [ class "TweetBar-textBox-display" ] styledText
 
 
 urlRegex : Regex.Regex
@@ -189,12 +186,15 @@ urlRegex =
     regex "(https?:\\/\\/(?:www\\.|(?!www))[^\\s\\.]+\\.[^\\s]{2,}|www\\.[^\\s]+\\.[^\\s]{2,})"
 
 
-highlightMatches : Regex.Regex -> String -> String
-highlightMatches reg txt =
-    Regex.replace
-        reg
-        (\m -> "<span class='TweetBar-textBox-display-highlight'>" ++ m.match ++ "</span>")
-        txt
+highlightMatches : Regex.Regex -> List (RichText.Part Msg) -> List (RichText.Part Msg)
+highlightMatches reg parts =
+    let
+        highlighted m =
+            Html.span
+                [ class "TweetBar-textBox-display-highlight" ]
+                [ text m.match ]
+    in
+    RichText.replaceRegex reg highlighted parts
 
 
 arrowNavigation : (KeyboardNavigation -> msg) -> Attribute msg
