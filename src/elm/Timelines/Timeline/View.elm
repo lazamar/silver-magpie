@@ -49,7 +49,7 @@ view zone now model =
             Html.Keyed.node
                 "div"
                 []
-                (List.indexedMap keyedTweet model.homeTab.tweets)
+                (List.indexedMap keyedTweet tweets)
     in
     div [ class "Timeline" ]
         [ div
