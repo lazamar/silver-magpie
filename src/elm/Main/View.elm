@@ -125,7 +125,7 @@ accountsView sessionID usersDetails =
                 , target "blank"
                 , title "Add another account"
                 , tabindex -1
-                , href <| Generic.Http.sameDomain <| "/sign-in/?app_session_id=" ++ sessionID
+                , onClick SignIn
                 ]
                 []
     in
