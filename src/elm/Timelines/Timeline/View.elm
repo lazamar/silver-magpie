@@ -4,6 +4,7 @@ import Generic.Utils exposing (errorMessage, tooltip)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Html.Keyed
 import Html.Lazy
 import Http
 import List.Extra
@@ -40,6 +41,15 @@ view zone now model =
 
                 MentionsTab ->
                     ( model.mentionsTab.newTweets, "-100%" )
+
+        keyedTweet ix tweet =
+            ( tweet.id, tweetView zone now ix tweet )
+
+        viewTweets tweets =
+            Html.Keyed.node
+                "div"
+                []
+                (List.indexedMap keyedTweet model.homeTab.tweets)
     in
     div [ class "Timeline" ]
         [ div
@@ -49,14 +59,14 @@ view zone now model =
                 [ class "Timeline-home"
                 , style "transform" ("translateX(" ++ translation ++ ")")
                 ]
-                [ div [] (List.indexedMap (tweetView zone now) model.homeTab.tweets)
+                [ viewTweets model.homeTab.tweets
                 , loadMoreBtn model.tab model.homeTab.tweets model.homeTab.newTweets
                 ]
             , div
                 [ class "Timeline-mentions"
                 , style "transform" ("translateX(" ++ translation ++ ")")
                 ]
-                [ div [] (List.indexedMap (tweetView zone now) model.mentionsTab.tweets)
+                [ viewTweets model.mentionsTab.tweets
                 , loadMoreBtn model.tab model.mentionsTab.tweets model.mentionsTab.newTweets
                 ]
             ]
