@@ -31,5 +31,6 @@
     "test-dependencies": {
         "direct": {},
         "indirect": {}
-    }
+    },
+    "version": "0.1.5"
 }
