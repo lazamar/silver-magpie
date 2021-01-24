@@ -107,6 +107,8 @@ type DateTime
         }
 
 
+{-| Parses dates in the format "Wed Sep 02 07:55:01 +0000 2020"
+-}
 dateParser : Parser DateTime
 dateParser =
     let
@@ -131,29 +133,37 @@ dateParser =
 
         parseDay =
             Parser.oneOf
-                [ Parser.int
-
-                -- Leading zero
-                , Parser.succeed identity
+                [ -- Leading zero
+                  Parser.succeed identity
                     |. Parser.chompIf (\v -> v == '0')
                     |= Parser.int
+                , Parser.int
                 ]
 
         parseMonth =
             Parser.andThen (either Parser.problem Parser.succeed) <|
                 Parser.succeed stringToMonth
                     |= take 3
+
+        weekDay =
+            take 3
+
+        timePart =
+            take 8
+
+        utcOffset =
+            take 5
     in
     Parser.succeed createDateTime
-        |. take 4
+        |. weekDay
         |. Parser.spaces
         |= parseMonth
         |. Parser.spaces
         |= parseDay
         |. Parser.spaces
-        |= take 8
+        |= timePart
         |. Parser.spaces
-        |= take 5
+        |= utcOffset
         |. Parser.spaces
         |= Parser.int
         |. Parser.end
