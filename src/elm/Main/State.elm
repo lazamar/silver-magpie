@@ -63,7 +63,7 @@ initSessionID model =
 
 
 type alias Flags =
-    { localStorage : String
+    { localStorage : Value
     , timeNow : Int
     , randomInt : Int
     }
@@ -72,8 +72,20 @@ type alias Flags =
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
+        ldecoder =
+            Decode.string
+                |> Decode.andThen
+                    (\str ->
+                        case Decode.decodeString localStorageDecoder str of
+                            Ok r ->
+                                Decode.succeed r
+
+                            Err err ->
+                                Decode.fail <| Decode.errorToString err
+                    )
+
         mLocalStorage =
-            Decode.decodeString localStorageDecoder flags.localStorage
+            Decode.decodeValue ldecoder flags.localStorage
                 |> Debug.log "decoded local storage"
                 |> Result.toMaybe
 
