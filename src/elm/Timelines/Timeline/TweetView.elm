@@ -64,7 +64,7 @@ timeInfo zone now tweet =
     a
         [ class "Tweet-timeInfo"
         , target "blank"
-        , href <| "https://twitter.com/" ++ tweet.user.name ++ "/status/" ++ tweet.id
+        , href <| "https://twitter.com/" ++ tweet.user.screen_name ++ "/status/" ++ tweet.id
         ]
         [ text info ]
 
